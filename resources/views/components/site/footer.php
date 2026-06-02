@@ -83,9 +83,17 @@
         <div class="border-t border-white/5 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
             <p class="text-sm text-gray-500">&copy; <?= date('Y') ?> LRV Web. <?= \Core\I18n::get('all_rights_reserved') ?></p>
             <div class="flex gap-6 text-sm text-gray-500">
-                <a href="/<?= $locale ?>/pagina/politica-de-privacidade" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('privacy_policy') ?></a>
-                <a href="/<?= $locale ?>/pagina/termos-de-uso" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('terms_of_use') ?></a>
-                <a href="/<?= $locale ?>/pagina/politica-de-cookies" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('cookie_policy') ?></a>
+                <?php
+                $policyLinks = [
+                    'pt' => ['politica-de-privacidade', 'termos-de-uso', 'politica-de-cookies'],
+                    'en' => ['en-privacy-policy', 'en-terms-of-use', 'en-cookie-policy'],
+                    'es' => ['es-politica-de-privacidad', 'es-terminos-de-uso', 'es-politica-de-cookies'],
+                ];
+                $currentLinks = $policyLinks[$locale] ?? $policyLinks['pt'];
+                ?>
+                <a href="/<?= $locale ?>/pagina/<?= $currentLinks[0] ?>" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('privacy_policy') ?></a>
+                <a href="/<?= $locale ?>/pagina/<?= $currentLinks[1] ?>" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('terms_of_use') ?></a>
+                <a href="/<?= $locale ?>/pagina/<?= $currentLinks[2] ?>" class="hover:text-purple-400 transition-colors"><?= \Core\I18n::get('cookie_policy') ?></a>
             </div>
         </div>
     </div>

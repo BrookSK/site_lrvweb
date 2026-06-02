@@ -49,8 +49,11 @@ function isActive(string $path, string $uri): string {
             <div class="flex items-center gap-3">
                 <!-- Language -->
                 <div class="hidden md:flex items-center gap-1 bg-white/5 rounded-lg p-1">
-                    <?php foreach (\Core\I18n::getAvailableLocales() as $lang): ?>
-                        <a href="/<?= $lang ?>/" class="px-2.5 py-1 rounded-md text-xs font-medium transition-all <?= $lang === $locale ? 'bg-purple-600 text-white shadow-sm' : 'text-gray-400 hover:text-white' ?>">
+                    <?php
+                    // Manter a página atual ao trocar idioma
+                    $currentPath = preg_replace('#^/(pt|en|es)#', '', $currentUri) ?: '/';
+                    foreach (\Core\I18n::getAvailableLocales() as $lang): ?>
+                        <a href="/<?= $lang ?><?= $currentPath ?>" class="px-2.5 py-1 rounded-md text-xs font-medium transition-all <?= $lang === $locale ? 'bg-purple-600 text-white shadow-sm' : 'text-gray-400 hover:text-white' ?>">
                             <?= strtoupper($lang) ?>
                         </a>
                     <?php endforeach; ?>
@@ -83,7 +86,7 @@ function isActive(string $path, string $uri): string {
             <?php endforeach; ?>
             <div class="pt-4 flex gap-2">
                 <?php foreach (\Core\I18n::getAvailableLocales() as $lang): ?>
-                    <a href="/<?= $lang ?>/" class="px-4 py-2 rounded-lg text-sm <?= $lang === $locale ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400' ?>"><?= strtoupper($lang) ?></a>
+                    <a href="/<?= $lang ?><?= $currentPath ?>" class="px-4 py-2 rounded-lg text-sm <?= $lang === $locale ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400' ?>"><?= strtoupper($lang) ?></a>
                 <?php endforeach; ?>
             </div>
         </div>

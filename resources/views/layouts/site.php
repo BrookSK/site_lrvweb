@@ -20,8 +20,13 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= \Core\View::asset('img/favicon.ico') ?>">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Preconnect para performance -->
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Tailwind CSS (com plugin typography) -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -129,6 +134,7 @@
 
     <?php echo \Core\View::component('site/footer', $data ?? []) ?>
     <?php echo \Core\View::component('site/whatsapp-float') ?>
+    <?php echo \Core\View::component('site/chatbot') ?>
     <?php echo \Core\View::component('site/cookie-banner') ?>
 
     <!-- Scripts -->
