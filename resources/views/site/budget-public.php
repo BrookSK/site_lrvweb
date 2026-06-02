@@ -3,8 +3,14 @@
 /** @var array $blocks */
 /** @var array $portfolios */
 /** @var array $settings */
-$settings = $settings ?? [];
-$logo = ($settings['logo_budget'] ?? '') ?: (($settings['logo_main'] ?? '') ?: ($settings['logo_system'] ?? ''));
+if (!is_array($settings)) $settings = [];
+if (!is_array($blocks)) $blocks = [];
+if (!is_array($portfolios)) $portfolios = [];
+
+$logo = '';
+if (!empty($settings['logo_budget'])) $logo = $settings['logo_budget'];
+elseif (!empty($settings['logo_main'])) $logo = $settings['logo_main'];
+elseif (!empty($settings['logo_system'])) $logo = $settings['logo_system'];
 
 $meses = [1=>'Janeiro',2=>'Fevereiro',3=>'Março',4=>'Abril',5=>'Maio',6=>'Junho',7=>'Julho',8=>'Agosto',9=>'Setembro',10=>'Outubro',11=>'Novembro',12=>'Dezembro'];
 function dataPT($date) {
@@ -226,20 +232,22 @@ function dataPT($date) {
     </div>
 
     <!-- SOBRE A LRV -->
-    <section class="mt-12 pt-8 border-t border-gray-200">
-        <div class="flex items-center gap-3 mb-3">
-            <?php if ($logo): ?>
-                <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-7 object-contain">
-            <?php endif; ?>
-            <div>
-                <p class="text-sm font-bold text-gray-800">Sobre a LRV Web</p>
-                <a href="https://lrvweb.com.br" target="_blank" class="text-xs text-brand-600 hover:underline">lrvweb.com.br</a>
+    <section class="mt-12 rounded-2xl overflow-hidden" style="background: linear-gradient(135deg, #2d1b69 0%, #1a0f40 100%);">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-3">
+                <?php if ($logo): ?>
+                    <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-8 object-contain brightness-0 invert">
+                <?php endif; ?>
+                <div>
+                    <p class="text-sm font-bold text-white">Sobre a LRV Web</p>
+                    <a href="https://lrvweb.com.br" target="_blank" class="text-xs text-purple-300 hover:text-purple-200 transition">lrvweb.com.br</a>
+                </div>
             </div>
+            <?php $about = ($budget['about_company'] ?? '') ?: ($settings['about_company'] ?? ''); ?>
+            <?php if ($about): ?>
+                <p class="text-sm text-purple-100/80 leading-relaxed mt-3"><?= nl2br(htmlspecialchars($about)) ?></p>
+            <?php endif; ?>
         </div>
-        <?php $about = $budget['about_company'] ?: ($settings['about_company'] ?? ''); ?>
-        <?php if ($about): ?>
-            <p class="text-sm text-gray-600 leading-relaxed mt-2"><?= nl2br(htmlspecialchars($about)) ?></p>
-        <?php endif; ?>
     </section>
 
     <!-- PROJETOS RECENTES -->
