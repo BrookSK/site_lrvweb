@@ -35,26 +35,26 @@
 
             <!-- Visual decorativo -->
             <div class="hidden lg:flex justify-center relative">
-                <div class="relative w-[420px] h-[420px]" data-parallax="8">
-                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-pink-600/5 rounded-full blur-3xl animate-float"></div>
-                    <!-- Cards flutuantes -->
-                    <div class="absolute top-6 right-4 glass px-4 py-3 rounded-xl animate-float" style="animation-delay:0.5s">
+                <div class="relative w-[420px] h-[420px]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/15 to-pink-600/5 rounded-full blur-3xl"></div>
+                    <!-- Cards flutuantes - posicionados fora do centro -->
+                    <div class="absolute top-4 right-0 glass px-4 py-3 rounded-xl animate-float z-10" style="animation-delay:0.5s">
                         <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span><span class="text-xs text-gray-300">99.9% Uptime</span></div>
                     </div>
-                    <div class="absolute bottom-16 left-0 glass px-4 py-3 rounded-xl animate-float" style="animation-delay:1.2s">
+                    <div class="absolute bottom-12 -left-4 glass px-4 py-3 rounded-xl animate-float z-10" style="animation-delay:1.2s">
                         <div class="flex items-center gap-2"><span class="text-lg">⚡</span><span class="text-xs text-gray-300">NVMe SSD</span></div>
                     </div>
-                    <div class="absolute top-1/3 left-8 glass px-4 py-3 rounded-xl animate-float" style="animation-delay:0.8s">
+                    <div class="absolute top-1/4 -left-8 glass px-4 py-3 rounded-xl animate-float z-10" style="animation-delay:0.8s">
                         <div class="flex items-center gap-2"><span class="text-lg">🛡️</span><span class="text-xs text-gray-300">DDoS Protection</span></div>
                     </div>
                     <!-- Centro -->
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 bg-gradient-to-br from-purple-600 to-purple-900 rounded-3xl shadow-2xl shadow-purple-500/30 flex items-center justify-center animate-glow border border-purple-500/30">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-purple-600 to-purple-900 rounded-3xl shadow-2xl shadow-purple-500/30 flex items-center justify-center animate-glow border border-purple-500/30 z-0">
                         <div class="text-center">
                             <span class="text-5xl block mb-2">☁️</span>
                             <p class="text-white font-bold text-sm">LRV Cloud</p>
                         </div>
                     </div>
-                    <div class="absolute bottom-6 right-12 glass px-4 py-3 rounded-xl animate-float" style="animation-delay:1.8s">
+                    <div class="absolute bottom-4 right-4 glass px-4 py-3 rounded-xl animate-float z-10" style="animation-delay:1.8s">
                         <div class="flex items-center gap-2"><span class="text-lg">🚀</span><span class="text-xs text-gray-300">Deploy Rápido</span></div>
                     </div>
                 </div>

@@ -12,9 +12,6 @@
             <?php endif; ?>
             <div>
                 <h1 class="text-3xl md:text-5xl font-bold"><?= htmlspecialchars($service['name']) ?></h1>
-                <?php if ($service['price_from']): ?>
-                    <p class="text-purple-300 mt-2">A partir de <strong class="text-white">R$ <?= number_format((float)$service['price_from'], 0, ',', '.') ?></strong></p>
-                <?php endif; ?>
             </div>
         </div>
     </div>

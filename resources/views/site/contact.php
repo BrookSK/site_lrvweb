@@ -81,7 +81,7 @@
                             <div class="w-10 h-10 bg-green-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">💬</span></div>
                             <div>
                                 <p class="text-xs text-gray-500">WhatsApp</p>
-                                <p class="text-sm text-white">Clique para conversar</p>
+                                <a href="https://wa.me/5517988093160" target="_blank" class="text-sm text-white hover:text-purple-400 transition">(17) 98809-3160</a>
                             </div>
                         </div>
                     </div>

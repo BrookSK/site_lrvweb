@@ -69,6 +69,7 @@
     </main>
 
     <?php echo \Core\View::component('site/footer', $data ?? []) ?>
+    <?php echo \Core\View::component('site/whatsapp-float') ?>
     <?php echo \Core\View::component('site/cookie-banner') ?>
 
     <!-- Scripts -->

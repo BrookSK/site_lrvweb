@@ -6,10 +6,14 @@
     <title><?= htmlspecialchars($title ?? 'Orçamento') ?> | LRV Web</title>
     <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
     <link rel="stylesheet" href="<?= \Core\View::asset('css/app.css') ?>">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <?= $content ?>
-    <script src="<?= \Core\View::asset('js/app.js') ?>"></script>
 </body>
 </html>
