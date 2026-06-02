@@ -16,7 +16,7 @@ return [
     // === APLICAÇÃO ===
     'app' => [
         'name' => 'LRV Web',
-        'url' => 'http://localhost',
+        'url' => 'https://lrvweb.com.br',
         'env' => 'development', // development, staging, production
         'debug' => true,
         'version' => '1.0.0',
