@@ -144,31 +144,40 @@ html { scroll-behavior: smooth; }
     animation: float 8s ease-in-out infinite reverse;
 }
 
-/* === BUTTONS === */
+/* === BUTTONS (alta especificidade para sobrescrever Tailwind preflight) === */
+a.btn-primary,
+button.btn-primary,
+a[class*="btn-primary"],
+button[class*="btn-primary"],
 .btn-primary {
-    background: linear-gradient(135deg, var(--purple-vibrant), #6d28d9) !important;
-    color: white !important;
+    background-image: linear-gradient(135deg, var(--purple-vibrant), #6d28d9);
+    color: #ffffff;
     padding: 0.875rem 2rem;
     border-radius: 0.75rem;
     font-weight: 600;
-    display: inline-flex !important;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    display: inline-flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
     white-space: nowrap;
     text-decoration: none;
     border: none;
     cursor: pointer;
-    line-height: 1.5;
-    font-size: 0.9375rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
 }
+a.btn-primary:hover,
+button.btn-primary:hover,
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px var(--purple-glow);
     opacity: 0.95;
+    color: #ffffff;
+    text-decoration: none;
 }
 .btn-primary::after {
     content: '';
@@ -182,35 +191,53 @@ html { scroll-behavior: smooth; }
 }
 .btn-primary:hover::after { left: 100%; }
 
-.btn-primary svg, .btn-outline svg {
-    flex-shrink: 0;
-    width: 1.125rem;
-    height: 1.125rem;
-}
-
+a.btn-outline,
+button.btn-outline,
+a[class*="btn-outline"],
+button[class*="btn-outline"],
 .btn-outline {
-    border: 2px solid rgba(124, 58, 237, 0.5) !important;
-    color: white !important;
+    border: 2px solid rgba(124, 58, 237, 0.5);
+    background: transparent;
+    color: #ffffff;
     padding: 0.875rem 2rem;
     border-radius: 0.75rem;
     font-weight: 600;
-    display: inline-flex !important;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    display: inline-flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s;
     white-space: nowrap;
     text-decoration: none;
-    background: transparent;
     cursor: pointer;
-    line-height: 1.5;
-    font-size: 0.9375rem;
+    transition: all 0.3s;
 }
+a.btn-outline:hover,
+button.btn-outline:hover,
 .btn-outline:hover {
-    background: var(--purple-vibrant) !important;
-    border-color: var(--purple-vibrant) !important;
+    background: var(--purple-vibrant);
+    border-color: var(--purple-vibrant);
     transform: translateY(-2px);
     box-shadow: 0 10px 30px var(--purple-glow);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.btn-primary svg,
+.btn-outline svg {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Quando dentro de flex containers do Tailwind, forçar row */
+.btn-primary,
+.btn-outline {
+    flex-direction: row !important;
 }
 
 /* === SECTION DIVIDERS === */

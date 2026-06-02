@@ -49,6 +49,65 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= \Core\View::asset('css/app.css') ?>">
 
+    <!-- Override Tailwind para botões (garante especificidade) -->
+    <style>
+        .btn-primary {
+            background-image: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+            color: #fff !important;
+            padding: 0.875rem 2rem !important;
+            border-radius: 0.75rem !important;
+            font-weight: 600 !important;
+            font-size: 0.9375rem !important;
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            white-space: nowrap !important;
+            text-decoration: none !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3) !important;
+        }
+        .btn-outline {
+            border: 2px solid rgba(124, 58, 237, 0.5) !important;
+            background: transparent !important;
+            color: #fff !important;
+            padding: 0.875rem 2rem !important;
+            border-radius: 0.75rem !important;
+            font-weight: 600 !important;
+            font-size: 0.9375rem !important;
+            display: inline-flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            white-space: nowrap !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s !important;
+        }
+        .btn-outline:hover {
+            background: #7c3aed !important;
+            border-color: #7c3aed !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3) !important;
+        }
+        .btn-primary svg,
+        .btn-outline svg {
+            flex-shrink: 0 !important;
+            width: 1.125rem !important;
+            height: 1.125rem !important;
+            display: inline-block !important;
+        }
+    </style>
+
     <!-- Schema.org -->
     <script type="application/ld+json">
     {
