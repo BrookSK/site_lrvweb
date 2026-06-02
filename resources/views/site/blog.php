@@ -1,48 +1,53 @@
 <?php $locale = \Core\I18n::getLocale(); ?>
 
-<section class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16 text-white">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-4"><?= \Core\I18n::get('blog') ?></h1>
-        <p class="text-blue-100 text-lg">Artigos sobre tecnologia, hospedagem e marketing digital.</p>
+<!-- HERO -->
+<section class="hero-gradient py-28 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Blog</span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100">Insights sobre <span class="text-gradient">tecnologia</span> e negócios</h1>
+        <p class="text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200">Artigos sobre desenvolvimento web, hospedagem, marketing digital e como escalar seu negócio online.</p>
     </div>
 </section>
 
-<section class="py-16 bg-white dark:bg-gray-900">
+<!-- POSTS -->
+<section class="section-dark py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php foreach ($posts as $post): ?>
-            <article class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700" data-animate>
-                <?php if ($post['image']): ?>
-                    <div class="aspect-video bg-gray-200 overflow-hidden">
-                        <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="w-full h-full object-cover" loading="lazy">
-                    </div>
-                <?php endif; ?>
-                <div class="p-5">
-                    <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                        <time><?= isset($post['published_at']) ? date('d/m/Y', strtotime($post['published_at'])) : '' ?></time>
-                        <?php if (!empty($post['category_name'])): ?>
-                            <span>•</span>
-                            <span class="text-blue-600"><?= htmlspecialchars($post['category_name']) ?></span>
+            <?php foreach ($posts as $i => $post): ?>
+            <article class="group" data-animate="fade-up" data-delay="<?= ($i % 6) * 100 ?>">
+                <a href="/<?= $locale ?>/blog/<?= $post['slug'] ?>" class="block">
+                    <div class="relative aspect-[16/10] bg-gray-900 rounded-2xl overflow-hidden border border-white/5 group-hover:border-purple-500/30 transition-all duration-500 mb-5">
+                        <?php if ($post['image']): ?>
+                            <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">
+                        <?php else: ?>
+                            <div class="w-full h-full bg-gradient-to-br from-purple-950 to-black flex items-center justify-center"><span class="text-4xl opacity-30">📝</span></div>
                         <?php endif; ?>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
-                        <a href="/<?= $locale ?>/blog/<?= $post['slug'] ?>" class="hover:text-blue-600 transition"><?= htmlspecialchars($post['title']) ?></a>
-                    </h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-2 line-clamp-3"><?= htmlspecialchars($post['excerpt'] ?? '') ?></p>
-                </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                        <time><?= isset($post['published_at']) ? date('d M Y', strtotime($post['published_at'])) : '' ?></time>
+                        <?php if (!empty($post['category_name'])): ?>
+                            <span class="w-1 h-1 bg-purple-500 rounded-full"></span>
+                            <span class="text-purple-400"><?= htmlspecialchars($post['category_name']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white group-hover:text-purple-300 transition-colors line-clamp-2"><?= htmlspecialchars($post['title']) ?></h3>
+                    <p class="text-sm text-gray-400 mt-2 line-clamp-2"><?= htmlspecialchars($post['excerpt'] ?? '') ?></p>
+                </a>
             </article>
             <?php endforeach; ?>
         </div>
 
         <?php if (empty($posts)): ?>
-            <p class="text-center text-gray-500 dark:text-gray-400 py-12">Nenhum artigo publicado ainda.</p>
+            <div class="text-center py-20">
+                <span class="text-5xl block mb-4">📝</span>
+                <p class="text-gray-400 text-lg">Artigos sendo preparados. Volte em breve!</p>
+            </div>
         <?php endif; ?>
 
-        <!-- Paginação -->
         <?php if ($totalPages > 1): ?>
-        <div class="mt-12 flex justify-center gap-2">
+        <div class="mt-16 flex justify-center gap-2">
             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a href="?page=<?= $i ?>" class="px-4 py-2 rounded-lg text-sm <?= $i === $currentPage ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200' ?>"><?= $i ?></a>
+                <a href="?page=<?= $i ?>" class="w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all <?= $i === $currentPage ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20' : 'bg-white/5 border border-white/10 text-gray-400 hover:border-purple-500/50 hover:text-white' ?>"><?= $i ?></a>
             <?php endfor; ?>
         </div>
         <?php endif; ?>

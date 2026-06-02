@@ -1,16 +1,13 @@
 <!-- Cookie Banner (LGPD) -->
-<div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-2xl border-t border-gray-200 dark:border-gray-700 p-4 z-50 hidden">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-sm text-gray-600 dark:text-gray-300">
-            <?= \Core\I18n::get('cookie_message') ?>
+<div id="cookie-banner" class="fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-50 hidden">
+    <div class="glass bg-black/80 backdrop-blur-xl rounded-2xl p-6 border border-white/10 shadow-2xl">
+        <p class="text-sm text-gray-300 mb-4">
+            🍪 Utilizamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa
+            <a href="/<?= \Core\I18n::getLocale() ?>/pagina/politica-de-cookies" class="text-purple-400 hover:underline">Política de Cookies</a>.
         </p>
-        <div class="flex gap-3 flex-shrink-0">
-            <button onclick="rejectCookies()" class="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                <?= \Core\I18n::get('cookie_reject') ?>
-            </button>
-            <button onclick="acceptCookies()" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                <?= \Core\I18n::get('cookie_accept') ?>
-            </button>
+        <div class="flex gap-3">
+            <button onclick="acceptCookies()" class="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition">Aceitar</button>
+            <button onclick="rejectCookies()" class="px-4 py-2.5 border border-white/10 text-gray-300 text-sm rounded-xl hover:bg-white/5 transition">Recusar</button>
         </div>
     </div>
 </div>
@@ -18,17 +15,9 @@
 <script>
 (function() {
     if (!localStorage.getItem('cookie_consent')) {
-        document.getElementById('cookie-banner').classList.remove('hidden');
+        setTimeout(() => document.getElementById('cookie-banner').classList.remove('hidden'), 2000);
     }
 })();
-
-function acceptCookies() {
-    localStorage.setItem('cookie_consent', 'accepted');
-    document.getElementById('cookie-banner').classList.add('hidden');
-}
-
-function rejectCookies() {
-    localStorage.setItem('cookie_consent', 'rejected');
-    document.getElementById('cookie-banner').classList.add('hidden');
-}
+function acceptCookies() { localStorage.setItem('cookie_consent', 'accepted'); document.getElementById('cookie-banner').classList.add('hidden'); }
+function rejectCookies() { localStorage.setItem('cookie_consent', 'rejected'); document.getElementById('cookie-banner').classList.add('hidden'); }
 </script>

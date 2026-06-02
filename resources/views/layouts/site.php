@@ -15,34 +15,36 @@
     <meta property="og:title" content="<?= htmlspecialchars($title ?? 'LRV Web') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="<?= htmlspecialchars($canonical ?? '') ?>">
-    <meta property="og:image" content="<?= htmlspecialchars($og_image ?? '') ?>">
     <meta property="og:site_name" content="LRV Web">
-    <meta property="og:locale" content="<?= \Core\I18n::getLocale() === 'pt' ? 'pt_BR' : \Core\I18n::getLocale() ?>">
-
-    <!-- Twitter Cards -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?= htmlspecialchars($title ?? 'LRV Web') ?>">
-    <meta name="twitter:description" content="<?= htmlspecialchars($meta_description ?? '') ?>">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= \Core\View::asset('img/favicon.ico') ?>">
 
-    <!-- Tailwind CSS via CDN (substituir por build em produção) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
-                        secondary: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        purple: {
+                            50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe',
+                            400: '#c084fc', 500: '#a855f7', 600: '#7c3aed', 700: '#6d28d9',
+                            800: '#5b21b6', 900: '#4c1d95', 950: '#2d1b69'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= \Core\View::asset('css/app.css') ?>">
@@ -54,38 +56,22 @@
         "@type": "Organization",
         "name": "LRV Web",
         "url": "<?= \Core\Config::get('app.url', '') ?>",
-        "description": "Soluções Digitais - Hospedagem, Sites e Sistemas",
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "customer service"
-        }
+        "description": "Soluções Digitais - Hospedagem, Sites e Sistemas"
     }
     </script>
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 antialiased">
+<body class="bg-black text-white antialiased font-sans overflow-x-hidden">
 
-    <!-- Header/Navbar -->
     <?php echo \Core\View::component('site/header', $data ?? []) ?>
 
-    <!-- Main Content -->
     <main>
         <?= $content ?>
     </main>
 
-    <!-- Footer -->
     <?php echo \Core\View::component('site/footer', $data ?? []) ?>
-
-    <!-- Cookie Banner -->
     <?php echo \Core\View::component('site/cookie-banner') ?>
 
     <!-- Scripts -->
     <script src="<?= \Core\View::asset('js/app.js') ?>"></script>
-
-    <!-- Dark Mode Toggle -->
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
 </body>
 </html>

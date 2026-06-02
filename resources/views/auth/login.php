@@ -1,76 +1,55 @@
-<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+<div class="bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
     <!-- Logo -->
     <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">LRV Web</h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-2">Acesse sua conta</p>
+        <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-800 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+            <span class="text-white font-bold text-2xl">L</span>
+        </div>
+        <h1 class="text-2xl font-bold text-white">LRV <span class="text-purple-400">Web</span></h1>
+        <p class="text-gray-400 text-sm mt-1">Acesse sua conta</p>
     </div>
 
     <!-- Flash Messages -->
     <?php if ($error = \Core\Session::getInstance()->getFlash('error')): ?>
-        <div class="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
+        <div class="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             <?= htmlspecialchars($error) ?>
         </div>
     <?php endif; ?>
-
     <?php if ($success = \Core\Session::getInstance()->getFlash('success')): ?>
-        <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-400 text-sm">
-            <?= htmlspecialchars($success) ?>
-        </div>
+        <div class="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <!-- Login Form -->
+    <!-- Form -->
     <form action="/login" method="POST" class="space-y-5">
         <?= \Core\View::csrf() ?>
 
-        <!-- Email -->
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-mail</label>
-            <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required 
-                autofocus
-                autocomplete="email"
-                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition"
-                placeholder="seu@email.com"
-            >
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">E-mail</label>
+            <input type="email" id="email" name="email" required autofocus autocomplete="email"
+                   class="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                   placeholder="seu@email.com">
         </div>
 
-        <!-- Password -->
         <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Senha</label>
-            <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                required
-                autocomplete="current-password"
-                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition"
-                placeholder="••••••••"
-            >
+            <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Senha</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password"
+                   class="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition"
+                   placeholder="••••••••">
         </div>
 
-        <!-- Remember & Forgot -->
         <div class="flex items-center justify-between">
-            <label class="flex items-center">
-                <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Lembrar-me</span>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="remember" class="w-4 h-4 rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0">
+                <span class="text-sm text-gray-400">Lembrar-me</span>
             </label>
-            <a href="/recuperar-senha" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">Esqueceu a senha?</a>
+            <a href="/recuperar-senha" class="text-sm text-purple-400 hover:text-purple-300 transition">Esqueceu a senha?</a>
         </div>
 
-        <!-- Submit -->
-        <button 
-            type="submit"
-            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition duration-200 focus:ring-4 focus:ring-blue-300"
-        >
+        <button type="submit"
+                class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all duration-300 hover:-translate-y-0.5">
             Entrar
         </button>
     </form>
 </div>
 
-<!-- Footer -->
-<p class="text-center mt-6 text-white/60 text-sm">
-    &copy; <?= date('Y') ?> LRV Web. Todos os direitos reservados.
-</p>
+<p class="text-center mt-6 text-gray-500 text-xs">&copy; <?= date('Y') ?> LRV Web. Todos os direitos reservados.</p>

@@ -1,54 +1,106 @@
 <?php $locale = \Core\I18n::getLocale(); ?>
 
-<section class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16 text-white">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-4"><?= \Core\I18n::get('contact_title') ?></h1>
-        <p class="text-blue-100 text-lg"><?= \Core\I18n::get('contact_subtitle') ?></p>
+<!-- HERO -->
+<section class="hero-gradient py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Contato</span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100">Vamos conversar sobre seu <span class="text-gradient">projeto</span>?</h1>
+        <p class="text-lg text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200">Preencha o formulário abaixo ou utilize um dos nossos canais diretos.</p>
     </div>
 </section>
 
-<section class="py-16 bg-white dark:bg-gray-900">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="section-dark py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Formulário -->
+            <div class="lg:col-span-2" data-animate="fade-left">
+                <?php if ($success = \Core\Session::getInstance()->getFlash('success')): ?>
+                    <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm flex items-center gap-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <?= htmlspecialchars($success) ?>
+                    </div>
+                <?php endif; ?>
 
-        <?php if ($success = \Core\Session::getInstance()->getFlash('success')): ?>
-            <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-400">
-                <?= htmlspecialchars($success) ?>
-            </div>
-        <?php endif; ?>
-
-        <form action="/<?= $locale ?>/contato" method="POST" class="space-y-6">
-            <?= \Core\View::csrf() ?>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><?= \Core\I18n::get('your_name') ?> *</label>
-                    <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                <div class="card-premium">
+                    <form action="/<?= $locale ?>/contato" method="POST" class="space-y-6">
+                        <?= \Core\View::csrf() ?>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Nome *</label>
+                                <input type="text" name="name" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="Seu nome completo">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">E-mail *</label>
+                                <input type="email" name="email" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="seu@email.com">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Telefone / WhatsApp</label>
+                                <input type="tel" name="phone" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="(11) 99999-9999">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Assunto *</label>
+                                <select name="subject" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition">
+                                    <option value="" class="bg-gray-900">Selecione...</option>
+                                    <option value="Orçamento - Site" class="bg-gray-900">Orçamento — Criação de Site</option>
+                                    <option value="Orçamento - Sistema" class="bg-gray-900">Orçamento — Sistema Sob Medida</option>
+                                    <option value="Orçamento - E-commerce" class="bg-gray-900">Orçamento — E-commerce</option>
+                                    <option value="Hospedagem" class="bg-gray-900">Hospedagem de Site</option>
+                                    <option value="Suporte" class="bg-gray-900">Suporte Técnico</option>
+                                    <option value="Parceria" class="bg-gray-900">Parceria</option>
+                                    <option value="Outro" class="bg-gray-900">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Mensagem *</label>
+                            <textarea name="message" rows="5" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition resize-none" placeholder="Conte sobre seu projeto, necessidades e objetivos..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary w-full md:w-auto justify-center">
+                            Enviar Mensagem
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        </button>
+                    </form>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><?= \Core\I18n::get('your_email') ?> *</label>
-                    <input type="email" name="email" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
-                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><?= \Core\I18n::get('your_phone') ?></label>
-                    <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+            <!-- Info lateral -->
+            <div class="space-y-6" data-animate="fade-right">
+                <div class="card-premium">
+                    <h3 class="font-semibold text-white mb-4">Canais Diretos</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">📧</span></div>
+                            <div>
+                                <p class="text-xs text-gray-500">E-mail</p>
+                                <p class="text-sm text-white">contato@lrvweb.com.br</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">💬</span></div>
+                            <div>
+                                <p class="text-xs text-gray-500">WhatsApp</p>
+                                <p class="text-sm text-white">Clique para conversar</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><?= \Core\I18n::get('subject') ?> *</label>
-                    <input type="text" name="subject" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+
+                <div class="card-premium">
+                    <h3 class="font-semibold text-white mb-4">Horário de Atendimento</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between"><span class="text-gray-400">Segunda a Sexta</span><span class="text-white">09h — 18h</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Sábado</span><span class="text-white">09h — 13h</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400">Domingo</span><span class="text-gray-500">Fechado</span></div>
+                    </div>
+                </div>
+
+                <div class="card-premium">
+                    <h3 class="font-semibold text-white mb-3">Resposta Rápida</h3>
+                    <p class="text-sm text-gray-400">Respondemos todas as mensagens em até <strong class="text-purple-400">2 horas</strong> durante o horário comercial.</p>
                 </div>
             </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"><?= \Core\I18n::get('message') ?> *</label>
-                <textarea name="message" rows="6" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-            </div>
-
-            <button type="submit" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg transition">
-                <?= \Core\I18n::get('send_message') ?>
-            </button>
-        </form>
+        </div>
     </div>
 </section>
