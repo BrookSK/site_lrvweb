@@ -4,9 +4,9 @@
 <section class="hero-gradient py-32 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Quem somos</span>
-            <h1 class="text-4xl md:text-6xl font-bold mt-4 animate-fade-up delay-100">Somos a <span class="text-gradient">LRV Web</span></h1>
-            <p class="text-lg text-gray-300 mt-6 max-w-2xl mx-auto animate-fade-up delay-200">Uma empresa apaixonada por tecnologia, focada em entregar soluções digitais que realmente transformam negócios.</p>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up"><?= \Core\I18n::get('about_badge') ?></span>
+            <h1 class="text-4xl md:text-6xl font-bold mt-4 animate-fade-up delay-100"><?= \Core\I18n::get('about_title') ?></h1>
+            <p class="text-lg text-gray-300 mt-6 max-w-2xl mx-auto animate-fade-up delay-200"><?= \Core\I18n::get('about_subtitle') ?></p>
         </div>
     </div>
 </section>
@@ -16,11 +16,11 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div data-animate="fade-left">
-                <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider">Nossa História</span>
-                <h2 class="text-3xl font-bold mt-3 mb-6">Do código à <span class="text-gradient">transformação digital</span></h2>
-                <p class="text-gray-400 leading-relaxed mb-4">A LRV Web nasceu da paixão por resolver problemas reais com tecnologia. Começamos com hospedagem de sites e rapidamente expandimos para desenvolvimento web, sistemas sob medida e soluções de automação.</p>
-                <p class="text-gray-400 leading-relaxed mb-4">Hoje, somos parceiros estratégicos de empresas que buscam não apenas presença online, mas resultados mensuráveis e crescimento sustentável.</p>
-                <p class="text-gray-400 leading-relaxed">Cada projeto que entregamos carrega nosso compromisso com qualidade, performance e inovação.</p>
+                <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider"><?= \Core\I18n::get('about_history') ?></span>
+                <h2 class="text-3xl font-bold mt-3 mb-6"><?= \Core\I18n::get('about_history_title') ?></h2>
+                <p class="text-gray-400 leading-relaxed mb-4"><?= \Core\I18n::get('about_history_p1') ?></p>
+                <p class="text-gray-400 leading-relaxed mb-4"><?= \Core\I18n::get('about_history_p2') ?></p>
+                <p class="text-gray-400 leading-relaxed"><?= \Core\I18n::get('about_history_p3') ?></p>
             </div>
             <div class="relative" data-animate="fade-right">
                 <div class="w-full aspect-square max-w-md mx-auto relative">
@@ -44,8 +44,8 @@
 <section class="section-gradient py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Nossos Pilares</span>
-            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">O que nos <span class="text-gradient">move</span></h2>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('about_pillars') ?></span>
+            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('about_pillars_title') ?></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -53,22 +53,22 @@
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
                     <span class="text-3xl">🎯</span>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-3">Missão</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Transformar negócios através de soluções digitais inovadoras, acessíveis e de altíssima qualidade, gerando resultados reais para nossos clientes.</p>
+                <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_mission') ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_mission_desc') ?></p>
             </div>
             <div class="card-premium text-center" data-animate="fade-up" data-delay="200">
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
                     <span class="text-3xl">🔭</span>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-3">Visão</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Ser referência nacional em hospedagem e desenvolvimento web, reconhecida pela excelência técnica e pelo impacto positivo nos negócios que atendemos.</p>
+                <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_vision') ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_vision_desc') ?></p>
             </div>
             <div class="card-premium text-center" data-animate="fade-up" data-delay="300">
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
                     <span class="text-3xl">💎</span>
                 </div>
-                <h3 class="text-xl font-semibold text-white mb-3">Valores</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Transparência total, compromisso com resultados, inovação contínua, qualidade sem concessões e foco absoluto na experiência do cliente.</p>
+                <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_values') ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_values_desc') ?></p>
             </div>
         </div>
     </div>
@@ -78,17 +78,17 @@
 <section class="section-dark py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Por que nós?</span>
-            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Diferenciais que fazem a <span class="text-gradient">diferença</span></h2>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('about_why') ?></span>
+            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('about_why_title') ?></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php
             $diffs = [
-                ['🛡️', 'Segurança', 'Proteção total com SSL, firewall e monitoramento 24h.'],
-                ['⚡', 'Performance', 'Servidores NVMe com CDN global e tempo de resposta < 200ms.'],
-                ['🤝', 'Suporte Humano', 'Atendimento real, sem robô. Sua dúvida resolvida de verdade.'],
-                ['📈', 'Resultados', 'Foco em conversão, SEO e métricas que importam pro seu negócio.'],
+                ['🛡️', \Core\I18n::get('diff_security'), \Core\I18n::get('diff_security_desc')],
+                ['⚡', \Core\I18n::get('diff_performance'), \Core\I18n::get('diff_performance_desc')],
+                ['🤝', \Core\I18n::get('diff_support'), \Core\I18n::get('diff_support_desc')],
+                ['📈', \Core\I18n::get('diff_results'), \Core\I18n::get('diff_results_desc')],
             ];
             foreach ($diffs as $i => $d): ?>
             <div class="text-center p-6" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
@@ -105,10 +105,10 @@
 <section class="relative py-24 overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-purple-950 via-purple-900 to-black"></div>
     <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <h2 class="text-3xl md:text-4xl font-bold mb-6" data-animate="fade-up">Vamos construir algo <span class="text-gradient">incrível</span> juntos?</h2>
-        <p class="text-gray-300 mb-8 text-lg" data-animate="fade-up" data-delay="100">Conte pra gente o que você precisa. A primeira conversa é por nossa conta.</p>
+        <h2 class="text-3xl md:text-4xl font-bold mb-6" data-animate="fade-up"><?= \Core\I18n::get('about_cta_title') ?></h2>
+        <p class="text-gray-300 mb-8 text-lg" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('about_cta_desc') ?></p>
         <a href="/<?= $locale ?>/contato" class="btn-primary text-lg px-10" data-animate="fade-up" data-delay="200">
-            Fale Com Nossa Equipe
+            <?= \Core\I18n::get('about_cta_btn') ?>
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>

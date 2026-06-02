@@ -3,9 +3,9 @@
 <!-- HERO -->
 <section class="hero-gradient py-24 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Contato</span>
-        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100">Vamos conversar sobre seu <span class="text-gradient">projeto</span>?</h1>
-        <p class="text-lg text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200">Preencha o formulário abaixo ou utilize um dos nossos canais diretos.</p>
+        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up"><?= \Core\I18n::get('contact_badge') ?></span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100"><?= \Core\I18n::get('contact_title') ?></h1>
+        <p class="text-lg text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200"><?= \Core\I18n::get('contact_subtitle') ?></p>
     </div>
 </section>
 
@@ -26,39 +26,39 @@
                         <?= \Core\View::csrf() ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Nome *</label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2"><?= \Core\I18n::get('your_name') ?> *</label>
                                 <input type="text" name="name" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="Seu nome completo">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">E-mail *</label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2"><?= \Core\I18n::get('your_email') ?> *</label>
                                 <input type="email" name="email" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="seu@email.com">
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Telefone / WhatsApp</label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2"><?= \Core\I18n::get('your_phone') ?></label>
                                 <input type="tel" name="phone" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition" placeholder="(11) 99999-9999">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Assunto *</label>
+                                <label class="block text-sm font-medium text-gray-300 mb-2"><?= \Core\I18n::get('subject') ?> *</label>
                                 <select name="subject" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition">
-                                    <option value="" class="bg-gray-900">Selecione...</option>
-                                    <option value="Orçamento - Site" class="bg-gray-900">Orçamento — Criação de Site</option>
-                                    <option value="Orçamento - Sistema" class="bg-gray-900">Orçamento — Sistema Sob Medida</option>
-                                    <option value="Orçamento - E-commerce" class="bg-gray-900">Orçamento — E-commerce</option>
-                                    <option value="Hospedagem" class="bg-gray-900">Hospedagem de Site</option>
-                                    <option value="Suporte" class="bg-gray-900">Suporte Técnico</option>
-                                    <option value="Parceria" class="bg-gray-900">Parceria</option>
-                                    <option value="Outro" class="bg-gray-900">Outro</option>
+                                    <option value="" class="bg-gray-900"><?= \Core\I18n::get('contact_select') ?></option>
+                                    <option value="Orçamento - Site" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_site') ?></option>
+                                    <option value="Orçamento - Sistema" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_system') ?></option>
+                                    <option value="Orçamento - E-commerce" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_ecommerce') ?></option>
+                                    <option value="Hospedagem" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_hosting') ?></option>
+                                    <option value="Suporte" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_support') ?></option>
+                                    <option value="Parceria" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_partnership') ?></option>
+                                    <option value="Outro" class="bg-gray-900"><?= \Core\I18n::get('contact_subject_other') ?></option>
                                 </select>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Mensagem *</label>
-                            <textarea name="message" rows="5" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition resize-none" placeholder="Conte sobre seu projeto, necessidades e objetivos..."></textarea>
+                            <label class="block text-sm font-medium text-gray-300 mb-2"><?= \Core\I18n::get('message') ?> *</label>
+                            <textarea name="message" rows="5" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition resize-none" placeholder="<?= \Core\I18n::get('contact_placeholder_msg') ?>"></textarea>
                         </div>
                         <button type="submit" class="btn-primary w-full md:w-auto justify-center">
-                            Enviar Mensagem
+                            <?= \Core\I18n::get('send_message') ?>
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
                         </button>
                     </form>
@@ -68,7 +68,7 @@
             <!-- Info lateral -->
             <div class="space-y-6" data-animate="fade-right">
                 <div class="card-premium">
-                    <h3 class="font-semibold text-white mb-4">Canais Diretos</h3>
+                    <h3 class="font-semibold text-white mb-4"><?= \Core\I18n::get('contact_channels') ?></h3>
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">📧</span></div>
@@ -88,17 +88,17 @@
                 </div>
 
                 <div class="card-premium">
-                    <h3 class="font-semibold text-white mb-4">Horário de Atendimento</h3>
+                    <h3 class="font-semibold text-white mb-4"><?= \Core\I18n::get('contact_hours') ?></h3>
                     <div class="space-y-2 text-sm">
-                        <div class="flex justify-between"><span class="text-gray-400">Segunda a Sexta</span><span class="text-white">09h — 18h</span></div>
-                        <div class="flex justify-between"><span class="text-gray-400">Sábado</span><span class="text-white">09h — 13h</span></div>
-                        <div class="flex justify-between"><span class="text-gray-400">Domingo</span><span class="text-gray-500">Fechado</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400"><?= \Core\I18n::get('contact_hours_weekday') ?></span><span class="text-white">09h — 18h</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400"><?= \Core\I18n::get('contact_hours_saturday') ?></span><span class="text-white">09h — 13h</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400"><?= \Core\I18n::get('contact_hours_sunday') ?></span><span class="text-gray-500"><?= \Core\I18n::get('contact_hours_closed') ?></span></div>
                     </div>
                 </div>
 
                 <div class="card-premium">
-                    <h3 class="font-semibold text-white mb-3">Resposta Rápida</h3>
-                    <p class="text-sm text-gray-400">Respondemos todas as mensagens em até <strong class="text-purple-400">2 horas</strong> durante o horário comercial.</p>
+                    <h3 class="font-semibold text-white mb-3"><?= \Core\I18n::get('contact_fast_reply') ?></h3>
+                    <p class="text-sm text-gray-400"><?= \Core\I18n::get('contact_fast_reply_desc') ?></p>
                 </div>
             </div>
         </div>

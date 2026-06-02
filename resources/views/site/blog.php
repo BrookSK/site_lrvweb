@@ -3,9 +3,9 @@
 <!-- HERO -->
 <section class="hero-gradient py-28 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Blog</span>
-        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100">Insights sobre <span class="text-gradient">tecnologia</span> e negócios</h1>
-        <p class="text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200">Artigos sobre desenvolvimento web, hospedagem, marketing digital e como escalar seu negócio online.</p>
+        <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up"><?= \Core\I18n::get('blog_badge') ?></span>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100"><?= \Core\I18n::get('blog_title') ?></h1>
+        <p class="text-gray-300 mt-4 max-w-xl mx-auto animate-fade-up delay-200"><?= \Core\I18n::get('blog_subtitle') ?></p>
     </div>
 </section>
 
@@ -40,7 +40,7 @@
         <?php if (empty($posts)): ?>
             <div class="text-center py-20">
                 <span class="text-5xl block mb-4">📝</span>
-                <p class="text-gray-400 text-lg">Artigos sendo preparados. Volte em breve!</p>
+                <p class="text-gray-400 text-lg"><?= \Core\I18n::get('blog_empty') ?></p>
             </div>
         <?php endif; ?>
 

@@ -5,7 +5,7 @@
         <!-- Back -->
         <a href="/<?= $locale ?>/blog" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm mb-8 transition group" data-animate="fade-up">
             <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Voltar ao Blog
+            <?= \Core\I18n::get('blog_back') ?>
         </a>
 
         <!-- Meta -->
@@ -48,7 +48,7 @@
         <!-- Relacionados -->
         <?php if (!empty($related)): ?>
         <div class="mt-16 pt-12 border-t border-white/5">
-            <h3 class="text-xl font-bold text-white mb-8">Leia também</h3>
+            <h3 class="text-xl font-bold text-white mb-8"><?= \Core\I18n::get('blog_related') ?></h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <?php foreach ($related as $r): ?>
                 <a href="/<?= $locale ?>/blog/<?= $r['slug'] ?>" class="group card-premium p-4">
