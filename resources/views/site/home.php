@@ -9,25 +9,25 @@
             <div>
                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-8 animate-fade-up">
                     <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-sm text-purple-300">Infraestrutura & Desenvolvimento Digital</span>
+                    <span class="text-sm text-purple-300"><?= \Core\I18n::get('hero_badge') ?></span>
                 </div>
 
                 <h1 class="text-4xl md:text-5xl lg:text-[3.5rem] font-bold leading-[1.15] mb-8 animate-fade-up delay-100">
-                    Hospedagem Cloud,<br>Sites e Sistemas que
-                    <span class="text-gradient block mt-1" id="typed-text" data-texts='["escalam seu negócio","geram resultados","vendem mais","automatizam processos"]'>escalam seu negócio</span>
+                    <?= \Core\I18n::get('hero_title') ?>
+                    <span class="text-gradient block mt-1" id="typed-text" data-texts='["<?= \Core\I18n::get('hero_typed_1') ?>","<?= \Core\I18n::get('hero_typed_2') ?>","<?= \Core\I18n::get('hero_typed_3') ?>","<?= \Core\I18n::get('hero_typed_4') ?>"]'><?= \Core\I18n::get('hero_typed_1') ?></span>
                 </h1>
 
                 <p class="text-lg text-gray-300 leading-relaxed mb-10 max-w-lg animate-fade-up delay-200">
-                    Servidores VPS de alta performance, criação de sites premium e sistemas sob medida. Tudo em um só lugar, com suporte humano de verdade.
+                    <?= \Core\I18n::get('hero_subtitle') ?>
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 animate-fade-up delay-300">
                     <a href="/<?= $locale ?>/contato" class="btn-primary">
-                        Solicitar Orçamento
+                        <?= \Core\I18n::get('hero_cta') ?>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
                     <a href="https://cloud.lrvweb.com.br" target="_blank" class="btn-outline">
-                        Conheça o Cloud
+                        <?= \Core\I18n::get('hero_cta_cloud') ?>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
@@ -87,10 +87,10 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
             <?php
             $stats = [
-                ['500', 'Projetos Entregues', '+'],
-                ['200', 'Clientes Ativos', '+'],
-                ['99.9', 'Uptime Garantido', '%'],
-                ['5', 'Anos de Mercado', '+'],
+                ['500', \Core\I18n::get('stat_projects'), '+'],
+                ['200', \Core\I18n::get('stat_clients'), '+'],
+                ['99.9', \Core\I18n::get('stat_uptime'), '%'],
+                ['5', \Core\I18n::get('stat_years'), '+'],
             ];
             foreach ($stats as $i => $s): ?>
             <div class="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
@@ -109,9 +109,9 @@
 <section class="section-dark py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Soluções</span>
-            <h2 class="text-3xl md:text-4xl font-bold mt-3" data-animate="fade-up" data-delay="100">O que a LRV Web <span class="text-gradient">faz por você</span></h2>
-            <p class="text-gray-400 mt-4 max-w-2xl mx-auto" data-animate="fade-up" data-delay="150">Somos especialistas em infraestrutura cloud, desenvolvimento web e automação digital.</p>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('services_subtitle') ?></span>
+            <h2 class="text-3xl md:text-4xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('services_title') ?></h2>
+            <p class="text-gray-400 mt-4 max-w-2xl mx-auto" data-animate="fade-up" data-delay="150"><?= \Core\I18n::get('services_desc') ?></p>
         </div>
 
         <!-- Grid principal (3 colunas destaque) -->
@@ -123,8 +123,8 @@
                         <div class="w-12 h-12 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center"><span class="text-2xl">☁️</span></div>
                         <span class="text-xs bg-purple-600/20 text-purple-300 px-2 py-1 rounded-full border border-purple-500/20">Principal</span>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Hospedagem Cloud & VPS</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed mb-4">Servidores VPS com recursos dedicados, proteção DDoS nativa, uptime 99.9% e suporte técnico especializado. Infraestrutura enterprise para seu projeto.</p>
+                    <h3 class="text-xl font-bold text-white mb-3"><?= \Core\I18n::get('service_hosting') ?></h3>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-4"><?= \Core\I18n::get('service_hosting_desc') ?></p>
                     <ul class="space-y-2 text-sm text-gray-400 mb-6">
                         <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Intel Xeon + NVMe SSD</li>
                         <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Proteção DDoS inclusa</li>
@@ -133,7 +133,7 @@
                     </ul>
                 </div>
                 <a href="https://cloud.lrvweb.com.br" target="_blank" class="btn-primary w-full justify-center">
-                    Ver Planos Cloud
+                    <?= \Core\I18n::get('hosting_see_plans') ?>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
             </div>
@@ -141,33 +141,33 @@
             <!-- SITES -->
             <div class="card-premium" data-animate="fade-up" data-delay="200">
                 <div class="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center mb-4"><span class="text-xl">🌐</span></div>
-                <h3 class="text-lg font-semibold text-white mb-2">Criação de Sites</h3>
+                <h3 class="text-lg font-semibold text-white mb-2"><?= \Core\I18n::get('service_websites') ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed">Sites profissionais, rápidos e otimizados para conversão. Design exclusivo que representa sua marca.</p>
-                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group">Solicitar orçamento <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group"><?= \Core\I18n::get('request_quote') ?> <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
             </div>
 
             <!-- SISTEMAS -->
             <div class="card-premium" data-animate="fade-up" data-delay="300">
                 <div class="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center mb-4"><span class="text-xl">⚙️</span></div>
-                <h3 class="text-lg font-semibold text-white mb-2">Sistemas Sob Medida</h3>
+                <h3 class="text-lg font-semibold text-white mb-2"><?= \Core\I18n::get('service_systems') ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed">Sistemas, painéis, CRM, ERP e automações desenvolvidos especificamente para resolver seus problemas.</p>
-                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group">Solicitar orçamento <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group"><?= \Core\I18n::get('request_quote') ?> <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
             </div>
 
             <!-- E-COMMERCE -->
             <div class="card-premium" data-animate="fade-up" data-delay="350">
                 <div class="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center mb-4"><span class="text-xl">🛒</span></div>
-                <h3 class="text-lg font-semibold text-white mb-2">E-commerce</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Lojas virtuais completas com checkout otimizado, integrações de pagamento e gestão de estoque.</p>
-                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group">Solicitar orçamento <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+                <h3 class="text-lg font-semibold text-white mb-2"><?= \Core\I18n::get('service_ecommerce') ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('service_ecommerce_desc') ?></p>
+                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group"><?= \Core\I18n::get('request_quote') ?> <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
             </div>
 
             <!-- AUTOMAÇÃO -->
             <div class="card-premium" data-animate="fade-up" data-delay="400">
                 <div class="w-10 h-10 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center mb-4"><span class="text-xl">💬</span></div>
-                <h3 class="text-lg font-semibold text-white mb-2">Automação & WhatsApp</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Chatbots, disparos, atendimento automatizado e integrações que escalam sua operação comercial.</p>
-                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group">Solicitar orçamento <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+                <h3 class="text-lg font-semibold text-white mb-2"><?= \Core\I18n::get('service_automation') ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('service_automation_desc') ?></p>
+                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-1 text-purple-400 text-sm font-medium mt-4 hover:text-purple-300 transition group"><?= \Core\I18n::get('request_quote') ?> <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
             </div>
         </div>
     </div>
@@ -179,19 +179,19 @@
 <section class="section-gradient py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Por que a LRV Web?</span>
-            <h2 class="text-3xl md:text-4xl font-bold mt-3" data-animate="fade-up" data-delay="100">Tecnologia de ponta com <span class="text-gradient">suporte humano</span></h2>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('why_us') ?></span>
+            <h2 class="text-3xl md:text-4xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('why_us_title') ?></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php
             $features = [
-                ['⚡', 'Desempenho Superior', 'Processadores Intel Xeon e armazenamento NVMe para máximo throughput e mínima latência.'],
-                ['🛡️', 'Proteção DDoS Nativa', 'Infraestrutura blindada contra ataques volumétricos. Inclusa em todos os serviços.'],
-                ['🌐', 'Hiperconectividade', 'Portas de 1 a 10 Gbps com tráfego ilimitado. Conexão direta com CloudFlare, AWS e Google.'],
-                ['📈', 'Escalabilidade Real', 'Ajuste CPU, RAM e armazenamento sob demanda sem downtime. Cresça sem limites.'],
-                ['🤝', 'Suporte Humanizado', 'Atendimento real por especialistas. Nada de robôs. Resolução rápida e eficiente.'],
-                ['💰', 'Custos Transparentes', 'Preços claros, sem taxas ocultas. Tudo combinado previamente na proposta.'],
+                ['⚡', \Core\I18n::get('feat_performance'), \Core\I18n::get('feat_performance_desc')],
+                ['🛡️', \Core\I18n::get('feat_ddos'), \Core\I18n::get('feat_ddos_desc')],
+                ['🌐', \Core\I18n::get('feat_connectivity'), \Core\I18n::get('feat_connectivity_desc')],
+                ['📈', \Core\I18n::get('feat_upgrades'), \Core\I18n::get('feat_upgrades_desc')],
+                ['🤝', \Core\I18n::get('diff_support'), \Core\I18n::get('diff_support_desc')],
+                ['💰', \Core\I18n::get('feat_pricing'), \Core\I18n::get('feat_pricing_desc')],
             ];
             foreach ($features as $i => $f): ?>
             <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300 group" data-animate="fade-up" data-delay="<?= $i * 80 ?>">
@@ -212,8 +212,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
             <div data-animate="fade-left">
                 <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider">LRV Cloud Manager</span>
-                <h2 class="text-3xl font-bold mt-3 mb-6">Infraestrutura VPS para <span class="text-gradient">escalar seu negócio</span></h2>
-                <p class="text-gray-400 leading-relaxed mb-6">Servidores VPS com recursos dedicados, proteção DDoS nativa, uptime 99.9% e suporte técnico. Ativação em até 6 dias úteis.</p>
+                <h2 class="text-3xl font-bold mt-3 mb-6"><?= \Core\I18n::get('hosting_title') ?></h2>
+                <p class="text-gray-400 leading-relaxed mb-6"><?= \Core\I18n::get('hosting_subtitle') ?></p>
 
                 <div class="grid grid-cols-2 gap-4 mb-8">
                     <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5">
@@ -235,8 +235,8 @@
                 </div>
 
                 <div class="flex gap-4">
-                    <a href="https://cloud.lrvweb.com.br/#planos" target="_blank" class="btn-primary">Ver Planos e Preços</a>
-                    <a href="https://cloud.lrvweb.com.br/contato" target="_blank" class="btn-outline">Falar com Consultor</a>
+                    <a href="https://cloud.lrvweb.com.br/#planos" target="_blank" class="btn-primary"><?= \Core\I18n::get('hosting_see_plans') ?></a>
+                    <a href="https://cloud.lrvweb.com.br/contato" target="_blank" class="btn-outline"><?= \Core\I18n::get('hosting_talk_consultant') ?></a>
                 </div>
             </div>
 
@@ -281,17 +281,17 @@
 <section class="section-dark py-20 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Como funciona</span>
-            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Do primeiro contato à <span class="text-gradient">entrega</span></h2>
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('services_process') ?></span>
+            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('services_process_title') ?></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <?php
             $steps = [
-                ['💬', '01', 'Conversa', 'Entendemos seu projeto, objetivos e necessidades. Sem compromisso.'],
-                ['📋', '02', 'Proposta', 'Montamos uma proposta detalhada com escopo, prazo e valores transparentes.'],
-                ['🚀', '03', 'Execução', 'Desenvolvemos com entregas parciais e feedback constante.'],
-                ['✅', '04', 'Entrega', 'Lançamos com suporte contínuo e acompanhamento de resultados.'],
+                ['💬', '01', \Core\I18n::get('step_1_title'), \Core\I18n::get('step_1_desc')],
+                ['📋', '02', \Core\I18n::get('step_2_title'), \Core\I18n::get('step_2_desc')],
+                ['🚀', '03', \Core\I18n::get('step_3_title'), \Core\I18n::get('step_3_desc')],
+                ['✅', '04', \Core\I18n::get('step_4_title'), \Core\I18n::get('step_4_desc')],
             ];
             foreach ($steps as $i => $step): ?>
             <div class="text-center" data-animate="fade-up" data-delay="<?= $i * 120 ?>">
@@ -315,11 +315,11 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-end justify-between mb-12">
             <div>
-                <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Portfólio</span>
-                <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Projetos <span class="text-gradient">recentes</span></h2>
+                <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('portfolio_badge') ?></span>
+                <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100"><?= \Core\I18n::get('portfolio_recent') ?></h2>
             </div>
             <a href="/<?= $locale ?>/portfolio" class="hidden md:inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition group">
-                Ver todos <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                <?= \Core\I18n::get('view_all') ?> <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
         </div>
 
@@ -356,20 +356,20 @@
     <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl"></div>
 
     <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <span class="text-purple-300 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Pronto para começar?</span>
+        <span class="text-purple-300 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up"><?= \Core\I18n::get('cta_ready') ?></span>
         <h2 class="text-3xl md:text-4xl font-bold mt-4 mb-6" data-animate="fade-up" data-delay="100">
-            Vamos transformar sua ideia em <span class="text-gradient">realidade</span>
+            <?= \Core\I18n::get('cta_title') ?>
         </h2>
         <p class="text-gray-300 mb-10 text-lg max-w-2xl mx-auto" data-animate="fade-up" data-delay="150">
-            Entre em contato e receba uma proposta personalizada. Nossa equipe técnica está pronta para atender.
+            <?= \Core\I18n::get('cta_desc') ?>
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center" data-animate="fade-up" data-delay="200">
             <a href="/<?= $locale ?>/contato" class="btn-primary text-base px-8">
-                Solicitar Orçamento
+                <?= \Core\I18n::get('hero_cta') ?>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
             <a href="https://cloud.lrvweb.com.br/contato" target="_blank" class="btn-outline text-base px-8">
-                Falar com Consultor
+                <?= \Core\I18n::get('hosting_talk_consultant') ?>
             </a>
         </div>
     </div>
