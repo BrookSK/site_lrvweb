@@ -38,6 +38,14 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parcelas</label>
                     <input type="number" name="installments" value="<?= $budget['installments'] ?? 1 ?>" min="1" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor Mensal (se aplicável)</label>
+                    <input type="number" step="0.01" name="monthly_value" value="<?= $budget['monthly_value'] ?? '' ?>" placeholder="0.00" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Entrada Mínima (%)</label>
+                    <input type="number" step="1" name="minimum_entry" value="<?= $budget['minimum_entry'] ?? '' ?>" placeholder="Ex: 50" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
             </div>
 
             <!-- Formas de pagamento -->
@@ -87,8 +95,53 @@
         <p class="text-sm font-medium text-purple-800 dark:text-purple-300 mb-1">Link público do orçamento:</p>
         <div class="flex items-center gap-2">
             <input type="text" readonly value="<?= rtrim(\Core\Config::get('app.url', ''), '/') ?>/orcamento/<?= $budget['hash'] ?>" class="flex-1 px-3 py-2 bg-white dark:bg-gray-900 border border-purple-200 dark:border-purple-700 rounded-lg text-sm text-gray-800 dark:text-white font-mono">
-            <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value); this.textContent='✓'" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition">Copiar</button>
+            <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value); this.textContent='✓ Copiado'" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition">Copiar</button>
         </div>
+    </div>
+
+    <!-- Adicionar bloco -->
+    <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+        <h4 class="font-semibold text-gray-800 dark:text-white mb-4">Adicionar Bloco de Solicitação</h4>
+        <form action="/admin/orcamentos/<?= $budget['id'] ?>/blocos" method="POST" class="space-y-4">
+            <?= \Core\View::csrf() ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
+                    <input type="text" name="title" required placeholder="Ex: Desenvolvimento de Sistema" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data da Solicitação</label>
+                    <input type="date" name="requested_at" value="<?= date('Y-m-d') ?>" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
+                <textarea name="description" rows="3" placeholder="Descrição geral do que será feito..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Escopo</label>
+                <textarea name="scope" rows="2" placeholder="Escopo técnico ou funcional..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Funcionalidades / O que será feito (um item por linha)</label>
+                <textarea name="features" rows="5" placeholder="Autenticação de usuários&#10;Dashboard com relatórios&#10;Integração com API&#10;..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prazo</label>
+                    <input type="text" name="deadline" placeholder="Ex: 30 dias úteis" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor (R$)</label>
+                    <input type="number" step="0.01" name="value" placeholder="0.00" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observações do bloco</label>
+                <textarea name="notes" rows="2" placeholder="Observações específicas desta solicitação..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition">+ Adicionar Bloco</button>
+        </form>
     </div>
     <?php endif; ?>
 </div>
