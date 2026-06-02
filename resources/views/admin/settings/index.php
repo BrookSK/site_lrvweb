@@ -166,19 +166,19 @@ $fc = $fileConfig;
                         $current = $settings['branding'][$key]['value'] ?? '';
                     ?>
                     <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><?= $label ?></label>
-                        <?php if ($current): ?>
-                            <img src="<?= htmlspecialchars($current) ?>" alt="<?= $label ?>" class="h-12 mb-3 object-contain">
-                        <?php else: ?>
-                            <div class="h-12 mb-3 flex items-center text-sm text-gray-400">Nenhum arquivo</div>
-                        <?php endif; ?>
-                        <div class="flex gap-2">
-                            <input type="file" name="file" accept="image/*" class="text-sm text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" form="upload-<?= $key ?>">
-                        </div>
-                        <form id="upload-<?= $key ?>" action="/admin/configuracoes/logo" method="POST" enctype="multipart/form-data" class="mt-2">
+                        <form action="/admin/configuracoes/logo" method="POST" enctype="multipart/form-data">
                             <?= \Core\View::csrf() ?>
                             <input type="hidden" name="type" value="<?= $key ?>">
-                            <button type="submit" class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Enviar</button>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"><?= $label ?></label>
+                            <?php if ($current): ?>
+                                <img src="<?= htmlspecialchars($current) ?>" alt="<?= $label ?>" class="h-12 mb-3 object-contain">
+                            <?php else: ?>
+                                <div class="h-12 mb-3 flex items-center text-sm text-gray-400">Nenhum arquivo</div>
+                            <?php endif; ?>
+                            <div class="flex items-center gap-3">
+                                <input type="file" name="file" accept="image/*" required class="text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 dark:file:bg-purple-900/30 dark:file:text-purple-300">
+                                <button type="submit" class="px-4 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition flex-shrink-0">Enviar</button>
+                            </div>
                         </form>
                     </div>
                     <?php endforeach; ?>

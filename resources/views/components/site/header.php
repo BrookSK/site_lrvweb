@@ -13,10 +13,15 @@ function isActive(string $path, string $uri): string {
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
             <a href="/<?= $locale ?>/" class="flex items-center gap-2 group">
-                <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-purple-500/30 transition-all duration-300">
-                    <span class="text-white font-bold text-lg">L</span>
-                </div>
-                <span class="text-xl font-bold text-white">LRV<span class="text-purple-400">Web</span></span>
+                <?php $logoMain = \Core\Config::setting('branding.logo_main'); ?>
+                <?php if ($logoMain): ?>
+                    <img src="<?= htmlspecialchars($logoMain) ?>" alt="LRV Web" class="h-9 object-contain">
+                <?php else: ?>
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-purple-500/30 transition-all duration-300">
+                        <span class="text-white font-bold text-lg">L</span>
+                    </div>
+                    <span class="text-xl font-bold text-white">LRV<span class="text-purple-400">Web</span></span>
+                <?php endif; ?>
             </a>
 
             <!-- Desktop Nav -->

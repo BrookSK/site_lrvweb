@@ -18,7 +18,12 @@
     <meta property="og:site_name" content="LRV Web">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= \Core\View::asset('img/favicon.ico') ?>">
+    <?php $favicon = \Core\Config::setting('branding.favicon'); ?>
+    <?php if ($favicon): ?>
+        <link rel="icon" href="<?= htmlspecialchars($favicon) ?>">
+    <?php else: ?>
+        <link rel="icon" type="image/x-icon" href="<?= \Core\View::asset('img/favicon.ico') ?>">
+    <?php endif; ?>
 
     <!-- Preconnect para performance -->
     <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
@@ -123,8 +128,25 @@
         "description": "Soluções Digitais - Hospedagem, Sites e Sistemas"
     }
     </script>
+
+    <!-- Google Analytics -->
+    <?php $ga = \Core\Config::setting('seo.google_analytics'); ?>
+    <?php if ($ga): ?>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?= htmlspecialchars($ga) ?>"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','<?= htmlspecialchars($ga) ?>');</script>
+    <?php endif; ?>
+
+    <!-- Google Tag Manager -->
+    <?php $gtm = \Core\Config::setting('seo.google_tag_manager'); ?>
+    <?php if ($gtm): ?>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<?= htmlspecialchars($gtm) ?>');</script>
+    <?php endif; ?>
 </head>
 <body class="bg-black text-white antialiased font-sans overflow-x-hidden">
+    <!-- GTM noscript -->
+    <?php if ($gtm ?? null): ?>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<?= htmlspecialchars($gtm) ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <?php endif; ?>
 
     <?php echo \Core\View::component('site/header', $data ?? []) ?>
 

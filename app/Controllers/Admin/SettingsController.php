@@ -132,18 +132,30 @@ class SettingsController extends Controller
     {
         $this->requirePermission('settings.manage');
 
-        $type = $request->input('type') ?? 'logo_main'; // logo_main, logo_system, logo_budget, favicon
+        $type = $request->input('type') ?? 'logo_main';
         $file = $request->file('file');
 
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            $this->session->flash('error', 'Erro no upload do arquivo.');
+            $errorMessages = [
+                UPLOAD_ERR_INI_SIZE => 'Arquivo excede o limite do servidor (upload_max_filesize).',
+                UPLOAD_ERR_FORM_SIZE => 'Arquivo excede o limite do formulário.',
+                UPLOAD_ERR_PARTIAL => 'Upload parcial, tente novamente.',
+                UPLOAD_ERR_NO_FILE => 'Nenhum arquivo selecionado.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Diretório temporário não encontrado.',
+                UPLOAD_ERR_CANT_WRITE => 'Falha ao gravar no disco.',
+            ];
+            $errorCode = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+            $msg = $errorMessages[$errorCode] ?? 'Erro desconhecido no upload (código ' . $errorCode . ').';
+
+            Logger::error('Upload de logo falhou', ['type' => $type, 'error_code' => $errorCode]);
+            $this->session->flash('error', $msg);
             $this->redirect('/admin/configuracoes?tab=branding');
             return;
         }
 
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/svg+xml', 'image/webp', 'image/x-icon', 'image/vnd.microsoft.icon', 'image/gif'];
         if (!in_array($file['type'], $allowedTypes)) {
-            $this->session->flash('error', 'Tipo de arquivo não permitido.');
+            $this->session->flash('error', 'Tipo de arquivo não permitido: ' . $file['type']);
             $this->redirect('/admin/configuracoes?tab=branding');
             return;
         }
@@ -153,18 +165,19 @@ class SettingsController extends Controller
             mkdir($uploadDir, 0755, true);
         }
 
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = $type . '.' . $ext;
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = $type . '_' . time() . '.' . $ext;
         $destination = $uploadDir . $filename;
 
         if (move_uploaded_file($file['tmp_name'], $destination)) {
             $path = '/assets/img/branding/' . $filename;
             Config::setSetting('branding', $type, $path);
 
-            Logger::audit("Logo atualizado: {$type}");
+            Logger::audit("Logo atualizado: {$type}", ['path' => $path]);
             $this->session->flash('success', 'Logo atualizado com sucesso!');
         } else {
-            $this->session->flash('error', 'Erro ao salvar arquivo.');
+            Logger::error('move_uploaded_file falhou', ['type' => $type, 'dest' => $destination]);
+            $this->session->flash('error', 'Erro ao mover arquivo. Verifique permissões do diretório.');
         }
 
         $this->redirect('/admin/configuracoes?tab=branding');
