@@ -73,6 +73,6 @@ class BudgetPublicController extends Controller
             'blocks' => $blocks,
             'portfolios' => $portfolios,
             'settings' => $settings,
-        ], 'budget');
+        ], null);
     }
 }

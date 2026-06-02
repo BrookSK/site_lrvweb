@@ -4,284 +4,273 @@
 /** @var array $portfolios */
 /** @var array $settings */
 $logo = $settings['logo_budget'] ?? $settings['logo_main'] ?? $settings['logo_system'] ?? '';
+
+// Meses em PT
+$meses = ['January'=>'Janeiro','February'=>'Fevereiro','March'=>'Março','April'=>'Abril','May'=>'Maio','June'=>'Junho','July'=>'Julho','August'=>'Agosto','September'=>'Setembro','October'=>'Outubro','November'=>'Novembro','December'=>'Dezembro'];
+function dataPT($date) {
+    global $meses;
+    $d = date('d', strtotime($date));
+    $m = $meses[date('F', strtotime($date))] ?? date('F', strtotime($date));
+    $y = date('Y', strtotime($date));
+    return "{$d} de {$m} de {$y}";
+}
 ?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($budget['name']) ?> — LRV Web</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-header { background: linear-gradient(135deg, #2d1b69 0%, #1a0f40 100%); }
+    </style>
+</head>
+<body class="bg-white text-gray-800 antialiased">
 
-<div class="max-w-4xl mx-auto px-4 py-12">
-
-    <!-- ============================================ -->
-    <!-- HEADER DO ORÇAMENTO -->
-    <!-- ============================================ -->
-    <div class="text-center mb-10">
+<!-- ============================================ -->
+<!-- HEADER -->
+<!-- ============================================ -->
+<header class="gradient-header py-8">
+    <div class="max-w-3xl mx-auto px-6 text-center">
         <?php if ($logo): ?>
-            <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-10 mx-auto mb-6 object-contain">
+            <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-10 mx-auto mb-4 object-contain">
         <?php else: ?>
-            <h1 class="text-2xl font-bold text-gray-800 mb-6">LRV Web</h1>
+            <p class="text-white text-xl font-bold mb-4">LRV Web</p>
         <?php endif; ?>
-
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-800"><?= htmlspecialchars($budget['name']) ?> — LRV Web</h2>
-
-        <p class="text-gray-500 mt-3">
-            Para: <strong class="text-gray-700"><?= htmlspecialchars($budget['client_name'] ?? '') ?></strong>
+        <h1 class="text-white text-2xl md:text-3xl font-bold"><?= htmlspecialchars($budget['name']) ?></h1>
+        <p class="text-purple-200 mt-2 text-sm">
+            Para: <strong class="text-white"><?= htmlspecialchars($budget['client_name'] ?? '') ?></strong>
             <?= $budget['client_company'] ? ' — ' . htmlspecialchars($budget['client_company']) : '' ?>
         </p>
     </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-6 py-10">
 
     <!-- ============================================ -->
-    <!-- METADADOS DO ORÇAMENTO -->
+    <!-- METADADOS -->
     <!-- ============================================ -->
-    <div class="bg-gray-50 rounded-xl border border-gray-200 p-5 mb-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Criado em</p>
-                <p class="text-gray-800 font-medium"><?= date('d/m/Y H:i', strtotime($budget['created_at'])) ?></p>
-            </div>
-            <?php if ($budget['updated_at'] && $budget['updated_at'] !== $budget['created_at']): ?>
-            <div>
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Atualizado</p>
-                <p class="text-gray-800 font-medium"><?= date('d/m/Y H:i', strtotime($budget['updated_at'])) ?></p>
-            </div>
-            <?php endif; ?>
-            <div>
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Status</p>
-                <p class="font-medium <?= match($budget['status']) { 'approved' => 'text-green-600', 'rejected' => 'text-red-600', 'expired' => 'text-gray-500', default => 'text-blue-600' } ?>">
-                    <?= match($budget['status']) { 'draft' => '📝 Rascunho', 'sent' => '📤 Enviado', 'viewed' => '👁️ Visualizado', 'approved' => '✅ Aprovado', 'rejected' => '❌ Recusado', 'expired' => '⏰ Expirado', default => $budget['status'] } ?>
-                </p>
-            </div>
-            <?php if ($budget['validity_date']): ?>
-            <div>
-                <p class="text-gray-400 text-xs uppercase tracking-wider mb-1">Válido até</p>
-                <p class="text-gray-800 font-medium"><?= date('d/m/Y', strtotime($budget['validity_date'])) ?></p>
-            </div>
-            <?php endif; ?>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 p-4 bg-gray-50 rounded-xl border border-gray-100">
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Criado em</p>
+            <p class="text-sm text-gray-700 font-medium"><?= date('d/m/Y', strtotime($budget['created_at'])) ?></p>
         </div>
+        <?php if ($budget['updated_at'] !== $budget['created_at']): ?>
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Atualizado</p>
+            <p class="text-sm text-gray-700 font-medium"><?= date('d/m/Y', strtotime($budget['updated_at'])) ?></p>
+        </div>
+        <?php endif; ?>
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Status</p>
+            <p class="text-sm font-semibold <?= match($budget['status']) { 'approved' => 'text-green-600', 'rejected' => 'text-red-600', default => 'text-purple-600' } ?>">
+                <?= match($budget['status']) { 'draft' => 'Rascunho', 'sent' => 'Enviado', 'viewed' => 'Visualizado', 'approved' => 'Aprovado', 'rejected' => 'Recusado', 'expired' => 'Expirado', default => $budget['status'] } ?>
+            </p>
+        </div>
+        <?php if ($budget['validity_date']): ?>
+        <div>
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mb-0.5">Válido até</p>
+            <p class="text-sm text-gray-700 font-medium"><?= date('d/m/Y', strtotime($budget['validity_date'])) ?></p>
+        </div>
+        <?php endif; ?>
     </div>
 
-    <!-- ============================================ -->
-    <!-- INTRODUÇÃO -->
-    <!-- ============================================ -->
-    <div class="mb-10">
-        <p class="text-gray-600 leading-relaxed">Segue abaixo uma estimativa detalhada para as solicitações:</p>
-    </div>
+    <!-- Intro -->
+    <p class="text-gray-600 mb-8 text-[15px]">Segue abaixo uma estimativa detalhada para as solicitações:</p>
 
     <!-- ============================================ -->
     <!-- BLOCOS DE SOLICITAÇÃO -->
     <!-- ============================================ -->
     <?php foreach ($blocks as $i => $block): ?>
-    <div class="mb-10 pb-8 <?= $i < count($blocks) - 1 ? 'border-b border-gray-200' : '' ?>">
-        <!-- Título do bloco -->
-        <div class="flex items-start justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-800"><?= htmlspecialchars($block['title']) ?></h3>
+    <section class="mb-8 pb-8 <?= $i < count($blocks) - 1 ? 'border-b border-gray-200' : '' ?>">
+        <div class="flex items-baseline justify-between mb-3">
+            <h2 class="text-lg font-bold text-gray-900"><?= htmlspecialchars($block['title']) ?></h2>
             <?php if ($block['requested_at']): ?>
-                <span class="text-xs text-gray-400 whitespace-nowrap ml-4">(<?= date('d/m', strtotime($block['requested_at'])) ?> — data da solicitação)</span>
+                <span class="text-xs text-gray-400 ml-3 whitespace-nowrap">(<?= date('d/m', strtotime($block['requested_at'])) ?> — data da solicitação)</span>
             <?php endif; ?>
         </div>
 
-        <!-- Descrição -->
         <?php if ($block['description']): ?>
-        <div class="mb-4">
-            <p class="text-sm font-semibold text-gray-700 mb-1">Descrição:</p>
-            <p class="text-gray-600 text-sm leading-relaxed"><?= nl2br(htmlspecialchars($block['description'])) ?></p>
-        </div>
+        <p class="text-sm text-gray-600 leading-relaxed mb-3"><span class="font-semibold text-gray-700">Descrição: </span><?= nl2br(htmlspecialchars($block['description'])) ?></p>
         <?php endif; ?>
 
-        <!-- Escopo / O que será feito -->
         <?php if ($block['scope']): ?>
-        <div class="mb-4">
-            <p class="text-sm font-semibold text-gray-700 mb-1">Escopo:</p>
-            <p class="text-gray-600 text-sm leading-relaxed"><?= nl2br(htmlspecialchars($block['scope'])) ?></p>
-        </div>
+        <p class="text-sm text-gray-600 leading-relaxed mb-3"><span class="font-semibold text-gray-700">Escopo: </span><?= nl2br(htmlspecialchars($block['scope'])) ?></p>
         <?php endif; ?>
 
-        <!-- Funcionalidades / Tópicos -->
         <?php if ($block['features']): ?>
-        <div class="mb-4">
-            <p class="text-sm font-semibold text-gray-700 mb-2">O que será feito:</p>
-            <ul class="space-y-1.5">
-                <?php foreach (explode("\n", $block['features']) as $feature):
-                    $feature = trim($feature);
-                    if (empty($feature)) continue;
-                    $feature = ltrim($feature, '•-· ');
-                ?>
-                <li class="flex items-start gap-2 text-sm text-gray-600">
-                    <span class="text-purple-500 mt-0.5">•</span>
-                    <?= htmlspecialchars($feature) ?>
+        <div class="mb-3">
+            <p class="text-sm font-semibold text-gray-700 mb-1.5">O que será feito:</p>
+            <ul class="space-y-1 ml-1">
+                <?php foreach (array_filter(explode("\n", $block['features']), 'trim') as $feat): ?>
+                <li class="text-sm text-gray-600 flex items-start gap-2">
+                    <span class="text-purple-500 mt-1 text-[8px]">●</span>
+                    <?= htmlspecialchars(ltrim(trim($feat), '•-· ')) ?>
                 </li>
                 <?php endforeach; ?>
             </ul>
         </div>
         <?php endif; ?>
 
-        <!-- Prazo -->
         <?php if ($block['deadline']): ?>
-        <p class="text-sm text-gray-700 mb-2"><strong>Prazo:</strong> <?= htmlspecialchars($block['deadline']) ?></p>
+        <p class="text-sm text-gray-700 mb-1"><span class="font-semibold">Prazo:</span> <?= htmlspecialchars($block['deadline']) ?></p>
         <?php endif; ?>
 
-        <!-- Valor -->
         <?php if ((float)$block['value'] > 0): ?>
-        <p class="text-sm text-gray-700 mb-2"><strong>Valor:</strong> R$ <?= number_format((float)$block['value'], 2, ',', '.') ?></p>
+        <p class="text-sm text-gray-700 mb-1"><span class="font-semibold">Valor:</span> R$ <?= number_format((float)$block['value'], 2, ',', '.') ?></p>
         <?php else: ?>
-        <p class="text-sm text-gray-700 mb-2"><strong>Valor:</strong> Incluso no pacote geral.</p>
+        <p class="text-sm text-gray-500 italic mb-1">Valor: Incluso no pacote geral.</p>
         <?php endif; ?>
 
-        <!-- Observações do bloco -->
         <?php if ($block['notes']): ?>
-        <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p class="text-sm text-yellow-800"><strong>Observação:</strong> <?= nl2br(htmlspecialchars($block['notes'])) ?></p>
+        <div class="mt-3 p-3 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+            <p class="text-sm text-amber-800"><span class="font-semibold">Observação:</span> <?= nl2br(htmlspecialchars($block['notes'])) ?></p>
         </div>
         <?php endif; ?>
-    </div>
+    </section>
     <?php endforeach; ?>
 
     <!-- ============================================ -->
     <!-- RESUMO GERAL -->
     <!-- ============================================ -->
-    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 mb-8">
-        <h3 class="text-lg font-bold text-gray-800 mb-4">Resumo Geral</h3>
+    <section class="mb-8 bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-5 py-3 bg-gray-100 border-b border-gray-200">
+            <h3 class="text-base font-bold text-gray-800">Resumo Geral</h3>
+        </div>
+        <div class="px-5 py-4">
+            <!-- Itens -->
+            <table class="w-full mb-4">
+                <thead>
+                    <tr class="text-xs text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                        <th class="text-left pb-2 font-semibold">Serviço</th>
+                        <th class="text-right pb-2 font-semibold">Valor</th>
+                        <th class="text-right pb-2 font-semibold">Prazo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($blocks as $block): ?>
+                    <tr class="border-b border-gray-50">
+                        <td class="py-2 text-sm text-gray-700"><?= htmlspecialchars($block['title']) ?></td>
+                        <td class="py-2 text-sm text-right font-medium text-gray-800"><?= (float)$block['value'] > 0 ? 'R$ ' . number_format((float)$block['value'], 2, ',', '.') : 'Incluso' ?></td>
+                        <td class="py-2 text-sm text-right text-gray-500"><?= htmlspecialchars($block['deadline'] ?? '—') ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
 
-        <div class="space-y-3 mb-4">
-            <?php foreach ($blocks as $block): ?>
-            <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                <span class="text-sm text-gray-700 font-medium"><?= htmlspecialchars($block['title']) ?></span>
-                <div class="text-right">
-                    <?php if ((float)$block['value'] > 0): ?>
-                        <span class="text-sm font-semibold text-gray-800">R$ <?= number_format((float)$block['value'], 2, ',', '.') ?></span>
-                    <?php else: ?>
-                        <span class="text-sm text-gray-500 italic">Incluso</span>
-                    <?php endif; ?>
-                    <?php if ($block['deadline']): ?>
-                        <span class="text-xs text-gray-400 block"><?= htmlspecialchars($block['deadline']) ?></span>
-                    <?php endif; ?>
+            <!-- Totais -->
+            <div class="border-t-2 border-gray-200 pt-3 space-y-1.5">
+                <div class="flex justify-between text-sm"><span class="text-gray-500">Subtotal</span><span class="font-medium text-gray-800">R$ <?= number_format((float)$budget['total_value'], 2, ',', '.') ?></span></div>
+                <?php if ((float)($budget['discount_value'] ?? 0) > 0): ?>
+                <div class="flex justify-between text-sm"><span class="text-green-600">Desconto (<?= $budget['discount_percent'] ?>%)</span><span class="text-green-600 font-medium">- R$ <?= number_format((float)$budget['discount_value'], 2, ',', '.') ?></span></div>
+                <?php endif; ?>
+                <div class="flex justify-between text-base font-bold pt-2 border-t border-gray-200">
+                    <span class="text-gray-900">Valor Total Final</span>
+                    <span class="text-purple-700">R$ <?= number_format((float)$budget['final_value'], 2, ',', '.') ?></span>
                 </div>
+                <?php if ($budget['payment_type'] === 'installments' && $budget['installments'] > 1): ?>
+                <div class="flex justify-between text-sm text-gray-500"><span>Parcelamento</span><span><?= $budget['installments'] ?>x de R$ <?= number_format((float)$budget['installment_value'], 2, ',', '.') ?></span></div>
+                <?php endif; ?>
             </div>
-            <?php endforeach; ?>
         </div>
-
-        <!-- Totais -->
-        <div class="border-t-2 border-gray-300 pt-4 space-y-2">
-            <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Subtotal</span>
-                <span class="font-medium">R$ <?= number_format((float)$budget['total_value'], 2, ',', '.') ?></span>
-            </div>
-            <?php if ((float)($budget['discount_value'] ?? 0) > 0): ?>
-            <div class="flex justify-between text-sm">
-                <span class="text-green-600">Desconto (<?= $budget['discount_percent'] ?>%)</span>
-                <span class="text-green-600 font-medium">- R$ <?= number_format((float)$budget['discount_value'], 2, ',', '.') ?></span>
-            </div>
-            <?php endif; ?>
-            <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
-                <span class="text-gray-800">Valor Total Final</span>
-                <span class="text-purple-700">R$ <?= number_format((float)$budget['final_value'], 2, ',', '.') ?></span>
-            </div>
-            <?php if ($budget['payment_type'] === 'installments' && $budget['installments'] > 1): ?>
-            <div class="flex justify-between text-sm text-gray-500">
-                <span>Parcelamento</span>
-                <span><?= $budget['installments'] ?>x de R$ <?= number_format((float)$budget['installment_value'], 2, ',', '.') ?></span>
-            </div>
-            <?php endif; ?>
-            <?php if ($budget['monthly_value']): ?>
-            <div class="flex justify-between text-sm text-gray-500">
-                <span>Valor mensal</span>
-                <span>R$ <?= number_format((float)$budget['monthly_value'], 2, ',', '.') ?>/mês</span>
-            </div>
-            <?php endif; ?>
-        </div>
-    </div>
+    </section>
 
     <!-- ============================================ -->
-    <!-- OBSERVAÇÕES GERAIS -->
+    <!-- OBSERVAÇÕES -->
     <!-- ============================================ -->
     <?php if ($budget['notes']): ?>
-    <div class="mb-8 p-5 bg-blue-50 border border-blue-200 rounded-xl">
-        <p class="text-sm text-blue-800 leading-relaxed"><?= nl2br(htmlspecialchars($budget['notes'])) ?></p>
-    </div>
+    <p class="text-sm text-gray-600 leading-relaxed mb-6"><?= nl2br(htmlspecialchars($budget['notes'])) ?></p>
     <?php endif; ?>
 
-    <!-- ============================================ -->
-    <!-- VALIDADE -->
-    <!-- ============================================ -->
+    <!-- Validade -->
     <?php if ($budget['validity_date']): ?>
-    <p class="text-sm text-gray-700 mb-4 font-medium">📅 Orçamento válido até <?= date('d \d\e F \d\e Y', strtotime($budget['validity_date'])) ?>.</p>
+    <p class="text-sm text-gray-700 font-medium mb-5">Orçamento válido até <?= dataPT($budget['validity_date']) ?>.</p>
     <?php endif; ?>
 
     <!-- ============================================ -->
     <!-- MEIOS DE PAGAMENTO -->
     <!-- ============================================ -->
     <?php if ($budget['payment_pix'] || $budget['payment_card'] || $budget['payment_boleto']): ?>
-    <div class="mb-6">
-        <p class="text-sm font-semibold text-gray-700 mb-2">Meios de pagamento:</p>
+    <div class="mb-5">
+        <p class="text-sm font-semibold text-gray-700 mb-1">Meios de pagamento:</p>
         <p class="text-sm text-gray-600">
             Aceitamos
             <?php
             $methods = [];
-            if ($budget['payment_pix']) $methods[] = '<strong>Pix</strong> com 5% de desconto no valor total';
-            if ($budget['payment_boleto']) $methods[] = '<strong>Boleto</strong> com valor integral';
-            if ($budget['payment_card']) $methods[] = '<strong>Cartão de crédito</strong> (acréscimo conforme operadora)';
-            echo implode(', ', $methods) . '.';
+            if ($budget['payment_pix']) $methods[] = '**Pix** com 5% de desconto no valor total';
+            if ($budget['payment_boleto']) $methods[] = '**Boleto** com valor integral';
+            if ($budget['payment_card']) $methods[] = '**Cartão de crédito** (acréscimo conforme operadora)';
+            $text = implode(', ', $methods) . '.';
+            echo str_replace('**', '', preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $text));
             ?>
         </p>
     </div>
     <?php endif; ?>
 
-    <!-- Entrada mínima -->
+    <!-- Entrada -->
     <?php if ($budget['minimum_entry']): ?>
     <div class="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-xl">
-        <p class="text-sm text-purple-800">💰 Para o início do projeto, solicitamos <strong><?= number_format((float)$budget['minimum_entry'], 0, ',', '.') ?>%</strong> do valor total.</p>
+        <p class="text-sm text-purple-800 font-medium">Para o início do projeto, solicitamos <strong><?= (int)$budget['minimum_entry'] ?>%</strong> do valor total.</p>
     </div>
     <?php endif; ?>
 
     <!-- ============================================ -->
     <!-- SOBRE A LRV WEB -->
     <!-- ============================================ -->
-    <div class="mt-12 pt-8 border-t border-gray-200">
-        <div class="flex items-center gap-3 mb-3">
+    <section class="mt-12 pt-8 border-t border-gray-200">
+        <div class="flex items-center gap-3 mb-2">
             <?php if ($logo): ?>
-                <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-8 object-contain">
-            <?php else: ?>
-                <span class="text-lg font-bold text-gray-800">LRV Web</span>
+                <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-7 object-contain">
             <?php endif; ?>
+            <span class="text-sm font-bold text-gray-800">Sobre a LRV Web</span>
         </div>
-
-        <p class="text-sm text-gray-500 leading-relaxed mb-2">
-            <a href="https://lrvweb.com.br" target="_blank" class="text-purple-600 hover:underline">https://lrvweb.com.br</a>
-        </p>
-
+        <p class="text-sm text-gray-500 mb-1"><a href="https://lrvweb.com.br" target="_blank" class="text-purple-600 hover:underline">https://lrvweb.com.br</a></p>
         <?php $about = $budget['about_company'] ?: ($settings['about_company'] ?? ''); ?>
         <?php if ($about): ?>
-            <p class="text-sm text-gray-600 leading-relaxed"><?= nl2br(htmlspecialchars($about)) ?></p>
+            <p class="text-sm text-gray-600 leading-relaxed mt-2"><?= nl2br(htmlspecialchars($about)) ?></p>
         <?php endif; ?>
-    </div>
+    </section>
 
     <!-- ============================================ -->
     <!-- PROJETOS RECENTES -->
     <!-- ============================================ -->
     <?php if (!empty($portfolios)): ?>
-    <div class="mt-8">
-        <h4 class="text-base font-bold text-gray-800 mb-4">Projetos Recentes</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section class="mt-8">
+        <h4 class="text-sm font-bold text-gray-800 mb-4">Projetos Recentes</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <?php foreach ($portfolios as $p): ?>
-            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition">
                 <?php if ($p['image_cover']): ?>
-                    <img src="<?= htmlspecialchars($p['image_cover']) ?>" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                    <img src="<?= htmlspecialchars($p['image_cover']) ?>" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                 <?php endif; ?>
-                <div>
+                <div class="min-w-0">
                     <?php if ($p['url']): ?>
-                        <a href="<?= htmlspecialchars($p['url']) ?>" target="_blank" class="text-sm font-semibold text-purple-700 hover:underline"><?= htmlspecialchars($p['name']) ?></a>
+                        <a href="<?= htmlspecialchars($p['url']) ?>" target="_blank" class="text-sm font-semibold text-purple-700 hover:underline truncate block"><?= htmlspecialchars($p['name']) ?></a>
                     <?php else: ?>
-                        <p class="text-sm font-semibold text-gray-800"><?= htmlspecialchars($p['name']) ?></p>
+                        <p class="text-sm font-semibold text-gray-800 truncate"><?= htmlspecialchars($p['name']) ?></p>
                     <?php endif; ?>
-                    <p class="text-xs text-purple-600 font-medium mt-0.5"><?= htmlspecialchars($p['category'] ?? '') ?></p>
+                    <p class="text-xs text-gray-500"><?= htmlspecialchars($p['category'] ?? '') ?></p>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
-    </div>
+    </section>
     <?php endif; ?>
 
-    <!-- ============================================ -->
-    <!-- RODAPÉ -->
-    <!-- ============================================ -->
-    <div class="mt-12 pt-6 border-t border-gray-200 text-center text-sm text-gray-400">
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-gray-100 py-6 mt-8">
+    <div class="max-w-3xl mx-auto px-6 text-center text-xs text-gray-400">
         <p>&copy; <?= date('Y') ?> LRV Web — Todos os direitos reservados.</p>
         <p class="mt-1">contato@lrvweb.com.br · <a href="https://lrvweb.com.br" class="text-purple-500 hover:underline">lrvweb.com.br</a></p>
     </div>
-</div>
+</footer>
+
+</body>
+</html>
