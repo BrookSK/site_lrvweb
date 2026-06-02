@@ -13,9 +13,13 @@ function isActive(string $path, string $uri): string {
         <div class="flex items-center justify-between h-20">
             <!-- Logo -->
             <a href="/<?= $locale ?>/" class="flex items-center gap-2 group">
-                <?php $logoMain = \Core\Config::setting('branding.logo_main'); ?>
-                <?php if ($logoMain): ?>
-                    <img src="<?= htmlspecialchars($logoMain) ?>" alt="LRV Web" class="h-9 object-contain">
+                <?php
+                $logoMain = \Core\Config::setting('branding.logo_main');
+                $logoSystem = \Core\Config::setting('branding.logo_system');
+                $logo = $logoMain ?: $logoSystem;
+                ?>
+                <?php if ($logo): ?>
+                    <img src="<?= htmlspecialchars($logo) ?>" alt="LRV Web" class="h-9 object-contain">
                 <?php else: ?>
                     <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-purple-500/30 transition-all duration-300">
                         <span class="text-white font-bold text-lg">L</span>

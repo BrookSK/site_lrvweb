@@ -10,10 +10,17 @@
             <!-- Brand -->
             <div class="lg:col-span-1">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">L</span>
-                    </div>
-                    <span class="text-xl font-bold text-white">LRV<span class="text-purple-400">Web</span></span>
+                    <?php
+                    $footerLogo = \Core\Config::setting('branding.logo_main') ?: \Core\Config::setting('branding.logo_system');
+                    ?>
+                    <?php if ($footerLogo): ?>
+                        <img src="<?= htmlspecialchars($footerLogo) ?>" alt="LRV Web" class="h-9 object-contain">
+                    <?php else: ?>
+                        <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">L</span>
+                        </div>
+                        <span class="text-xl font-bold text-white">LRV<span class="text-purple-400">Web</span></span>
+                    <?php endif; ?>
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed mb-6">Transformamos ideias em soluções digitais de alto impacto. Hospedagem premium, desenvolvimento web e sistemas sob medida.</p>
                 <!-- Social -->
