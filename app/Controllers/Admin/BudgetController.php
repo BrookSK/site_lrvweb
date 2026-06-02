@@ -119,6 +119,46 @@ class BudgetController extends Controller
 
         $budgetId = $db->insert('budgets', $budgetData);
 
+        // Salvar blocos enviados no formulário
+        $blocks = $request->input('blocks');
+        if (is_array($blocks)) {
+            $sortOrder = 1;
+            $totalValue = 0;
+            foreach ($blocks as $blockInput) {
+                if (empty($blockInput['title'])) continue;
+                $blockValue = (float) ($blockInput['value'] ?? 0);
+                $totalValue += $blockValue;
+
+                $db->insert('budget_blocks', [
+                    'budget_id' => $budgetId,
+                    'title' => $blockInput['title'],
+                    'description' => $blockInput['description'] ?? null,
+                    'scope' => $blockInput['scope'] ?? null,
+                    'features' => $blockInput['features'] ?? null,
+                    'deadline' => $blockInput['deadline'] ?? null,
+                    'value' => $blockValue,
+                    'notes' => $blockInput['notes'] ?? null,
+                    'sort_order' => $sortOrder++,
+                    'requested_at' => $blockInput['requested_at'] ?? date('Y-m-d'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            // Recalcula totais
+            $discountPercent = (float) ($request->input('discount_percent') ?? 0);
+            $discountValue = $totalValue * ($discountPercent / 100);
+            $finalValue = $totalValue - $discountValue;
+            $installments = max(1, (int) ($request->input('installments') ?? 1));
+
+            $db->update('budgets', [
+                'total_value' => $totalValue,
+                'discount_value' => $discountValue,
+                'final_value' => $finalValue,
+                'installment_value' => round($finalValue / $installments, 2),
+            ], 'id = :id', ['id' => $budgetId]);
+        }
+
         Logger::audit('Orçamento criado', [
             'budget_id' => $budgetId,
             'client_id' => $data['client_id'],
@@ -227,6 +267,47 @@ class BudgetController extends Controller
         $budgetData['installment_value'] = round($installmentValue, 2);
 
         $db->update('budgets', $budgetData, 'id = :id', ['id' => $id]);
+
+        // Recriar blocos se enviados pelo formulário
+        $blocksInput = $request->input('blocks');
+        if (is_array($blocksInput)) {
+            $db->delete('budget_blocks', 'budget_id = :id', ['id' => $id]);
+
+            $sortOrder = 1;
+            $totalValue = 0;
+            foreach ($blocksInput as $blockData) {
+                if (empty($blockData['title'])) continue;
+                $blockValue = (float) ($blockData['value'] ?? 0);
+                $totalValue += $blockValue;
+
+                $db->insert('budget_blocks', [
+                    'budget_id' => $id,
+                    'title' => $blockData['title'],
+                    'description' => $blockData['description'] ?? null,
+                    'scope' => $blockData['scope'] ?? null,
+                    'features' => $blockData['features'] ?? null,
+                    'deadline' => $blockData['deadline'] ?? null,
+                    'value' => $blockValue,
+                    'notes' => $blockData['notes'] ?? null,
+                    'sort_order' => $sortOrder++,
+                    'requested_at' => $blockData['requested_at'] ?? date('Y-m-d'),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+
+            $discountPercent = (float) ($request->input('discount_percent') ?? 0);
+            $discountValue = $totalValue * ($discountPercent / 100);
+            $finalValue = $totalValue - $discountValue;
+            $installments = max(1, (int) ($request->input('installments') ?? 1));
+
+            $db->update('budgets', [
+                'total_value' => $totalValue,
+                'discount_value' => $discountValue,
+                'final_value' => $finalValue,
+                'installment_value' => round($finalValue / $installments, 2),
+            ], 'id = :id', ['id' => $id]);
+        }
 
         Logger::audit('Orçamento atualizado', ['budget_id' => $id]);
 
