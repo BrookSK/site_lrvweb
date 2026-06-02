@@ -107,6 +107,31 @@
             </div>
 
             <!-- =============================== -->
+            <!-- PREVIEW DE TOTAIS (atualiza em tempo real) -->
+            <!-- =============================== -->
+            <div class="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-800">
+                <h4 class="text-sm font-semibold text-purple-800 dark:text-purple-300 mb-3">📊 Preview — Resumo Financeiro</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mb-1">Subtotal</p>
+                        <p class="text-lg font-bold text-gray-800 dark:text-white" id="preview-subtotal">R$ 0,00</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mb-1">Desconto</p>
+                        <p class="text-lg font-bold text-green-600" id="preview-discount">- R$ 0,00</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mb-1">Total Final</p>
+                        <p class="text-xl font-bold text-purple-700 dark:text-purple-300" id="preview-total">R$ 0,00</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mb-1">Por Parcela</p>
+                        <p class="text-lg font-bold text-gray-800 dark:text-white" id="preview-installment">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
             <!-- SALVAR -->
             <!-- =============================== -->
             <div class="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -163,5 +188,40 @@ function updateBlockIndexes() {
     if (blocks.length === 0) {
         document.getElementById('no-blocks-msg').classList.remove('hidden');
     }
+    updatePreview();
 }
+
+function updatePreview() {
+    // Soma valores de todos os blocos
+    let subtotal = 0;
+    document.querySelectorAll('.block-item input[name*="[value]"]').forEach(input => {
+        subtotal += parseFloat(input.value) || 0;
+    });
+
+    // Pega desconto e parcelas
+    const discountPercent = parseFloat(document.querySelector('input[name="discount_percent"]')?.value) || 0;
+    const installments = parseInt(document.querySelector('input[name="installments"]')?.value) || 1;
+
+    const discountValue = subtotal * (discountPercent / 100);
+    const total = subtotal - discountValue;
+    const perInstallment = installments > 0 ? total / installments : total;
+
+    // Formata
+    const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    document.getElementById('preview-subtotal').textContent = fmt(subtotal);
+    document.getElementById('preview-discount').textContent = '- ' + fmt(discountValue);
+    document.getElementById('preview-total').textContent = fmt(total);
+    document.getElementById('preview-installment').textContent = installments > 1 ? `${installments}x ${fmt(perInstallment)}` : fmt(total);
+}
+
+// Listeners para atualizar preview automaticamente
+document.addEventListener('input', function(e) {
+    if (e.target.name && (e.target.name.includes('[value]') || e.target.name === 'discount_percent' || e.target.name === 'installments')) {
+        updatePreview();
+    }
+});
+
+// Calcula ao carregar (para quando editar)
+document.addEventListener('DOMContentLoaded', updatePreview);
 </script>
