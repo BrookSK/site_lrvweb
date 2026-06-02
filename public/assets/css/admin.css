@@ -1,0 +1,89 @@
+/**
+ * LRV Web - Estilos do Painel Administrativo
+ */
+
+/* Sidebar transition */
+aside {
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Table styles */
+.table-container {
+    overflow-x: auto;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-container th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.table-container td {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.dark .table-container th {
+    color: #9ca3af;
+    border-color: #374151;
+}
+
+.dark .table-container td {
+    border-color: #1f2937;
+}
+
+/* Kanban board */
+.kanban-column {
+    min-height: 200px;
+}
+
+.kanban-card {
+    cursor: grab;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.kanban-card:active {
+    cursor: grabbing;
+    transform: rotate(2deg);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Status badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+}
+
+.badge-success { background: #dcfce7; color: #166534; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-danger { background: #fee2e2; color: #991b1b; }
+.badge-info { background: #dbeafe; color: #1e40af; }
+.badge-gray { background: #f3f4f6; color: #374151; }
+
+.dark .badge-success { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
+.dark .badge-warning { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+.dark .badge-danger { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+.dark .badge-info { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+.dark .badge-gray { background: rgba(107, 114, 128, 0.1); color: #9ca3af; }
+
+/* Form elements focus */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    ring: 2px;
+    border-color: #3b82f6;
+}

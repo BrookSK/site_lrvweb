@@ -1,0 +1,54 @@
+{
+    "name": "lrvweb/platform",
+    "description": "LRV Web - Plataforma completa de gestão, CRM e portal institucional",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "LRV Web",
+            "email": "contato@lrvweb.com.br",
+            "homepage": "https://lrvweb.com.br"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "ext-pdo": "*",
+        "ext-mbstring": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "monolog/monolog": "^3.5",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "friendsofphp/php-cs-fixer": "^3.50",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Core\\": "core/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "lint:fix": "php-cs-fixer fix",
+        "analyse": "phpstan analyse app core --level=6",
+        "test": "phpunit",
+        "migrate": "php cli/migrate.php run",
+        "migrate:rollback": "php cli/migrate.php rollback",
+        "migrate:status": "php cli/migrate.php status"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}
