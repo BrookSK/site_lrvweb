@@ -24,6 +24,18 @@
                         </select>
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                        <select name="status" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                            <?php $st = $budget['status'] ?? 'draft'; ?>
+                            <option value="draft" <?= $st === 'draft' ? 'selected' : '' ?>>📝 Rascunho</option>
+                            <option value="sent" <?= $st === 'sent' ? 'selected' : '' ?>>📤 Enviado</option>
+                            <option value="viewed" <?= $st === 'viewed' ? 'selected' : '' ?>>👁️ Visualizado</option>
+                            <option value="approved" <?= $st === 'approved' ? 'selected' : '' ?>>✅ Aprovado</option>
+                            <option value="rejected" <?= $st === 'rejected' ? 'selected' : '' ?>>❌ Recusado</option>
+                            <option value="expired" <?= $st === 'expired' ? 'selected' : '' ?>>⏰ Expirado</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Pagamento</label>
                         <select name="payment_type" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
                             <option value="one_time" <?= ($budget['payment_type'] ?? '') === 'one_time' ? 'selected' : '' ?>>À Vista</option>
