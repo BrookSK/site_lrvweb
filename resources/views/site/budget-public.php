@@ -217,9 +217,15 @@ function dataPT($date) {
         <div>
             <p class="text-sm font-semibold text-gray-700 mb-1.5">Meios de pagamento:</p>
             <div class="flex flex-wrap gap-2">
-                <?php if ($budget['payment_pix']): ?><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-xs font-medium text-green-700">💰 Pix <span class="text-green-500 font-normal">· 5% desc.</span></span><?php endif; ?>
-                <?php if ($budget['payment_boleto']): ?><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-xs font-medium text-gray-700">📄 Boleto <span class="text-gray-400 font-normal">· valor integral</span></span><?php endif; ?>
-                <?php if ($budget['payment_card']): ?><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">💳 Cartão <span class="text-blue-400 font-normal">· acréscimo</span></span><?php endif; ?>
+                <?php if (!empty($budget['payment_pix'])): ?>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 border border-green-200 text-xs font-medium text-green-700">💰 Pix
+                        <?php if (!empty($budget['pix_discount_enabled'])): ?>
+                            <span class="text-green-500 font-normal">· <?= rtrim(rtrim(number_format((float)($budget['pix_discount_percent'] ?? 5), 1, ',', ''), '0'), ',') ?>% desc.</span>
+                        <?php endif; ?>
+                    </span>
+                <?php endif; ?>
+                <?php if (!empty($budget['payment_boleto'])): ?><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 text-xs font-medium text-gray-700">📄 Boleto <span class="text-gray-400 font-normal">· valor integral</span></span><?php endif; ?>
+                <?php if (!empty($budget['payment_card'])): ?><span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">💳 Cartão <span class="text-blue-400 font-normal">· acréscimo</span></span><?php endif; ?>
             </div>
         </div>
         <?php endif; ?>

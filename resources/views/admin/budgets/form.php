@@ -56,10 +56,23 @@
                 <!-- Formas de pagamento -->
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Formas aceitas</label>
-                    <div class="flex gap-4">
+                    <div class="flex flex-wrap gap-4">
                         <label class="flex items-center gap-2"><input type="checkbox" name="payment_pix" value="1" <?= ($budget['payment_pix'] ?? 1) ? 'checked' : '' ?> class="rounded border-gray-300 text-purple-600"> <span class="text-sm text-gray-600 dark:text-gray-400">PIX</span></label>
                         <label class="flex items-center gap-2"><input type="checkbox" name="payment_card" value="1" <?= ($budget['payment_card'] ?? 1) ? 'checked' : '' ?> class="rounded border-gray-300 text-purple-600"> <span class="text-sm text-gray-600 dark:text-gray-400">Cartão</span></label>
                         <label class="flex items-center gap-2"><input type="checkbox" name="payment_boleto" value="1" <?= ($budget['payment_boleto'] ?? 1) ? 'checked' : '' ?> class="rounded border-gray-300 text-purple-600"> <span class="text-sm text-gray-600 dark:text-gray-400">Boleto</span></label>
+                    </div>
+                </div>
+
+                <!-- Desconto PIX -->
+                <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800">
+                    <label class="flex items-center gap-2 mb-3">
+                        <input type="checkbox" name="pix_discount_enabled" value="1" <?= ($budget['pix_discount_enabled'] ?? 0) ? 'checked' : '' ?> class="rounded border-gray-300 text-green-600" id="pix-discount-toggle">
+                        <span class="text-sm font-medium text-green-800 dark:text-green-300">Ativar desconto para pagamento via PIX</span>
+                    </label>
+                    <div class="flex items-center gap-2" id="pix-discount-value">
+                        <label class="text-sm text-green-700 dark:text-green-400">Desconto:</label>
+                        <input type="number" step="0.5" min="0" max="100" name="pix_discount_percent" value="<?= $budget['pix_discount_percent'] ?? 5 ?>" class="w-20 px-2 py-1.5 border border-green-300 dark:border-green-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm text-center">
+                        <span class="text-sm text-green-700 dark:text-green-400">%</span>
                     </div>
                 </div>
 
