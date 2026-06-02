@@ -1,79 +1,102 @@
 <?php $locale = \Core\I18n::getLocale(); ?>
 
 <!-- HERO -->
-<section class="hero-gradient py-32 relative">
+<section class="hero-gradient py-28 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
         <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider animate-fade-up">Nossos Serviços</span>
-        <h1 class="text-4xl md:text-6xl font-bold mt-4 animate-fade-up delay-100">Tudo que seu negócio precisa em <span class="text-gradient">um só lugar</span></h1>
-        <p class="text-lg text-gray-300 mt-6 max-w-2xl mx-auto animate-fade-up delay-200">Do primeiro pixel ao servidor em produção. Soluções completas que geram resultados de verdade.</p>
+        <h1 class="text-4xl md:text-5xl font-bold mt-4 animate-fade-up delay-100">Soluções digitais <span class="text-gradient">sob medida</span></h1>
+        <p class="text-gray-300 mt-4 max-w-2xl mx-auto animate-fade-up delay-200">Cada projeto é único. Analisamos sua necessidade e entregamos a melhor solução — sempre com orçamento personalizado.</p>
     </div>
 </section>
 
-<!-- LISTA DE SERVIÇOS -->
-<section class="section-dark py-24">
+<!-- SERVIÇOS PRINCIPAIS -->
+<section class="section-dark py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <?php
-        $allServices = !empty($services) ? $services : [
-            ['icon' => '🖥️', 'name' => 'Hospedagem de Sites', 'slug' => 'hospedagem', 'short_description' => 'Servidores ultra-rápidos com SSD NVMe, SSL grátis, backup automático e suporte especializado. Uptime de 99.9% garantido.', 'price_from' => 29],
-            ['icon' => '🌐', 'name' => 'Criação de Sites', 'slug' => 'criacao-sites', 'short_description' => 'Sites modernos, responsivos e otimizados para SEO. Design exclusivo que converte visitantes em clientes.', 'price_from' => 1500],
-            ['icon' => '🛒', 'name' => 'E-commerce', 'slug' => 'e-commerce', 'short_description' => 'Lojas virtuais completas com checkout otimizado, gateway de pagamento integrado e gestão de estoque.', 'price_from' => 3000],
-            ['icon' => '⚙️', 'name' => 'Sistemas Sob Medida', 'slug' => 'sistemas', 'short_description' => 'Sistemas personalizados para automatizar processos, CRM, ERP, painéis de gestão e integrações.', 'price_from' => 5000],
-            ['icon' => '💬', 'name' => 'Automação WhatsApp', 'slug' => 'automacao-whatsapp', 'short_description' => 'Chatbots inteligentes, disparo em massa, atendimento automatizado e integração com seus sistemas.', 'price_from' => 500],
-            ['icon' => '📱', 'name' => 'Social Media', 'slug' => 'social-media', 'short_description' => 'Gestão completa de redes sociais: estratégia, criação de conteúdo, design e análise de resultados.', 'price_from' => 800],
-            ['icon' => '🎨', 'name' => 'Criação de Marca', 'slug' => 'criacao-marca', 'short_description' => 'Logotipo, identidade visual, manual de marca e materiais gráficos que posicionam seu negócio.', 'price_from' => 1200],
-            ['icon' => '🔧', 'name' => 'Manutenção e Suporte', 'slug' => 'manutencao', 'short_description' => 'Manutenção preventiva, atualizações de segurança, monitoramento e suporte técnico contínuo.', 'price_from' => 200],
-            ['icon' => '📅', 'name' => 'Agendamento Online', 'slug' => 'agendamento', 'short_description' => 'Sistema de agendamento integrado ao seu site com confirmação automática e lembretes via WhatsApp.', 'price_from' => 300],
-        ];
-
-        foreach ($allServices as $i => $s): ?>
-        <div class="flex flex-col md:flex-row gap-8 items-center py-12 <?= $i > 0 ? 'border-t border-white/5' : '' ?>" data-animate="<?= $i % 2 === 0 ? 'fade-left' : 'fade-right' ?>">
-            <div class="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl border border-purple-500/20 flex items-center justify-center">
-                <span class="text-4xl"><?= $s['icon'] ?? '🌐' ?></span>
-            </div>
-            <div class="flex-1">
-                <h3 class="text-xl font-semibold text-white mb-2"><?= htmlspecialchars($s['name']) ?></h3>
-                <p class="text-gray-400 leading-relaxed"><?= htmlspecialchars($s['short_description'] ?? '') ?></p>
-            </div>
-            <div class="flex-shrink-0 text-right">
-                <?php if (!empty($s['price_from'])): ?>
-                    <p class="text-sm text-gray-500">A partir de</p>
-                    <p class="text-2xl font-bold text-purple-400">R$ <?= number_format((float)$s['price_from'], 0, ',', '.') ?></p>
-                <?php endif; ?>
-                <a href="/<?= $locale ?>/contato" class="inline-flex items-center gap-2 mt-3 text-sm text-purple-400 hover:text-purple-300 font-medium transition group">
-                    Solicitar <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-            </div>
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Foco Principal</span>
+            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Onde somos <span class="text-gradient">especialistas</span></h2>
         </div>
-        <?php endforeach; ?>
+
+        <!-- 3 grandes serviços -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
+            <?php
+            $mainServices = [
+                ['☁️', 'Hospedagem Cloud & VPS', 'Infraestrutura de alto desempenho com servidores dedicados, proteção DDoS, NVMe SSD e suporte 24/7. Para projetos que precisam de performance real.', ['Intel Xeon', 'NVMe SSD', 'DDoS Protection', 'Backup Diário', 'Tráfego Ilimitado', 'Suporte Especializado']],
+                ['⚙️', 'Sistemas & Aplicativos', 'Desenvolvimento de sistemas web, aplicativos, painéis administrativos, CRM, ERP e automações. Código limpo, escalável e documentado.', ['PHP, Node.js, React', 'Banco de Dados', 'API REST', 'Painel Admin', 'Integrações', 'Deploy Incluso']],
+                ['🌐', 'Criação de Sites', 'Sites institucionais, landing pages e portais com design exclusivo, SEO otimizado e foco total em conversão de visitantes em clientes.', ['Design Exclusivo', 'SEO Otimizado', 'Responsivo', 'Alta Velocidade', 'Painel CMS', 'SSL Incluso']],
+            ];
+            foreach ($mainServices as $i => $s): ?>
+            <div class="card-premium flex flex-col" data-animate="fade-up" data-delay="<?= $i * 120 ?>">
+                <div class="w-14 h-14 bg-purple-600/15 border border-purple-500/20 rounded-2xl flex items-center justify-center mb-5">
+                    <span class="text-3xl"><?= $s[0] ?></span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3"><?= $s[1] ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-6"><?= $s[2] ?></p>
+                <ul class="space-y-2 mb-6 flex-1">
+                    <?php foreach ($s[3] as $feature): ?>
+                    <li class="flex items-center gap-2 text-sm text-gray-300"><svg class="w-4 h-4 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><?= $feature ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <a href="/<?= $locale ?>/contato" class="btn-outline w-full justify-center">Solicitar Orçamento</a>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Serviços complementares -->
+        <div class="text-center mb-10">
+            <h3 class="text-xl font-bold text-white" data-animate="fade-up">Também oferecemos</h3>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <?php
+            $secondary = [
+                ['🛒', 'E-commerce', 'Lojas virtuais com checkout otimizado e gestão completa.'],
+                ['💬', 'Automação WhatsApp', 'Chatbots, disparos e atendimento automatizado.'],
+                ['📱', 'Social Media', 'Gestão de redes com estratégia e criação de conteúdo.'],
+                ['🎨', 'Branding', 'Logotipo, identidade visual e materiais gráficos.'],
+                ['🔧', 'Manutenção', 'Atualizações, monitoramento e suporte contínuo.'],
+                ['💾', 'Backup', 'Proteção dos seus dados com backups automáticos.'],
+                ['📧', 'E-mail Profissional', 'E-mail com seu domínio e antispam avançado.'],
+                ['📅', 'Agendamento Online', 'Sistema de agendamento com confirmação automática.'],
+            ];
+            foreach ($secondary as $i => $s): ?>
+            <div class="p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300 group" data-animate="fade-up" data-delay="<?= $i * 60 ?>">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl group-hover:scale-110 transition-transform"><?= $s[0] ?></span>
+                    <div>
+                        <h4 class="text-white text-sm font-semibold"><?= $s[1] ?></h4>
+                        <p class="text-gray-500 text-xs mt-0.5"><?= $s[2] ?></p>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </section>
 
 <!-- PROCESSO -->
-<section class="section-gradient py-24">
+<section class="section-gradient py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Como funciona</span>
-            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Nosso processo em <span class="text-gradient">4 etapas</span></h2>
+        <div class="text-center mb-14">
+            <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider" data-animate="fade-up">Processo</span>
+            <h2 class="text-3xl font-bold mt-3" data-animate="fade-up" data-delay="100">Simples, transparente e <span class="text-gradient">eficiente</span></h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <?php
             $steps = [
-                ['01', 'Conversa', 'Entendemos seu negócio, objetivos e necessidades em uma conversa sem compromisso.'],
-                ['02', 'Proposta', 'Criamos uma proposta detalhada com escopo, prazo e investimento transparentes.'],
-                ['03', 'Execução', 'Desenvolvemos com metodologia ágil, entregas parciais e feedback constante.'],
-                ['04', 'Entrega', 'Lançamos seu projeto com suporte contínuo e acompanhamento de resultados.'],
+                ['01', '💬', 'Conversa Inicial', 'Entendemos seu negócio e o que você precisa. Sem compromisso, sem jargão técnico.'],
+                ['02', '📋', 'Proposta Detalhada', 'Criamos um orçamento com escopo claro, prazo definido e valores transparentes.'],
+                ['03', '🚀', 'Desenvolvimento', 'Executamos com entregas parciais para você acompanhar cada etapa do progresso.'],
+                ['04', '✅', 'Entrega + Suporte', 'Lançamos seu projeto com acompanhamento e suporte contínuo pós-entrega.'],
             ];
             foreach ($steps as $i => $step): ?>
-            <div class="text-center relative" data-animate="fade-up" data-delay="<?= $i * 150 ?>">
-                <div class="w-14 h-14 bg-purple-600/20 border border-purple-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <span class="text-purple-400 font-bold"><?= $step[0] ?></span>
+            <div class="text-center" data-animate="fade-up" data-delay="<?= $i * 120 ?>">
+                <div class="w-16 h-16 bg-purple-600/10 border border-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 relative">
+                    <span class="text-2xl"><?= $step[1] ?></span>
+                    <span class="absolute -top-2 -right-2 w-7 h-7 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center justify-center"><?= $step[0] ?></span>
                 </div>
-                <h3 class="text-white font-semibold mb-2"><?= $step[1] ?></h3>
-                <p class="text-gray-400 text-sm"><?= $step[2] ?></p>
-                <?php if ($i < 3): ?>
-                    <div class="hidden md:block absolute top-7 left-full w-full h-px bg-gradient-to-r from-purple-500/30 to-transparent -translate-x-1/2"></div>
-                <?php endif; ?>
+                <h3 class="text-white font-semibold mb-2"><?= $step[2] ?></h3>
+                <p class="text-gray-400 text-sm leading-relaxed"><?= $step[3] ?></p>
             </div>
             <?php endforeach; ?>
         </div>
@@ -81,11 +104,14 @@
 </section>
 
 <!-- CTA -->
-<section class="relative py-24 overflow-hidden">
+<section class="relative py-20 overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-purple-950 via-purple-900 to-black"></div>
     <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <h2 class="text-3xl font-bold mb-6" data-animate="fade-up">Não sabe por onde começar?</h2>
-        <p class="text-gray-300 mb-8 text-lg" data-animate="fade-up" data-delay="100">Fale com a gente. Vamos entender sua necessidade e indicar a melhor solução.</p>
-        <a href="/<?= $locale ?>/contato" class="btn-primary text-lg px-10" data-animate="fade-up" data-delay="200">Falar com Especialista</a>
+        <h2 class="text-3xl font-bold mb-4" data-animate="fade-up">Cada projeto é <span class="text-gradient">único</span></h2>
+        <p class="text-gray-300 mb-8 text-lg" data-animate="fade-up" data-delay="100">Conte o que você precisa e montamos a melhor proposta. Sem fórmulas prontas, sem surpresas.</p>
+        <a href="/<?= $locale ?>/contato" class="btn-primary text-base px-10" data-animate="fade-up" data-delay="200">
+            Solicitar Orçamento Personalizado
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
     </div>
 </section>
