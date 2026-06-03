@@ -200,41 +200,6 @@ Retorne APENAS um JSON válido com essas chaves.";
         $response->setBody($xml);
         $response->send();
     }
-    {
-        $db = Database::getInstance();
-        $baseUrl = Config::get('app.url', 'https://lrvweb.com.br');
-
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-
-        // Páginas estáticas
-        $staticPages = ['', '/sobre', '/servicos', '/hospedagem', '/portfolio', '/blog', '/contato'];
-        $languages = ['pt', 'en', 'es'];
-
-        foreach ($languages as $lang) {
-            foreach ($staticPages as $page) {
-                $xml .= "<url><loc>{$baseUrl}/{$lang}{$page}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>";
-            }
-        }
-
-        // Blog posts
-        $posts = $db->fetchAll("SELECT slug, language, updated_at FROM blog_posts WHERE status = 'published' AND deleted_at IS NULL");
-        foreach ($posts as $post) {
-            $xml .= "<url><loc>{$baseUrl}/{$post['language']}/blog/{$post['slug']}</loc><lastmod>" . date('Y-m-d', strtotime($post['updated_at'])) . "</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>";
-        }
-
-        // Portfolio
-        $portfolios = $db->fetchAll("SELECT slug, updated_at FROM portfolios WHERE is_active = 1");
-        foreach ($portfolios as $item) {
-            $xml .= "<url><loc>{$baseUrl}/pt/portfolio/{$item['slug']}</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>";
-        }
-
-        $xml .= '</urlset>';
-
-        $response->setHeader('Content-Type', 'application/xml; charset=utf-8');
-        $response->setBody($xml);
-        $response->send();
-    }
 
     /**
      * Gera robots.txt
