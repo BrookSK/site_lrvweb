@@ -289,10 +289,10 @@ REGRAS:
 
         $tasksList = implode("\n", array_map(function($t) { $resp = $t['assigned_name'] ?? 'Ninguém'; $prio = $t['priority']; $s = "- [{$t['status']}] {$t['title']} | Resp: {$resp} | Prioridade: {$prio}"; if ($t['due_date']) $s .= " | Prazo: {$t['due_date']}"; if ($t['description']) $s .= " | Desc: {$t['description']}"; return $s; }, $tasks));
         $membersList = implode("\n", array_map(function($m) { $pos = $m['position'] ?? $m['role'] ?? 'Membro'; return "- {$m['name']} ({$pos}) | {$m['email']}"; }, $members));
-        $budgetsList = implode("\n", array_map(function($b) { $val = number_format((float)($b['final_value'] ?? 0), 2, ',', '.'); $s = "- {$b['name']} [{$b['status']}] R${$val} | Pagamento: {$b['payment_type']}"; if ($b['notes']) $s .= " | Obs: {$b['notes']}"; return $s; }, $budgets));
-        $blocksList = implode("\n", array_map(function($bl) { $val = number_format((float)$bl['value'], 2, ',', '.'); $s = "- {$bl['title']}: R${$val}"; if ($bl['deadline']) $s .= " | Prazo: {$bl['deadline']}"; if ($bl['description']) $s .= " | {$bl['description']}"; return $s; }, $budgetBlocks));
+        $budgetsList = implode("\n", array_map(function($b) { $val = number_format((float)($b['final_value'] ?? 0), 2, ',', '.'); $s = "- {$b['name']} [{$b['status']}] R\${$val} | Pagamento: {$b['payment_type']}"; if ($b['notes']) $s .= " | Obs: {$b['notes']}"; return $s; }, $budgets));
+        $blocksList = implode("\n", array_map(function($bl) { $val = number_format((float)$bl['value'], 2, ',', '.'); $s = "- {$bl['title']}: R\${$val}"; if ($bl['deadline']) $s .= " | Prazo: {$bl['deadline']}"; if ($bl['description']) $s .= " | {$bl['description']}"; return $s; }, $budgetBlocks));
         $docsList = implode("\n", array_map(fn($d) => "- {$d['name']} ({$d['category']})", $documents));
-        $finList = implode("\n", array_map(function($f) { $val = number_format((float)$f['value'], 2, ',', '.'); return "- [{$f['type']}] {$f['description']} R${$val} ({$f['date']}) Cat: {$f['category']}"; }, $financial));
+        $finList = implode("\n", array_map(function($f) { $val = number_format((float)$f['value'], 2, ',', '.'); return "- [{$f['type']}] {$f['description']} R\${$val} ({$f['date']}) Cat: {$f['category']}"; }, $financial));
         $leadsList = implode("\n", array_map(function($l) { $s = "- {$l['name']} [{$l['stage']}]"; if ($l['value']) $s .= " R$" . number_format((float)$l['value'], 2, ',', '.'); if ($l['source']) $s .= " | Origem: {$l['source']}"; if ($l['notes']) $s .= " | {$l['notes']}"; return $s; }, $leads));
 
         return "Você é o assistente IA da LRV Web com ACESSO TOTAL ao projeto e todos os dados relacionados.

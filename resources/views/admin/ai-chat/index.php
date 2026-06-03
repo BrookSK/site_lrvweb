@@ -50,7 +50,11 @@
         <?php endif; ?>
 
         <!-- Messages -->
-        <div id="chat-messages" class="flex-1 overflow-y-auto rounded-xl bg-gray-900/50 border border-gray-800 p-4 space-y-4 mb-3">
+        <div id="chat-messages" class="flex-1 overflow-y-auto rounded-xl bg-gray-900/50 border border-gray-800 p-4 space-y-4 mb-3 relative" onscroll="checkScrollBtn()">
+            <!-- Scroll to bottom -->
+            <button id="scroll-bottom-btn" onclick="scrollToBottom()" class="hidden sticky bottom-2 left-1/2 -translate-x-1/2 z-10 w-8 h-8 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg items-center justify-center transition" style="display:none;margin:0 auto;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </button>
             <?php if ($currentChat && !empty($messages)): ?>
                 <?php foreach ($messages as $msg): ?>
                     <?php if ($msg['role'] === 'user'): ?>
@@ -166,11 +170,72 @@ async function sendMessage() {
 function appendMsg(role, content) {
     const c = document.getElementById('chat-messages');
     document.getElementById('welcome-msg')?.remove();
-    let html = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code class="bg-gray-900 px-1 rounded text-purple-300 text-xs">$1</code>').replace(/\n/g, '<br>');
+
+    let html = content;
+    if (role === 'assistant') {
+        // Markdown rendering
+        // Code blocks
+        html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre class="bg-gray-950 border border-gray-700 rounded-lg p-3 my-2 overflow-x-auto text-xs font-mono text-gray-300"><code>$2</code></pre>');
+        // Tables
+        html = html.replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)+)/g, function(match, header, rows) {
+            const ths = header.split('|').filter(c=>c.trim()).map(c=>'<th class="px-3 py-1.5 text-left text-xs font-semibold text-gray-400 border-b border-gray-700">'+c.trim()+'</th>').join('');
+            const trs = rows.trim().split('\n').map(r => '<tr>' + r.split('|').filter(c=>c.trim()).map(c=>'<td class="px-3 py-1.5 text-xs text-gray-300 border-b border-gray-800">'+c.trim()+'</td>').join('') + '</tr>').join('');
+            return '<table class="w-full my-2 border border-gray-700 rounded-lg overflow-hidden"><thead class="bg-gray-900"><tr>'+ths+'</tr></thead><tbody>'+trs+'</tbody></table>';
+        });
+        // Headers
+        html = html.replace(/^### (.+)$/gm, '<h4 class="text-white font-semibold text-sm mt-3 mb-1">$1</h4>');
+        html = html.replace(/^## (.+)$/gm, '<h3 class="text-white font-bold text-base mt-4 mb-1">$1</h3>');
+        html = html.replace(/^# (.+)$/gm, '<h2 class="text-white font-bold text-lg mt-4 mb-2">$1</h2>');
+        // Bold
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
+        // Italic
+        html = html.replace(/\*(.+?)\*/g, '<em class="text-gray-300 italic">$1</em>');
+        // Inline code
+        html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-900 border border-gray-700 px-1.5 py-0.5 rounded text-purple-300 text-xs font-mono">$1</code>');
+        // Lists
+        html = html.replace(/^- (.+)$/gm, '<li class="text-gray-300 text-sm ml-4 list-disc">$1</li>');
+        html = html.replace(/^(\d+)\. (.+)$/gm, '<li class="text-gray-300 text-sm ml-4 list-decimal">$2</li>');
+        // Horizontal rule
+        html = html.replace(/^---$/gm, '<hr class="border-gray-700 my-3">');
+        // Line breaks
+        html = html.replace(/\n/g, '<br>');
+        // Clean up consecutive <br> before/after block elements
+        html = html.replace(/<br><(h[234]|pre|table|hr|li)/g, '<$1');
+        html = html.replace(/<\/(h[234]|pre|table|hr|li)><br>/g, '</$1>');
+    }
+
+    const msgId = 'msg-' + Date.now();
+    const copyBtn = role === 'assistant' ? `<button onclick="copyMessage('${msgId}')" class="mt-2 text-[10px] text-gray-500 hover:text-purple-400 transition flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Copiar</button>` : '';
+
     const el = role === 'user'
-        ? `<div class="flex gap-3 justify-end"><div class="bg-purple-600/20 border border-purple-500/30 rounded-xl rounded-tr-none p-3 max-w-[80%]"><p class="text-sm text-white whitespace-pre-wrap">${content.replace(/</g,'&lt;')}</p></div></div>`
-        : `<div class="flex gap-3"><div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-xs">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-3 max-w-[80%]"><div class="text-sm text-gray-300 leading-relaxed">${html}</div></div></div>`;
+        ? `<div class="flex gap-3 justify-end"><div class="bg-purple-600/20 border border-purple-500/30 rounded-xl rounded-tr-none p-3 max-w-[80%]"><p class="text-sm text-white whitespace-pre-wrap">${content.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p></div></div>`
+        : `<div class="flex gap-3"><div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 mt-1"><span class="text-xs">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-4 max-w-[85%]"><div id="${msgId}" class="text-sm text-gray-300 leading-relaxed">${html}</div>${copyBtn}</div></div>`;
+
     c.insertAdjacentHTML('beforeend', el);
+    c.scrollTop = c.scrollHeight;
+    checkScrollBtn();
+}
+
+function copyMessage(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const text = el.innerText || el.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = el.parentElement.querySelector('button');
+        if (btn) { btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Copiado!'; setTimeout(() => { btn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Copiar'; }, 2000); }
+    });
+}
+
+function checkScrollBtn() {
+    const c = document.getElementById('chat-messages');
+    const btn = document.getElementById('scroll-bottom-btn');
+    if (!btn) return;
+    const isNearBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 100;
+    btn.style.display = isNearBottom ? 'none' : 'flex';
+}
+
+function scrollToBottom() {
+    const c = document.getElementById('chat-messages');
     c.scrollTop = c.scrollHeight;
 }
 
