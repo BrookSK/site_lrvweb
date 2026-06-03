@@ -133,29 +133,53 @@
 </div>
 
 <script>
-// Revenue Chart
+// Revenue Chart com dados reais
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('revenueChart');
     if (ctx) {
+        <?php
+        $chartLabels = [];
+        $chartData = [];
+        $mesesPT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+        // Preenche os últimos 12 meses
+        for ($i = 11; $i >= 0; $i--) {
+            $month = date('Y-m', strtotime("-{$i} months"));
+            $chartLabels[] = $mesesPT[(int)date('n', strtotime($month)) - 1] . '/' . date('y', strtotime($month));
+            $found = false;
+            foreach ($monthlyRevenue as $mr) {
+                if ($mr['month'] === $month) {
+                    $chartData[] = (float) $mr['total'];
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) $chartData[] = 0;
+        }
+        ?>
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                labels: <?= json_encode($chartLabels) ?>,
                 datasets: [{
                     label: 'Receita (R$)',
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    data: <?= json_encode($chartData) ?>,
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
                     fill: true,
                     tension: 0.4,
+                    pointBackgroundColor: '#7c3aed',
+                    pointBorderColor: '#7c3aed',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
                 }]
             },
             options: {
                 responsive: true,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                    x: { grid: { display: false } }
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#6b7280' } },
+                    x: { grid: { display: false }, ticks: { color: '#6b7280' } }
                 }
             }
         });

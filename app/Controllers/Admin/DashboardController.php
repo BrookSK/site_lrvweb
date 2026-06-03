@@ -56,11 +56,21 @@ class DashboardController extends Controller
             LIMIT 5
         ");
 
+        // Receita mensal por mês (últimos 12 meses)
+        $monthlyRevenue = $db->fetchAll("
+            SELECT DATE_FORMAT(date, '%Y-%m') as month, COALESCE(SUM(value), 0) as total
+            FROM financial_entries
+            WHERE type = 'revenue' AND date >= DATE_SUB(CURRENT_DATE, INTERVAL 12 MONTH)
+            GROUP BY DATE_FORMAT(date, '%Y-%m')
+            ORDER BY month
+        ");
+
         return $this->adminView('dashboard/index', [
             'title' => 'Dashboard',
             'stats' => $stats,
             'recentActivities' => $recentActivities,
             'recentProjects' => $recentProjects,
+            'monthlyRevenue' => $monthlyRevenue,
         ]);
     }
 

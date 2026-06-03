@@ -68,6 +68,28 @@ class ClientController extends Controller
         }
 
         $id = $db->insert('clients', $clientData);
+
+        // Cria usuário vinculado para o cliente poder logar
+        $password = $request->input('client_password');
+        if (!empty($password)) {
+            $clientRoleId = $db->fetchOne("SELECT id FROM roles WHERE name = 'cliente'");
+            if ($clientRoleId) {
+                $userId = $db->insert('users', [
+                    'name' => $clientData['name'],
+                    'email' => $clientData['email'],
+                    'password' => password_hash($password, PASSWORD_ARGON2ID),
+                    'role_id' => (int) $clientRoleId['id'],
+                    'phone' => $clientData['phone'] ?? null,
+                    'is_active' => 1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+
+                // Vincula o usuário ao cliente
+                $db->update('clients', ['user_id' => $userId], 'id = :id', ['id' => $id]);
+            }
+        }
+
         Logger::audit('Cliente criado', ['client_id' => $id]);
 
         $this->session->flash('success', 'Cliente cadastrado com sucesso!');
@@ -136,6 +158,36 @@ class ClientController extends Controller
         }
 
         $db->update('clients', $clientData, 'id = :id', ['id' => $id]);
+
+        // Atualiza senha do usuário vinculado (se informou nova senha)
+        $password = $request->input('client_password');
+        if (!empty($password)) {
+            $client = $db->fetchOne("SELECT user_id, email, name FROM clients WHERE id = :id", ['id' => $id]);
+
+            if ($client['user_id']) {
+                // Atualiza senha do usuário existente
+                $db->update('users', [
+                    'password' => password_hash($password, PASSWORD_ARGON2ID),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ], 'id = :id', ['id' => $client['user_id']]);
+            } else {
+                // Cria usuário se não existir
+                $clientRoleId = $db->fetchOne("SELECT id FROM roles WHERE name = 'cliente'");
+                if ($clientRoleId) {
+                    $userId = $db->insert('users', [
+                        'name' => $clientData['name'] ?? $client['name'],
+                        'email' => $clientData['email'] ?? $client['email'],
+                        'password' => password_hash($password, PASSWORD_ARGON2ID),
+                        'role_id' => (int) $clientRoleId['id'],
+                        'is_active' => 1,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                    $db->update('clients', ['user_id' => $userId], 'id = :id', ['id' => $id]);
+                }
+            }
+        }
+
         Logger::audit('Cliente atualizado', ['client_id' => $id]);
 
         $this->session->flash('success', 'Cliente atualizado!');
