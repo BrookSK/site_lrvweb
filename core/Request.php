@@ -71,6 +71,14 @@ class Request
     }
 
     /**
+     * Retorna parâmetro POST sem sanitização (para conteúdo HTML)
+     */
+    public function raw(string $key, mixed $default = null): mixed
+    {
+        return $_POST[$key] ?? $default;
+    }
+
+    /**
      * Retorna parâmetro POST
      */
     public function input(string $key, mixed $default = null): mixed
