@@ -162,11 +162,18 @@ function startRecording() {
 
     recognition.onerror = (event) => {
         console.error('Erro no reconhecimento:', event.error);
+        if (event.error === 'not-allowed') {
+            alert('Permissão do microfone negada. Clique no ícone de cadeado na barra de endereço e permita o acesso ao microfone.');
+        }
+        isRecording = false;
         stopRecording();
     };
 
     recognition.onend = () => {
-        if (isRecording) recognition.start(); // Continua gravando
+        // Só reinicia se ainda estiver gravando (não se foi parado pelo usuário ou erro)
+        if (isRecording) {
+            try { recognition.start(); } catch(e) {}
+        }
     };
 
     recognition.start();
