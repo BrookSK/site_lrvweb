@@ -94,8 +94,10 @@
             ];
             foreach ($stats as $i => $s): ?>
             <div class="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
-                <p class="stat-number text-3xl md:text-4xl" data-count="<?= $s[0] ?>"><?= $s[0] ?></p>
-                <span class="text-purple-400 text-lg font-bold"><?= $s[2] ?></span>
+                <div class="flex items-baseline justify-center gap-1">
+                    <p class="stat-number text-3xl md:text-4xl" data-count="<?= $s[0] ?>"><?= $s[0] ?></p>
+                    <span class="text-purple-400 text-lg font-bold"><?= $s[2] ?></span>
+                </div>
                 <p class="text-gray-400 text-sm mt-1"><?= $s[1] ?></p>
             </div>
             <?php endforeach; ?>
