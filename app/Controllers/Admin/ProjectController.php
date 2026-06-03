@@ -149,6 +149,16 @@ class ProjectController extends Controller
             'updated_at' => date('Y-m-d H:i:s'),
         ], 'id = :id', ['id' => $id]);
 
+        // Adiciona/atualiza membros
+        $members = $request->input('members') ?? [];
+        if (is_array($members)) {
+            // Remove membros antigos e adiciona novos
+            $db->delete('project_members', 'project_id = :pid', ['pid' => $id]);
+            foreach ($members as $userId) {
+                $db->insert('project_members', ['project_id' => $id, 'user_id' => (int) $userId, 'role' => 'member']);
+            }
+        }
+
         Logger::audit('Projeto atualizado', ['project_id' => $id]);
         $this->session->flash('success', 'Projeto atualizado!');
         $this->redirect("/admin/projetos/{$id}");

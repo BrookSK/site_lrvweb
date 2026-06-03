@@ -25,6 +25,8 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
                         <select name="status" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
                             <?php $st = $budget['status'] ?? 'draft'; ?>
                             <option value="draft" <?= $st === 'draft' ? 'selected' : '' ?>>📝 Rascunho</option>
@@ -33,6 +35,18 @@
                             <option value="approved" <?= $st === 'approved' ? 'selected' : '' ?>>✅ Aprovado</option>
                             <option value="rejected" <?= $st === 'rejected' ? 'selected' : '' ?>>❌ Recusado</option>
                             <option value="expired" <?= $st === 'expired' ? 'selected' : '' ?>>⏰ Expirado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Projeto Vinculado</label>
+                        <select name="project_id" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                            <option value="">Nenhum (orçamento independente)</option>
+                            <?php
+                            $allProjects = \Core\Database::getInstance()->fetchAll("SELECT id, name FROM projects WHERE deleted_at IS NULL ORDER BY name");
+                            foreach ($allProjects as $proj):
+                            ?>
+                            <option value="<?= $proj['id'] ?>" <?= ($budget['project_id'] ?? '') == $proj['id'] ? 'selected' : '' ?>><?= htmlspecialchars($proj['name']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div>

@@ -99,6 +99,7 @@ class BudgetController extends Controller
         $budgetData = [
             'name' => $data['name'],
             'client_id' => $data['client_id'],
+            'project_id' => $request->input('project_id') ?: null,
             'hash' => $hash,
             'status' => 'draft',
             'payment_type' => $data['payment_type'],
@@ -239,6 +240,7 @@ class BudgetController extends Controller
         $budgetData = [
             'name' => $data['name'],
             'client_id' => $data['client_id'],
+            'project_id' => $request->input('project_id') ?: null,
             'status' => $request->input('status') ?? 'draft',
             'payment_type' => $data['payment_type'],
             'validity_date' => $request->input('validity_date') ?: null,

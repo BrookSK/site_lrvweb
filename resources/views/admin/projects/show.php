@@ -1,7 +1,7 @@
 <?php
 $db = \Core\Database::getInstance();
-// Busca orçamentos vinculados ao cliente do projeto
-$linkedBudgets = $db->fetchAll("SELECT id, name, status, final_value FROM budgets WHERE client_id = :cid AND deleted_at IS NULL ORDER BY created_at DESC", ['cid' => $project['client_id'] ?? 0]);
+// Busca orçamentos vinculados ao projeto OU ao cliente
+$linkedBudgets = $db->fetchAll("SELECT id, name, status, final_value FROM budgets WHERE (project_id = :pid OR (client_id = :cid AND project_id IS NULL)) AND deleted_at IS NULL ORDER BY created_at DESC", ['pid' => $project['id'], 'cid' => $project['client_id'] ?? 0]);
 // Busca documentos do projeto
 $projectDocs = $db->fetchAll("SELECT id, name, category, created_at FROM documents WHERE project_id = :pid AND deleted_at IS NULL ORDER BY created_at DESC", ['pid' => $project['id']]);
 // Busca usuários disponíveis para atribuir tarefas
