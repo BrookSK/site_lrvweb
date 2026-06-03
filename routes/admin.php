@@ -162,6 +162,8 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
 
     // Chat IA
     $router->get('/ia', [\App\Controllers\Admin\AiChatController::class, 'index']);
+    $router->post('/ia/criar', [\App\Controllers\Admin\AiChatController::class, 'createChat']);
     $router->post('/ia/send', [\App\Controllers\Admin\AiChatController::class, 'send']);
     $router->post('/ia/transcribe', [\App\Controllers\Admin\AiChatController::class, 'transcribe']);
+    $router->delete('/ia/{id}', [\App\Controllers\Admin\AiChatController::class, 'deleteChat']);
 });

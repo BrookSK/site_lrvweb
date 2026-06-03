@@ -16,16 +16,81 @@ class AiChatController extends Controller
     public function index(Request $request, Response $response): string
     {
         $this->requireAuth();
-        return $this->adminView('ai-chat/index', ['title' => 'Assistente IA']);
+        $db = Database::getInstance();
+        $userId = $this->getUser()['id'];
+
+        $chatId = $request->query('chat') ? (int) $request->query('chat') : null;
+
+        // Lista de chats do usuário
+        $chats = $db->fetchAll("
+            SELECT c.*, p.name as project_name 
+            FROM ai_chats c 
+            LEFT JOIN projects p ON c.project_id = p.id 
+            WHERE c.user_id = :uid 
+            ORDER BY c.updated_at DESC
+        ", ['uid' => $userId]);
+
+        // Projetos para criar chat vinculado
+        $projects = $db->fetchAll("SELECT id, name FROM projects WHERE deleted_at IS NULL ORDER BY name");
+
+        // Mensagens do chat selecionado
+        $messages = [];
+        $currentChat = null;
+        if ($chatId) {
+            $currentChat = $db->fetchOne("SELECT * FROM ai_chats WHERE id = :id AND user_id = :uid", ['id' => $chatId, 'uid' => $userId]);
+            if ($currentChat) {
+                $messages = $db->fetchAll("SELECT role, content, created_at FROM ai_chat_messages WHERE chat_id = :id ORDER BY created_at", ['id' => $chatId]);
+            }
+        }
+
+        return $this->adminView('ai-chat/index', [
+            'title' => 'Assistente IA',
+            'chats' => $chats,
+            'projects' => $projects,
+            'messages' => $messages,
+            'currentChat' => $currentChat,
+            'chatId' => $chatId,
+        ]);
     }
 
+    /**
+     * Cria novo chat (geral ou vinculado a projeto)
+     */
+    public function createChat(Request $request, Response $response): void
+    {
+        $this->requireAuth();
+        $db = Database::getInstance();
+        $userId = $this->getUser()['id'];
+        $projectId = $request->input('project_id') ?: null;
+        $title = $request->input('title') ?? 'Nova Conversa';
+
+        if ($projectId) {
+            $project = $db->fetchOne("SELECT name FROM projects WHERE id = :id", ['id' => $projectId]);
+            $title = $project ? 'Projeto: ' . $project['name'] : $title;
+        }
+
+        $chatId = $db->insert('ai_chats', [
+            'user_id' => $userId,
+            'project_id' => $projectId,
+            'title' => $title,
+            'model' => $request->input('model') ?? 'gpt-4o',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $this->redirect("/admin/ia?chat={$chatId}");
+    }
+
+    /**
+     * Envia mensagem no chat
+     */
     public function send(Request $request, Response $response): void
     {
         $this->requireAuth();
 
         $message = $request->input('message') ?? '';
-        $model = $request->input('model') ?? 'gpt-4';
-        $history = json_decode($request->input('history') ?? '[]', true) ?: [];
+        $chatId = (int) ($request->input('chat_id') ?? 0);
+        $model = $request->input('model') ?? 'gpt-4o';
 
         if (empty($message)) {
             $this->response->error('Mensagem vazia', 400);
@@ -34,25 +99,44 @@ class AiChatController extends Controller
 
         $apiKey = Config::get('openai.api_key') ?: Config::setting('openai.api_key');
         if (empty($apiKey)) {
-            $this->response->error('API Key não configurada. Vá em Configurações > Blog IA.', 400);
+            $this->response->error('API Key não configurada', 400);
             return;
         }
 
-        // Monta contexto da empresa
-        $context = $this->buildContext();
+        $db = Database::getInstance();
+        $userId = $this->getUser()['id'];
 
-        $messages = [
-            ['role' => 'system', 'content' => $context],
-        ];
-
-        // Adiciona histórico
-        foreach ($history as $msg) {
-            if (isset($msg['role']) && isset($msg['content'])) {
-                $messages[] = ['role' => $msg['role'], 'content' => $msg['content']];
-            }
+        // Se não tem chat, cria um novo
+        if (!$chatId) {
+            $chatId = $db->insert('ai_chats', [
+                'user_id' => $userId,
+                'title' => mb_substr($message, 0, 80),
+                'model' => $model,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
         }
 
-        $messages[] = ['role' => 'user', 'content' => $message];
+        // Verifica se chat pertence ao user
+        $chat = $db->fetchOne("SELECT * FROM ai_chats WHERE id = :id AND user_id = :uid", ['id' => $chatId, 'uid' => $userId]);
+        if (!$chat) {
+            $this->response->error('Chat não encontrado', 404);
+            return;
+        }
+
+        // Salva mensagem do usuário
+        $db->insert('ai_chat_messages', ['chat_id' => $chatId, 'role' => 'user', 'content' => $message, 'created_at' => date('Y-m-d H:i:s')]);
+
+        // Monta contexto
+        $context = $this->buildContext($chat['project_id']);
+
+        // Busca histórico completo do chat
+        $history = $db->fetchAll("SELECT role, content FROM ai_chat_messages WHERE chat_id = :id ORDER BY created_at", ['id' => $chatId]);
+
+        $messages = [['role' => 'system', 'content' => $context]];
+        foreach ($history as $msg) {
+            $messages[] = ['role' => $msg['role'], 'content' => $msg['content']];
+        }
 
         try {
             $ch = curl_init('https://api.openai.com/v1/chat/completions');
@@ -80,23 +164,26 @@ class AiChatController extends Controller
 
             $result = json_decode($aiResponse, true);
             $reply = $result['choices'][0]['message']['content'] ?? 'Sem resposta.';
-            $usage = $result['usage'] ?? [];
 
-            $this->response->success([
-                'reply' => $reply,
-                'model' => $model,
-                'tokens' => $usage,
-            ]);
+            // Salva resposta da IA
+            $db->insert('ai_chat_messages', ['chat_id' => $chatId, 'role' => 'assistant', 'content' => $reply, 'created_at' => date('Y-m-d H:i:s')]);
+
+            // Atualiza timestamp do chat
+            $db->update('ai_chats', ['updated_at' => date('Y-m-d H:i:s'), 'model' => $model], 'id = :id', ['id' => $chatId]);
+
+            $this->response->success(['reply' => $reply, 'chat_id' => $chatId]);
         } catch (\Throwable $e) {
             Logger::error('Chat IA falhou', ['error' => $e->getMessage()]);
             $this->response->error('Erro: ' . $e->getMessage(), 500);
         }
     }
 
+    /**
+     * Transcreve áudio com Whisper
+     */
     public function transcribe(Request $request, Response $response): void
     {
         $this->requireAuth();
-
         $apiKey = Config::get('openai.api_key') ?: Config::setting('openai.api_key');
         $audioFile = $request->file('audio');
 
@@ -122,53 +209,122 @@ class AiChatController extends Controller
             $data = json_decode($whisperResponse, true);
             $this->response->success(['text' => $data['text'] ?? '']);
         } else {
-            $this->response->error('Erro ao transcrever (HTTP ' . $httpCode . ')', 500);
+            $this->response->error('Erro ao transcrever', 500);
         }
     }
 
-    private function buildContext(): string
+    /**
+     * Exclui um chat
+     */
+    public function deleteChat(Request $request, Response $response, array $params): void
+    {
+        $this->requireAuth();
+        $db = Database::getInstance();
+        $chatId = (int) $params['id'];
+        $userId = $this->getUser()['id'];
+
+        $db->delete('ai_chats', 'id = :id AND user_id = :uid', ['id' => $chatId, 'uid' => $userId]);
+        $this->redirect('/admin/ia');
+    }
+
+    /**
+     * Constrói contexto completo baseado no projeto ou geral
+     */
+    private function buildContext(?int $projectId = null): string
     {
         $db = Database::getInstance();
 
-        $clientCount = $db->fetchOne("SELECT COUNT(*) as t FROM clients WHERE is_active = 1 AND deleted_at IS NULL")['t'] ?? 0;
-        $projectCount = $db->fetchOne("SELECT COUNT(*) as t FROM projects WHERE deleted_at IS NULL")['t'] ?? 0;
-        $budgetCount = $db->fetchOne("SELECT COUNT(*) as t FROM budgets WHERE deleted_at IS NULL")['t'] ?? 0;
+        if ($projectId) {
+            return $this->buildProjectContext($db, $projectId);
+        }
 
-        $recentClients = $db->fetchAll("SELECT name, company, email FROM clients WHERE is_active = 1 AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 10");
-        $recentProjects = $db->fetchAll("SELECT name, status, value FROM projects WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 10");
-        $recentBudgets = $db->fetchAll("SELECT name, status, final_value FROM budgets WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT 10");
+        return $this->buildFullContext($db);
+    }
 
-        $clientsList = implode("\n", array_map(fn($c) => "- {$c['name']}" . ($c['company'] ? " ({$c['company']})" : ''), $recentClients));
-        $projectsList = implode("\n", array_map(fn($p) => "- {$p['name']} [Status: {$p['status']}]" . ($p['value'] ? " R$ " . number_format((float)$p['value'], 2, ',', '.') : ''), $recentProjects));
-        $budgetsList = implode("\n", array_map(fn($b) => "- {$b['name']} [Status: {$b['status']}] R$ " . number_format((float)($b['final_value'] ?? 0), 2, ',', '.'), $recentBudgets));
+    private function buildFullContext(Database $db): string
+    {
+        $clients = $db->fetchAll("SELECT name, company, email, phone FROM clients WHERE is_active = 1 AND deleted_at IS NULL ORDER BY name");
+        $projects = $db->fetchAll("SELECT name, status, value, start_date, due_date FROM projects WHERE deleted_at IS NULL ORDER BY created_at DESC");
+        $budgets = $db->fetchAll("SELECT name, status, final_value, client_id FROM budgets WHERE deleted_at IS NULL ORDER BY created_at DESC");
 
-        return "Você é o assistente IA da LRV Web, uma empresa de tecnologia especializada em:
-- Hospedagem Cloud & VPS (LRV Cloud Manager)
-- Desenvolvimento de Sites e Sistemas Sob Medida
-- E-commerce, Automação WhatsApp, Social Media
+        $clientsList = implode("\n", array_map(fn($c) => "- {$c['name']}" . ($c['company'] ? " ({$c['company']})" : '') . " | {$c['email']}", $clients));
+        $projectsList = implode("\n", array_map(fn($p) => "- {$p['name']} [{$p['status']}]" . ($p['value'] ? " R$" . number_format((float)$p['value'], 2, ',', '.') : ''), $projects));
+        $budgetsList = implode("\n", array_map(fn($b) => "- {$b['name']} [{$b['status']}] R$" . number_format((float)($b['final_value'] ?? 0), 2, ',', '.'), $budgets));
 
-Dados atuais da empresa:
-- {$clientCount} clientes ativos
-- {$projectCount} projetos
-- {$budgetCount} orçamentos
+        return "Você é o assistente IA interno da LRV Web. Tem acesso COMPLETO a todos os dados da empresa.
 
-Últimos clientes:
+SOBRE A EMPRESA:
+A LRV Web é uma empresa de tecnologia especializada em Hospedagem Cloud/VPS (LRV Cloud Manager), Desenvolvimento de Sites, Sistemas Sob Medida, E-commerce e Automação.
+
+TODOS OS CLIENTES ({$this->count($clients)}):
 {$clientsList}
 
-Últimos projetos:
+TODOS OS PROJETOS ({$this->count($projects)}):
 {$projectsList}
 
-Últimos orçamentos:
+TODOS OS ORÇAMENTOS ({$this->count($budgets)}):
 {$budgetsList}
 
-Você deve:
-1. Ajudar com dúvidas sobre os projetos e clientes
-2. Sugerir textos para orçamentos, e-mails, propostas
-3. Ajudar com código PHP, JavaScript, CSS, SQL
-4. Gerar conteúdo para blog e redes sociais
-5. Responder em português brasileiro
-6. Ser direto, profissional e útil
+REGRAS:
+1. Responda sempre em português brasileiro
+2. Seja direto, profissional e útil
+3. Pode ajudar com: textos comerciais, propostas, respostas a clientes, código, análises, resumos
+4. Use Markdown para formatar (negrito, listas, código)
+5. Se perguntarem sobre um cliente/projeto específico, use os dados acima";
+    }
 
-Responda em Markdown quando apropriado.";
+    private function buildProjectContext(Database $db, int $projectId): string
+    {
+        $project = $db->fetchOne("SELECT p.*, c.name as client_name, c.company, c.email as client_email, c.phone as client_phone FROM projects p LEFT JOIN clients c ON p.client_id = c.id WHERE p.id = :id", ['id' => $projectId]);
+
+        if (!$project) return $this->buildFullContext($db);
+
+        $tasks = $db->fetchAll("SELECT title, status, priority FROM project_tasks WHERE project_id = :id ORDER BY priority DESC", ['id' => $projectId]);
+        $budgets = $db->fetchAll("SELECT b.name, b.status, b.final_value, b.notes FROM budgets b WHERE b.client_id = :cid AND b.deleted_at IS NULL", ['cid' => $project['client_id']]);
+        $documents = $db->fetchAll("SELECT name, category FROM documents WHERE project_id = :id AND deleted_at IS NULL", ['id' => $projectId]);
+        $financial = $db->fetchAll("SELECT description, type, value, date FROM financial_entries WHERE project_id = :id ORDER BY date DESC", ['id' => $projectId]);
+
+        $tasksList = implode("\n", array_map(fn($t) => "- [{$t['status']}] {$t['title']} (Prioridade: {$t['priority']})", $tasks));
+        $budgetsList = implode("\n", array_map(fn($b) => "- {$b['name']} [{$b['status']}] R$" . number_format((float)($b['final_value'] ?? 0), 2, ',', '.'), $budgets));
+        $docsList = implode("\n", array_map(fn($d) => "- {$d['name']} ({$d['category']})", $documents));
+        $finList = implode("\n", array_map(fn($f) => "- [{$f['type']}] {$f['description']} R$" . number_format((float)$f['value'], 2, ',', '.') . " ({$f['date']})", $financial));
+
+        return "Você é o assistente IA da LRV Web focado no PROJETO: {$project['name']}
+
+DADOS DO PROJETO:
+- Nome: {$project['name']}
+- Status: {$project['status']}
+- Valor: " . ($project['value'] ? 'R$ ' . number_format((float)$project['value'], 2, ',', '.') : 'Não definido') . "
+- Início: " . ($project['start_date'] ?? 'Não definido') . "
+- Prazo: " . ($project['due_date'] ?? 'Não definido') . "
+- Descrição: " . ($project['description'] ?? 'Sem descrição') . "
+
+CLIENTE:
+- Nome: {$project['client_name']}" . ($project['company'] ? " ({$project['company']})" : '') . "
+- E-mail: {$project['client_email']}
+- Telefone: " . ($project['client_phone'] ?? 'Não informado') . "
+
+TAREFAS ({$this->count($tasks)}):
+{$tasksList}
+
+ORÇAMENTOS DO CLIENTE:
+{$budgetsList}
+
+DOCUMENTOS:
+{$docsList}
+
+FINANCEIRO DO PROJETO:
+{$finList}
+
+REGRAS:
+1. Responda sempre em português brasileiro
+2. Você conhece TODOS os detalhes deste projeto
+3. Ajude com: comunicação com o cliente, resumos, decisões técnicas, textos, código
+4. Use Markdown para formatar";
+    }
+
+    private function count(array $arr): int
+    {
+        return count($arr);
     }
 }

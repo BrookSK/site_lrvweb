@@ -1,204 +1,191 @@
-<div class="flex flex-col h-[calc(100vh-130px)]">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-4 flex-shrink-0">
-        <div>
-            <h3 class="text-lg font-semibold text-white">Assistente IA</h3>
-            <p class="text-xs text-gray-500">Com contexto dos seus projetos, clientes e orçamentos</p>
+<div class="flex h-[calc(100vh-130px)] gap-4">
+    <!-- SIDEBAR DE CONVERSAS -->
+    <div class="w-72 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+        <!-- Novo chat -->
+        <div class="p-3 border-b border-gray-800">
+            <button onclick="document.getElementById('modal-new-chat').classList.remove('hidden')" class="w-full px-3 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition flex items-center justify-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Nova Conversa
+            </button>
         </div>
-        <div class="flex items-center gap-3">
-            <select id="ai-model" class="px-3 py-1.5 bg-gray-900 border border-gray-700 rounded-lg text-xs text-white">
-                <option value="gpt-4o">GPT-4o</option>
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-4o-mini">GPT-4o Mini</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            </select>
-            <button onclick="clearChat()" class="px-3 py-1.5 border border-gray-700 text-gray-400 text-xs rounded-lg hover:bg-gray-700 hover:text-white transition">Nova conversa</button>
-        </div>
-    </div>
 
-    <!-- Chat Messages -->
-    <div id="chat-messages" class="flex-1 overflow-y-auto rounded-xl bg-gray-900/50 border border-gray-800 p-4 space-y-4 mb-4">
-        <!-- Mensagem inicial -->
-        <div class="flex gap-3" id="welcome-msg">
-            <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-sm">🤖</span></div>
-            <div class="bg-gray-800 rounded-xl rounded-tl-none p-4 max-w-[80%]">
-                <p class="text-sm text-gray-300">Olá! Sou o assistente IA da LRV Web. Tenho acesso ao contexto dos seus clientes, projetos e orçamentos. Como posso ajudar?</p>
-                <div class="mt-3 flex flex-wrap gap-2">
-                    <button onclick="quickPrompt('Gere um texto de proposta comercial para um novo cliente')" class="px-3 py-1.5 bg-purple-600/20 border border-purple-500/30 rounded-lg text-xs text-purple-300 hover:bg-purple-600/30 transition">📝 Texto de proposta</button>
-                    <button onclick="quickPrompt('Sugira ideias de posts para o blog sobre hospedagem')" class="px-3 py-1.5 bg-purple-600/20 border border-purple-500/30 rounded-lg text-xs text-purple-300 hover:bg-purple-600/30 transition">💡 Ideias de blog</button>
-                    <button onclick="quickPrompt('Me ajude a responder um cliente que pediu desconto')" class="px-3 py-1.5 bg-purple-600/20 border border-purple-500/30 rounded-lg text-xs text-purple-300 hover:bg-purple-600/30 transition">💬 Responder cliente</button>
-                    <button onclick="quickPrompt('Resuma os projetos ativos e pendências')" class="px-3 py-1.5 bg-purple-600/20 border border-purple-500/30 rounded-lg text-xs text-purple-300 hover:bg-purple-600/30 transition">📊 Resumo projetos</button>
+        <!-- Lista de chats -->
+        <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            <?php foreach ($chats as $chat): ?>
+            <a href="/admin/ia?chat=<?= $chat['id'] ?>" class="block px-3 py-2.5 rounded-lg text-sm transition truncate <?= ($chatId ?? 0) == $chat['id'] ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white' ?>">
+                <div class="flex items-center gap-2">
+                    <?php if ($chat['project_id']): ?>
+                        <i data-lucide="folder" class="w-3.5 h-3.5 flex-shrink-0 text-purple-400"></i>
+                    <?php else: ?>
+                        <i data-lucide="message-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                    <?php endif; ?>
+                    <span class="truncate"><?= htmlspecialchars($chat['title']) ?></span>
                 </div>
-            </div>
+                <p class="text-[10px] text-gray-600 mt-0.5 ml-5"><?= date('d/m H:i', strtotime($chat['updated_at'])) ?></p>
+            </a>
+            <?php endforeach; ?>
+            <?php if (empty($chats)): ?>
+                <p class="text-xs text-gray-600 text-center py-8">Nenhuma conversa.<br>Crie uma nova!</p>
+            <?php endif; ?>
         </div>
     </div>
 
-    <!-- Input -->
-    <div class="flex-shrink-0 bg-gray-900 border border-gray-700 rounded-xl p-3">
-        <div class="flex items-end gap-3">
-            <div class="flex-1 relative">
-                <textarea id="chat-input" rows="1" placeholder="Pergunte qualquer coisa..." class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+    <!-- ÁREA DO CHAT -->
+    <div class="flex-1 flex flex-col">
+        <!-- Header do chat -->
+        <?php if ($currentChat): ?>
+        <div class="flex items-center justify-between mb-3 flex-shrink-0">
+            <div>
+                <h3 class="text-sm font-semibold text-white"><?= htmlspecialchars($currentChat['title']) ?></h3>
+                <p class="text-[10px] text-gray-500"><?= $currentChat['project_id'] ? '📁 Vinculado a projeto' : '💬 Conversa geral' ?> · <?= $currentChat['model'] ?></p>
             </div>
-            <!-- Mic button -->
-            <button id="btn-mic" onclick="toggleMic()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-800 border border-gray-700 text-gray-400 hover:text-white hover:bg-gray-700 transition" title="Gravar áudio">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-            </button>
-            <!-- Send button -->
-            <button onclick="sendMessage()" id="btn-send" class="w-10 h-10 flex items-center justify-center rounded-xl bg-purple-600 hover:bg-purple-700 text-white transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <select id="ai-model" class="px-2 py-1 bg-gray-900 border border-gray-700 rounded-lg text-[11px] text-white">
+                    <?php foreach (['gpt-4o'=>'GPT-4o','gpt-4'=>'GPT-4','gpt-4o-mini'=>'GPT-4o Mini','gpt-3.5-turbo'=>'GPT-3.5'] as $k=>$v): ?>
+                    <option value="<?= $k ?>" <?= ($currentChat['model'] ?? '') === $k ? 'selected' : '' ?>><?= $v ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button onclick="confirmDelete('/admin/ia/<?= $currentChat['id'] ?>')" class="p-1.5 text-gray-500 hover:text-red-400 transition" title="Excluir conversa"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
         </div>
+        <?php endif; ?>
+
+        <!-- Messages -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto rounded-xl bg-gray-900/50 border border-gray-800 p-4 space-y-4 mb-3">
+            <?php if ($currentChat && !empty($messages)): ?>
+                <?php foreach ($messages as $msg): ?>
+                    <?php if ($msg['role'] === 'user'): ?>
+                    <div class="flex gap-3 justify-end">
+                        <div class="bg-purple-600/20 border border-purple-500/30 rounded-xl rounded-tr-none p-3 max-w-[80%]">
+                            <p class="text-sm text-white whitespace-pre-wrap"><?= htmlspecialchars($msg['content']) ?></p>
+                        </div>
+                    </div>
+                    <?php elseif ($msg['role'] === 'assistant'): ?>
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-xs">🤖</span></div>
+                        <div class="bg-gray-800 rounded-xl rounded-tl-none p-3 max-w-[80%]">
+                            <div class="text-sm text-gray-300 leading-relaxed prose-sm"><?= nl2br(htmlspecialchars($msg['content'])) ?></div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php elseif (!$currentChat): ?>
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center">
+                        <span class="text-5xl block mb-4">🤖</span>
+                        <p class="text-gray-400 text-sm">Selecione uma conversa ou crie uma nova.</p>
+                        <p class="text-gray-600 text-xs mt-2">Chats vinculados a projetos têm contexto completo do projeto.</p>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="flex gap-3" id="welcome-msg">
+                    <div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-xs">🤖</span></div>
+                    <div class="bg-gray-800 rounded-xl rounded-tl-none p-3">
+                        <p class="text-sm text-gray-300">Olá! <?= $currentChat['project_id'] ? 'Estou com todo o contexto do projeto <strong>' . htmlspecialchars($currentChat['title']) . '</strong>. ' : '' ?>Como posso ajudar?</p>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Input -->
+        <?php if ($currentChat): ?>
+        <div class="flex-shrink-0 bg-gray-900 border border-gray-700 rounded-xl p-2.5">
+            <div class="flex items-end gap-2">
+                <textarea id="chat-input" rows="1" placeholder="Pergunte qualquer coisa..." class="flex-1 px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:border-purple-500 resize-none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+                <button id="btn-mic" onclick="toggleMic()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white transition" title="Gravar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg></button>
+                <button onclick="sendMessage()" class="w-9 h-9 flex items-center justify-center rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </div>
 
-<script>
-let chatHistory = [];
-let isRecording = false;
-let mediaRecorder = null;
-let audioChunks = [];
+<!-- MODAL: Nova Conversa -->
+<div id="modal-new-chat" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4 border border-gray-700 shadow-2xl">
+        <h3 class="text-lg font-semibold text-white mb-4">Nova Conversa</h3>
+        <form action="/admin/ia/criar" method="POST" class="space-y-4">
+            <?= \Core\View::csrf() ?>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Tipo</label>
+                <select name="project_id" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                    <option value="">💬 Conversa Geral (contexto de tudo)</option>
+                    <optgroup label="📁 Vinculado a Projeto">
+                        <?php foreach ($projects as $p): ?>
+                        <option value="<?= $p['id'] ?>">📁 <?= htmlspecialchars($p['name']) ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Chats de projeto têm acesso a: tarefas, orçamentos, documentos, financeiro e dados do cliente.</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Modelo</label>
+                <select name="model" class="w-full px-3 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
+                    <option value="gpt-4o">GPT-4o (recomendado)</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="gpt-4o-mini">GPT-4o Mini (mais rápido)</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo (mais barato)</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="document.getElementById('modal-new-chat').classList.add('hidden')" class="px-4 py-2 text-sm text-gray-400 hover:text-white transition">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">Criar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-function quickPrompt(text) {
-    document.getElementById('chat-input').value = text;
-    sendMessage();
-}
+<?php if ($currentChat): ?>
+<script>
+const chatId = <?= $chatId ?>;
+const csrfToken = '<?= \Core\Session::getInstance()->getCsrfToken() ?>';
+let isRecording = false, mediaRecorder = null, audioChunks = [];
 
 async function sendMessage() {
     const input = document.getElementById('chat-input');
-    const message = input.value.trim();
-    if (!message) return;
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = ''; input.style.height = 'auto';
 
-    input.value = '';
-    input.style.height = 'auto';
-
-    // Remove welcome
-    const welcome = document.getElementById('welcome-msg');
-    if (welcome) welcome.remove();
-
-    // Adiciona mensagem do usuário
-    appendMessage('user', message);
-    chatHistory.push({ role: 'user', content: message });
-
-    // Loading
-    const loadingId = 'loading-' + Date.now();
-    appendLoading(loadingId);
+    appendMsg('user', msg);
+    const lid = 'l-' + Date.now();
+    appendLoading(lid);
 
     try {
-        const model = document.getElementById('ai-model').value;
-        const csrfToken = '<?= \Core\Session::getInstance()->getCsrfToken() ?>';
-
         const res = await fetch('/admin/ia/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-Token': csrfToken },
-            body: JSON.stringify({ message, model, history: JSON.stringify(chatHistory.slice(-20)) })
+            body: JSON.stringify({ message: msg, chat_id: chatId, model: document.getElementById('ai-model').value })
         });
-
         const data = await res.json();
-        removeLoading(loadingId);
-
-        if (data.success && data.data.reply) {
-            appendMessage('assistant', data.data.reply);
-            chatHistory.push({ role: 'assistant', content: data.data.reply });
-        } else {
-            appendMessage('assistant', '❌ Erro: ' + (data.message || 'Sem resposta'));
-        }
-    } catch (err) {
-        removeLoading(loadingId);
-        appendMessage('assistant', '❌ Erro de conexão: ' + err.message);
-    }
+        document.getElementById(lid)?.remove();
+        if (data.success) appendMsg('assistant', data.data.reply);
+        else appendMsg('assistant', '❌ ' + (data.message || 'Erro'));
+    } catch (e) { document.getElementById(lid)?.remove(); appendMsg('assistant', '❌ ' + e.message); }
 }
 
-function appendMessage(role, content) {
-    const container = document.getElementById('chat-messages');
-    const isUser = role === 'user';
-
-    // Converte markdown básico para HTML
-    let html = content;
-    if (!isUser) {
-        html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="bg-gray-900 rounded-lg p-3 mt-2 mb-2 overflow-x-auto text-xs"><code>$2</code></pre>');
-        html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-900 px-1.5 py-0.5 rounded text-purple-300 text-xs">$1</code>');
-        html = html.replace(/\*\*(.+?)\*\*/g, '<strong class="text-white">$1</strong>');
-        html = html.replace(/\n/g, '<br>');
-    }
-
-    const msgHtml = isUser
-        ? `<div class="flex gap-3 justify-end"><div class="bg-purple-600/30 border border-purple-500/30 rounded-xl rounded-tr-none p-4 max-w-[80%]"><p class="text-sm text-white whitespace-pre-wrap">${escapeHtml(content)}</p></div><div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-bold">${'<?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>'}</span></div></div>`
-        : `<div class="flex gap-3"><div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-sm">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-4 max-w-[80%]"><div class="text-sm text-gray-300 leading-relaxed">${html}</div></div></div>`;
-
-    container.insertAdjacentHTML('beforeend', msgHtml);
-    container.scrollTop = container.scrollHeight;
+function appendMsg(role, content) {
+    const c = document.getElementById('chat-messages');
+    document.getElementById('welcome-msg')?.remove();
+    let html = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/`([^`]+)`/g, '<code class="bg-gray-900 px-1 rounded text-purple-300 text-xs">$1</code>').replace(/\n/g, '<br>');
+    const el = role === 'user'
+        ? `<div class="flex gap-3 justify-end"><div class="bg-purple-600/20 border border-purple-500/30 rounded-xl rounded-tr-none p-3 max-w-[80%]"><p class="text-sm text-white whitespace-pre-wrap">${content.replace(/</g,'&lt;')}</p></div></div>`
+        : `<div class="flex gap-3"><div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-xs">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-3 max-w-[80%]"><div class="text-sm text-gray-300 leading-relaxed">${html}</div></div></div>`;
+    c.insertAdjacentHTML('beforeend', el);
+    c.scrollTop = c.scrollHeight;
 }
 
 function appendLoading(id) {
-    const container = document.getElementById('chat-messages');
-    container.insertAdjacentHTML('beforeend', `<div id="${id}" class="flex gap-3"><div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-sm">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-4"><div class="flex items-center gap-2"><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay:0.1s"></div><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay:0.2s"></div></div></div></div>`);
-    container.scrollTop = container.scrollHeight;
+    const c = document.getElementById('chat-messages');
+    c.insertAdjacentHTML('beforeend', `<div id="${id}" class="flex gap-3"><div class="w-7 h-7 bg-purple-600 rounded-lg flex items-center justify-center"><span class="text-xs">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-3"><div class="flex gap-1"><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay:.1s"></div><div class="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style="animation-delay:.2s"></div></div></div></div>`);
+    c.scrollTop = c.scrollHeight;
 }
 
-function removeLoading(id) {
-    document.getElementById(id)?.remove();
-}
-
-function clearChat() {
-    chatHistory = [];
-    document.getElementById('chat-messages').innerHTML = `<div class="flex gap-3" id="welcome-msg"><div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0"><span class="text-white text-sm">🤖</span></div><div class="bg-gray-800 rounded-xl rounded-tl-none p-4"><p class="text-sm text-gray-300">Conversa limpa! Como posso ajudar?</p></div></div>`;
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// === MICROFONE ===
 async function toggleMic() {
-    if (isRecording) {
-        stopMic();
-    } else {
-        startMic();
-    }
+    if (isRecording) { mediaRecorder?.stop(); isRecording = false; document.getElementById('btn-mic').classList.remove('bg-red-600','text-white'); document.getElementById('btn-mic').classList.add('bg-gray-800','text-gray-400'); await new Promise(r=>setTimeout(r,300)); if(!audioChunks.length)return; const b=new Blob(audioChunks,{type:'audio/webm'}); const fd=new FormData(); fd.append('audio',b,'v.webm'); fd.append('_token',csrfToken); try{const r=await fetch('/admin/ia/transcribe',{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest'},body:fd}); const d=await r.json(); if(d.success&&d.data.text){document.getElementById('chat-input').value=d.data.text;document.getElementById('chat-input').focus();}}catch(e){} }
+    else { try{const s=await navigator.mediaDevices.getUserMedia({audio:true}); mediaRecorder=new MediaRecorder(s); audioChunks=[]; mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data)}; mediaRecorder.onstop=()=>s.getTracks().forEach(t=>t.stop()); mediaRecorder.start(); isRecording=true; document.getElementById('btn-mic').classList.add('bg-red-600','text-white'); document.getElementById('btn-mic').classList.remove('bg-gray-800','text-gray-400'); }catch(e){alert('Mic: '+e.message);} }
 }
 
-async function startMic() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
-        mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
-        mediaRecorder.start();
-        isRecording = true;
-        document.getElementById('btn-mic').classList.add('bg-red-600', 'border-red-600', 'text-white');
-        document.getElementById('btn-mic').classList.remove('bg-gray-800', 'border-gray-700', 'text-gray-400');
-    } catch (err) {
-        alert('Microfone não disponível: ' + err.message);
-    }
-}
-
-async function stopMic() {
-    if (mediaRecorder) mediaRecorder.stop();
-    isRecording = false;
-    document.getElementById('btn-mic').classList.remove('bg-red-600', 'border-red-600', 'text-white');
-    document.getElementById('btn-mic').classList.add('bg-gray-800', 'border-gray-700', 'text-gray-400');
-
-    // Espera o stop terminar
-    await new Promise(r => setTimeout(r, 300));
-
-    if (audioChunks.length === 0) return;
-
-    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-    const formData = new FormData();
-    formData.append('audio', blob, 'voice.webm');
-    formData.append('_token', '<?= \Core\Session::getInstance()->getCsrfToken() ?>');
-
-    try {
-        const res = await fetch('/admin/ia/transcribe', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: formData });
-        const data = await res.json();
-        if (data.success && data.data.text) {
-            document.getElementById('chat-input').value = data.data.text;
-            document.getElementById('chat-input').focus();
-        }
-    } catch (err) {
-        console.error('Transcrição falhou:', err);
-    }
-}
+// Scroll to bottom on load
+document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
 </script>
+<?php endif; ?>
