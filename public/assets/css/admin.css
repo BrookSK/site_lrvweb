@@ -92,3 +92,29 @@ input:focus, select:focus, textarea:focus {
 .dark .text-gray-800 { color: #f3f4f6 !important; }
 .dark .text-gray-700 { color: #d1d5db !important; }
 .dark .text-gray-900 { color: #ffffff !important; }
+
+/* Fix action buttons alignment in tables */
+td .flex { display: flex !important; flex-wrap: nowrap !important; }
+td a[class*="p-1"], td button[class*="p-1"] {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+td:last-child {
+    white-space: nowrap;
+}
+td .flex.items-center.justify-end {
+    gap: 0.25rem !important;
+}
+/* Ensure action icons don't wrap */
+.table-container td:last-child,
+table td:last-child {
+    white-space: nowrap !important;
+}
+table td:last-child a,
+table td:last-child button,
+table td:last-child form {
+    display: inline-flex !important;
+    vertical-align: middle;
+}
