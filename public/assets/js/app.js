@@ -109,24 +109,4 @@ document.addEventListener('mousemove', (e) => {
     });
 });
 
-// === BACK TO TOP ===
-(function() {
-    const btn = document.createElement('button');
-    btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>';
-    btn.className = 'fixed bottom-8 right-8 w-12 h-12 bg-purple-600 hover:bg-purple-500 text-white rounded-xl shadow-lg shadow-purple-500/30 flex items-center justify-center transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-40';
-    btn.id = 'back-to-top';
-    btn.setAttribute('aria-label', 'Voltar ao topo');
-    document.body.appendChild(btn);
-
-    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 500) {
-            btn.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-            btn.classList.add('opacity-100', 'translate-y-0');
-        } else {
-            btn.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-            btn.classList.remove('opacity-100', 'translate-y-0');
-        }
-    });
-})();
+// === BACK TO TOP (removido) ===

@@ -23,7 +23,6 @@ $favicon = \Core\Config::setting('branding.favicon');
                 <span class="text-white font-bold text-2xl">L</span>
             </div>
         <?php endif; ?>
-        <h1 class="text-2xl font-bold text-white">LRV <span class="text-purple-400">Web</span></h1>
         <p class="text-gray-400 text-sm mt-1">Acesse sua conta</p>
     </div>
 

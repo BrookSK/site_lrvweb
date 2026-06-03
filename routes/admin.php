@@ -109,6 +109,7 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
     $router->get('/portfolio/{id}/editar', [PortfolioController::class, 'edit']);
     $router->put('/portfolio/{id}', [PortfolioController::class, 'update']);
     $router->delete('/portfolio/{id}', [PortfolioController::class, 'destroy']);
+    $router->post('/portfolio/ia-preencher', [PortfolioController::class, 'aiAutofill']);
 
     // Blog
     $router->get('/blog', [BlogController::class, 'index']);
