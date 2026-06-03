@@ -3,6 +3,9 @@
     <div class="p-6 border-b border-white/10">
         <h1 class="text-xl font-bold">LRV Web</h1>
         <p class="text-xs text-gray-400 mt-1">Painel Administrativo</p>
+        <a href="/" target="_blank" class="inline-flex items-center gap-1.5 mt-3 text-[11px] text-gray-500 hover:text-purple-400 transition">
+            <i data-lucide="external-link" class="w-3 h-3"></i> Ver site institucional
+        </a>
     </div>
 
     <!-- Navigation -->
