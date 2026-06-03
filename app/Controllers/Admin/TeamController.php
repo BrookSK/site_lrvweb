@@ -19,7 +19,7 @@ class TeamController extends Controller
             SELECT u.*, r.display_name as role_name
             FROM users u
             JOIN roles r ON u.role_id = r.id
-            WHERE u.deleted_at IS NULL
+            WHERE u.deleted_at IS NULL AND r.name != 'cliente'
             ORDER BY u.name
         ");
 

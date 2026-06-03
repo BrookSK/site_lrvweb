@@ -68,7 +68,21 @@ $availableUsers = $db->fetchAll("SELECT id, name FROM users WHERE is_active = 1 
             <input type="text" name="title" required placeholder="Nova tarefa..." class="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500">
             <select name="assigned_to" class="px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
                 <option value="">Responsável</option>
-                <?php foreach ($availableUsers as $u): ?><option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['name']) ?></option><?php endforeach; ?>
+                <?php
+                // Admin (sempre)
+                $adminUser = $db->fetchOne("SELECT u.id, u.name FROM users u JOIN roles r ON u.role_id = r.id WHERE r.name = 'super_admin' AND u.is_active = 1 LIMIT 1");
+                if ($adminUser): ?>
+                <option value="<?= $adminUser['id'] ?>">👑 <?= htmlspecialchars($adminUser['name']) ?> (Admin)</option>
+                <?php endif; ?>
+                <?php // Membros do projeto
+                foreach ($members as $m): ?>
+                <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['name']) ?></option>
+                <?php endforeach; ?>
+                <?php // Cliente do projeto
+                $clientUser = $db->fetchOne("SELECT u.id, u.name FROM users u JOIN clients c ON c.user_id = u.id WHERE c.id = :cid", ['cid' => $project['client_id'] ?? 0]);
+                if ($clientUser): ?>
+                <option value="<?= $clientUser['id'] ?>">👤 <?= htmlspecialchars($clientUser['name']) ?> (Cliente)</option>
+                <?php endif; ?>
             </select>
             <select name="priority" class="px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm">
                 <option value="medium">Média</option>

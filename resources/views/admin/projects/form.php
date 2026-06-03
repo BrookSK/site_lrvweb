@@ -52,16 +52,18 @@
             <!-- EQUIPE -->
             <div>
                 <label class="block text-sm font-medium text-gray-300 mb-2">Equipe do Projeto</label>
-                <p class="text-xs text-gray-500 mb-2">Selecione os membros que farão parte deste projeto (segure Ctrl/Cmd para selecionar vários).</p>
+                <p class="text-xs text-gray-500 mb-2">Selecione os membros da equipe (Administrador já participa automaticamente). Clientes não aparecem aqui.</p>
                 <select name="members[]" multiple class="w-full px-3 py-2.5 border border-gray-700 rounded-lg bg-gray-900 text-white text-sm h-32">
                     <?php
                     $currentMembers = [];
                     if ($project) {
                         $currentMembers = array_column(\Core\Database::getInstance()->fetchAll("SELECT user_id FROM project_members WHERE project_id = :id", ['id' => $project['id']]), 'user_id');
                     }
-                    foreach ($users as $u):
+                    // Filtra: não mostra clientes nem super_admin (ele já está sempre)
+                    $teamUsers = \Core\Database::getInstance()->fetchAll("SELECT u.id, u.name, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.is_active = 1 AND u.deleted_at IS NULL AND r.name NOT IN ('cliente', 'super_admin') ORDER BY u.name");
+                    foreach ($teamUsers as $u):
                     ?>
-                    <option value="<?= $u['id'] ?>" <?= in_array($u['id'], $currentMembers) ? 'selected' : '' ?>><?= htmlspecialchars($u['name']) ?></option>
+                    <option value="<?= $u['id'] ?>" <?= in_array($u['id'], $currentMembers) ? 'selected' : '' ?>><?= htmlspecialchars($u['name']) ?> (<?= $u['role_name'] ?>)</option>
                     <?php endforeach; ?>
                 </select>
             </div>
