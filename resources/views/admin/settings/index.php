@@ -169,6 +169,11 @@ $fc = $fileConfig;
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome Remetente</label>
                         <input type="text" name="mail_from_name" value="<?= htmlspecialchars($fc['mail']['from_name'] ?? '') ?>" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
                     </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Destinatários (quem recebe as mensagens do formulário)</label>
+                        <input type="text" name="mail_recipients" value="<?= htmlspecialchars(\Core\Config::setting('mail.recipients') ?? '') ?>" placeholder="contato@lrvweb.com.br, lucasrvacari99@gmail.com" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+                        <p class="text-xs text-gray-500 mt-1">Separe por vírgula. O e-mail chega em todos.</p>
+                    </div>
                 </div>
 
                 <?php elseif ($tab === 'branding'): ?>

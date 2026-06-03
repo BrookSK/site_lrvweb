@@ -293,6 +293,10 @@ class SettingsController extends Controller
             Config::setSetting('mail', $key, $value);
         }
 
+        // Salva destinatários
+        $recipients = $request->input('mail_recipients') ?? '';
+        Config::setSetting('mail', 'recipients', $recipients);
+
         // Tenta salvar no arquivo também
         Config::saveToFile([
             'mail' => [
