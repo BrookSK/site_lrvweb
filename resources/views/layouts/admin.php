@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($title ?? 'Admin') ?> - LRV Web</title>
     <meta name="robots" content="noindex, nofollow">
+    <?php $adminFavicon = \Core\Config::setting('branding.favicon'); ?>
+    <?php if ($adminFavicon): ?><link rel="icon" href="<?= htmlspecialchars($adminFavicon) ?>"><?php endif; ?>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>

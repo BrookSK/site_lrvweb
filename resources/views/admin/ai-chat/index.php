@@ -181,8 +181,92 @@ function appendLoading(id) {
 }
 
 async function toggleMic() {
-    if (isRecording) { mediaRecorder?.stop(); isRecording = false; document.getElementById('btn-mic').classList.remove('bg-red-600','text-white'); document.getElementById('btn-mic').classList.add('bg-gray-800','text-gray-400'); await new Promise(r=>setTimeout(r,300)); if(!audioChunks.length)return; const b=new Blob(audioChunks,{type:'audio/webm'}); const fd=new FormData(); fd.append('audio',b,'v.webm'); fd.append('_token',csrfToken); try{const r=await fetch('/admin/ia/transcribe',{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest'},body:fd}); const d=await r.json(); if(d.success&&d.data.text){document.getElementById('chat-input').value=d.data.text;document.getElementById('chat-input').focus();}}catch(e){} }
-    else { try{const s=await navigator.mediaDevices.getUserMedia({audio:true}); mediaRecorder=new MediaRecorder(s); audioChunks=[]; mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data)}; mediaRecorder.onstop=()=>s.getTracks().forEach(t=>t.stop()); mediaRecorder.start(); isRecording=true; document.getElementById('btn-mic').classList.add('bg-red-600','text-white'); document.getElementById('btn-mic').classList.remove('bg-gray-800','text-gray-400'); }catch(e){alert('Mic: '+e.message);} }
+    const micBtn = document.getElementById('btn-mic');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.querySelector('[onclick="sendMessage()"]');
+
+    if (isRecording) {
+        // Para gravação
+        mediaRecorder?.stop();
+        isRecording = false;
+
+        // Visual: transcrevendo
+        micBtn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>';
+        micBtn.classList.remove('bg-red-600','text-white');
+        micBtn.classList.add('bg-yellow-600','text-white');
+        micBtn.disabled = true;
+        input.placeholder = 'Transcrevendo áudio...';
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.classList.add('opacity-50');
+
+        await new Promise(r => setTimeout(r, 300));
+
+        if (!audioChunks.length) {
+            resetMicUI();
+            return;
+        }
+
+        // Envia para transcrição
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const fd = new FormData();
+        fd.append('audio', blob, 'v.webm');
+        fd.append('_token', csrfToken);
+
+        try {
+            const res = await fetch('/admin/ia/transcribe', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd });
+            const data = await res.json();
+            if (data.success && data.data.text) {
+                // Acrescenta texto (não substitui)
+                const current = input.value.trim();
+                input.value = current ? current + ' ' + data.data.text : data.data.text;
+            }
+        } catch (e) {
+            console.error('Transcrição falhou:', e);
+        }
+
+        // Libera tudo
+        resetMicUI();
+
+    } else {
+        // Inicia gravação
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+            mediaRecorder.onstop = () => stream.getTracks().forEach(t => t.stop());
+            mediaRecorder.start();
+            isRecording = true;
+
+            // Visual: gravando
+            micBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>';
+            micBtn.classList.add('bg-red-600', 'text-white');
+            micBtn.classList.remove('bg-gray-800', 'text-gray-400');
+            input.placeholder = '🔴 Gravando... Clique no botão para parar';
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.classList.add('opacity-50');
+        } catch (e) {
+            alert('Microfone não disponível: ' + e.message);
+        }
+    }
+}
+
+function resetMicUI() {
+    const micBtn = document.getElementById('btn-mic');
+    const input = document.getElementById('chat-input');
+    const sendBtn = document.querySelector('[onclick="sendMessage()"]');
+
+    micBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>';
+    micBtn.classList.remove('bg-red-600', 'bg-yellow-600', 'text-white');
+    micBtn.classList.add('bg-gray-800', 'text-gray-400');
+    micBtn.disabled = false;
+    input.disabled = false;
+    input.placeholder = 'Pergunte qualquer coisa...';
+    input.focus();
+    sendBtn.disabled = false;
+    sendBtn.classList.remove('opacity-50');
 }
 
 // Scroll to bottom on load

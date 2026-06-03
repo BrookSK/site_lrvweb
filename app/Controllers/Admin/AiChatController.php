@@ -275,52 +275,71 @@ REGRAS:
 
     private function buildProjectContext(Database $db, int $projectId): string
     {
-        $project = $db->fetchOne("SELECT p.*, c.name as client_name, c.company, c.email as client_email, c.phone as client_phone FROM projects p LEFT JOIN clients c ON p.client_id = c.id WHERE p.id = :id", ['id' => $projectId]);
+        $project = $db->fetchOne("SELECT p.*, c.name as client_name, c.company, c.email as client_email, c.phone as client_phone, c.whatsapp as client_whatsapp, c.notes as client_notes FROM projects p LEFT JOIN clients c ON p.client_id = c.id WHERE p.id = :id", ['id' => $projectId]);
 
         if (!$project) return $this->buildFullContext($db);
 
-        $tasks = $db->fetchAll("SELECT title, status, priority FROM project_tasks WHERE project_id = :id ORDER BY priority DESC", ['id' => $projectId]);
-        $budgets = $db->fetchAll("SELECT b.name, b.status, b.final_value, b.notes FROM budgets b WHERE b.client_id = :cid AND b.deleted_at IS NULL", ['cid' => $project['client_id']]);
-        $documents = $db->fetchAll("SELECT name, category FROM documents WHERE project_id = :id AND deleted_at IS NULL", ['id' => $projectId]);
-        $financial = $db->fetchAll("SELECT description, type, value, date FROM financial_entries WHERE project_id = :id ORDER BY date DESC", ['id' => $projectId]);
+        $tasks = $db->fetchAll("SELECT t.title, t.status, t.priority, t.description, t.due_date, u.name as assigned_name FROM project_tasks t LEFT JOIN users u ON t.assigned_to = u.id WHERE t.project_id = :id ORDER BY t.priority DESC, t.created_at", ['id' => $projectId]);
+        $members = $db->fetchAll("SELECT u.name, u.email, u.position, pm.role FROM project_members pm JOIN users u ON pm.user_id = u.id WHERE pm.project_id = :id", ['id' => $projectId]);
+        $budgets = $db->fetchAll("SELECT b.name, b.status, b.final_value, b.notes, b.payment_type, b.installments FROM budgets b WHERE b.client_id = :cid AND b.deleted_at IS NULL", ['cid' => $project['client_id']]);
+        $budgetBlocks = $db->fetchAll("SELECT bb.title, bb.description, bb.features, bb.value, bb.deadline FROM budget_blocks bb JOIN budgets b ON bb.budget_id = b.id WHERE b.client_id = :cid AND b.deleted_at IS NULL", ['cid' => $project['client_id']]);
+        $documents = $db->fetchAll("SELECT name, category, original_name FROM documents WHERE project_id = :id AND deleted_at IS NULL", ['id' => $projectId]);
+        $financial = $db->fetchAll("SELECT description, type, value, date, category FROM financial_entries WHERE project_id = :id ORDER BY date DESC", ['id' => $projectId]);
+        $leads = $db->fetchAll("SELECT name, stage, value, source, notes FROM crm_leads WHERE client_id = :cid AND deleted_at IS NULL", ['cid' => $project['client_id']]);
 
-        $tasksList = implode("\n", array_map(fn($t) => "- [{$t['status']}] {$t['title']} (Prioridade: {$t['priority']})", $tasks));
-        $budgetsList = implode("\n", array_map(fn($b) => "- {$b['name']} [{$b['status']}] R$" . number_format((float)($b['final_value'] ?? 0), 2, ',', '.'), $budgets));
+        $tasksList = implode("\n", array_map(fn($t) => "- [{$t['status']}] {$t['title']} | Resp: " . ($t['assigned_name'] ?? 'Ninguém') . " | Prioridade: {$t['priority']}" . ($t['due_date'] ? " | Prazo: {$t['due_date']}" : '') . ($t['description'] ? " | Desc: {$t['description']}" : ''), $tasks));
+        $membersList = implode("\n", array_map(fn($m) => "- {$m['name']} ({$m['position'] ?? $m['role'] ?? 'Membro'}) | {$m['email']}", $members));
+        $budgetsList = implode("\n", array_map(fn($b) => "- {$b['name']} [{$b['status']}] R$" . number_format((float)($b['final_value'] ?? 0), 2, ',', '.') . " | Pagamento: {$b['payment_type']}" . ($b['notes'] ? " | Obs: {$b['notes']}" : ''), $budgets));
+        $blocksList = implode("\n", array_map(fn($bl) => "- {$bl['title']}: R$" . number_format((float)$bl['value'], 2, ',', '.') . ($bl['deadline'] ? " | Prazo: {$bl['deadline']}" : '') . ($bl['description'] ? " | {$bl['description']}" : ''), $budgetBlocks));
         $docsList = implode("\n", array_map(fn($d) => "- {$d['name']} ({$d['category']})", $documents));
-        $finList = implode("\n", array_map(fn($f) => "- [{$f['type']}] {$f['description']} R$" . number_format((float)$f['value'], 2, ',', '.') . " ({$f['date']})", $financial));
+        $finList = implode("\n", array_map(fn($f) => "- [{$f['type']}] {$f['description']} R$" . number_format((float)$f['value'], 2, ',', '.') . " ({$f['date']}) Cat: {$f['category']}", $financial));
+        $leadsList = implode("\n", array_map(fn($l) => "- {$l['name']} [{$l['stage']}] " . ($l['value'] ? "R$" . number_format((float)$l['value'], 2, ',', '.') : '') . ($l['source'] ? " | Origem: {$l['source']}" : '') . ($l['notes'] ? " | {$l['notes']}" : ''), $leads));
 
-        return "Você é o assistente IA da LRV Web focado no PROJETO: {$project['name']}
+        return "Você é o assistente IA da LRV Web com ACESSO TOTAL ao projeto e todos os dados relacionados.
 
-DADOS DO PROJETO:
-- Nome: {$project['name']}
-- Status: {$project['status']}
-- Valor: " . ($project['value'] ? 'R$ ' . number_format((float)$project['value'], 2, ',', '.') : 'Não definido') . "
-- Início: " . ($project['start_date'] ?? 'Não definido') . "
-- Prazo: " . ($project['due_date'] ?? 'Não definido') . "
-- Descrição: " . ($project['description'] ?? 'Sem descrição') . "
+═══ PROJETO ═══
+Nome: {$project['name']}
+Status: {$project['status']}
+Valor: " . ($project['value'] ? 'R$ ' . number_format((float)$project['value'], 2, ',', '.') : 'Não definido') . "
+Início: " . ($project['start_date'] ?? 'Não definido') . "
+Prazo: " . ($project['due_date'] ?? 'Não definido') . "
+Descrição: " . ($project['description'] ?? 'Sem descrição') . "
 
-CLIENTE:
-- Nome: {$project['client_name']}" . ($project['company'] ? " ({$project['company']})" : '') . "
-- E-mail: {$project['client_email']}
-- Telefone: " . ($project['client_phone'] ?? 'Não informado') . "
+═══ CLIENTE ═══
+Nome: {$project['client_name']}" . ($project['company'] ? " ({$project['company']})" : '') . "
+E-mail: {$project['client_email']}
+Telefone: " . ($project['client_phone'] ?? '—') . "
+WhatsApp: " . ($project['client_whatsapp'] ?? '—') . "
+" . ($project['client_notes'] ? "Observações do cliente: {$project['client_notes']}" : '') . "
 
-TAREFAS ({$this->count($tasks)}):
+═══ EQUIPE DO PROJETO ({$this->count($members)} membros) ═══
+{$membersList}
+
+═══ TAREFAS ({$this->count($tasks)}) ═══
 {$tasksList}
 
-ORÇAMENTOS DO CLIENTE:
+═══ ORÇAMENTOS DO CLIENTE ({$this->count($budgets)}) ═══
 {$budgetsList}
 
-DOCUMENTOS:
+═══ BLOCOS DOS ORÇAMENTOS (escopo detalhado) ═══
+{$blocksList}
+
+═══ CRM / LEADS DO CLIENTE ({$this->count($leads)}) ═══
+{$leadsList}
+
+═══ DOCUMENTOS DO PROJETO ({$this->count($documents)}) ═══
 {$docsList}
 
-FINANCEIRO DO PROJETO:
+═══ FINANCEIRO DO PROJETO ═══
 {$finList}
 
-REGRAS:
-1. Responda sempre em português brasileiro
-2. Você conhece TODOS os detalhes deste projeto
-3. Ajude com: comunicação com o cliente, resumos, decisões técnicas, textos, código
-4. Use Markdown para formatar";
+═══ REGRAS ═══
+1. Você TEM ACESSO COMPLETO a tudo acima. Use para responder.
+2. Responda sempre em português brasileiro
+3. Seja direto, profissional e útil
+4. Ajude com: comunicação com cliente, resumos de progresso, decisões técnicas, textos de e-mail, código, relatórios
+5. Use Markdown (negrito, listas, código) quando apropriado
+6. Se algo não foi informado nos dados acima, diga que não tem essa informação";
     }
 
     private function count(array $arr): int
