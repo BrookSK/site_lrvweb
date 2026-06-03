@@ -23,7 +23,7 @@
             <div class="lg:col-span-2" data-animate="fade-left">
                 <?php if ($portfolio['description']): ?>
                     <div class="prose prose-invert prose-purple max-w-none text-gray-300 leading-relaxed">
-                        <?= $portfolio['description'] ?>
+                        <?= html_entity_decode($portfolio['description'], ENT_QUOTES, 'UTF-8') ?>
                     </div>
                 <?php endif; ?>
             </div>
