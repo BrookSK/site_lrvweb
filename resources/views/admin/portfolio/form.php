@@ -121,9 +121,9 @@
 
 <!-- JavaScript: Gravação de voz + IA -->
 <script>
-let recognition = null;
+let mediaRecorder = null;
+let audioChunks = [];
 let isRecording = false;
-let transcript = '';
 
 function toggleRecording() {
     if (isRecording) {
@@ -133,95 +133,72 @@ function toggleRecording() {
     }
 }
 
-function startRecording() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('Seu navegador não suporta gravação de voz. Use o Chrome.');
-        return;
+async function startRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        isRecording = true;
+
+        document.getElementById('btn-record').classList.remove('bg-purple-600', 'hover:bg-purple-700');
+        document.getElementById('btn-record').classList.add('bg-red-600', 'hover:bg-red-700');
+        document.getElementById('btn-record-text').textContent = 'Parar Gravação';
+        document.getElementById('voice-status').textContent = '🔴 Gravando...';
+        document.getElementById('voice-status').className = 'text-xs text-red-400';
+
+    } catch (err) {
+        alert('Não foi possível acessar o microfone: ' + err.message);
     }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'pt-BR';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    transcript = '';
-
-    recognition.onresult = (event) => {
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-            if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript + ' ';
-            }
-        }
-        if (finalTranscript) transcript += finalTranscript;
-
-        document.getElementById('transcript-text').textContent = transcript || '(ouvindo...)';
-        document.getElementById('voice-transcript').classList.remove('hidden');
-    };
-
-    recognition.onerror = (event) => {
-        console.error('Erro no reconhecimento:', event.error);
-        if (event.error === 'not-allowed') {
-            alert('Permissão do microfone negada. Clique no ícone de cadeado na barra de endereço e permita o acesso ao microfone.');
-        }
-        isRecording = false;
-        stopRecording();
-    };
-
-    recognition.onend = () => {
-        // Só reinicia se ainda estiver gravando (não se foi parado pelo usuário ou erro)
-        if (isRecording) {
-            try { recognition.start(); } catch(e) {}
-        }
-    };
-
-    recognition.start();
-    isRecording = true;
-
-    document.getElementById('btn-record').classList.remove('bg-purple-600', 'hover:bg-purple-700');
-    document.getElementById('btn-record').classList.add('bg-red-600', 'hover:bg-red-700');
-    document.getElementById('btn-record-text').textContent = 'Parar';
-    document.getElementById('voice-status').textContent = '🔴 Gravando...';
-    document.getElementById('voice-status').classList.add('text-red-400');
 }
 
 function stopRecording() {
-    if (recognition) {
-        isRecording = false;
-        recognition.stop();
-        recognition = null;
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
     }
+    isRecording = false;
 
     document.getElementById('btn-record').classList.add('bg-purple-600', 'hover:bg-purple-700');
     document.getElementById('btn-record').classList.remove('bg-red-600', 'hover:bg-red-700');
     document.getElementById('btn-record-text').textContent = 'Gravar';
-    document.getElementById('voice-status').textContent = '✓ Gravação finalizada';
-    document.getElementById('voice-status').classList.remove('text-red-400');
-    document.getElementById('voice-status').classList.add('text-green-400');
-
-    if (transcript.trim()) {
-        document.getElementById('btn-ai-fill').classList.remove('hidden');
-    }
+    document.getElementById('voice-status').textContent = '✓ Gravação finalizada. Clique para preencher com IA.';
+    document.getElementById('voice-status').className = 'text-xs text-green-400';
+    document.getElementById('btn-ai-fill').classList.remove('hidden');
 }
 
 async function sendToAI() {
-    if (!transcript.trim()) return;
+    if (audioChunks.length === 0) {
+        alert('Nenhum áudio gravado.');
+        return;
+    }
 
     const loading = document.getElementById('ai-loading');
     const btn = document.getElementById('btn-ai-fill');
     loading.classList.remove('hidden');
     btn.classList.add('hidden');
+    document.getElementById('voice-status').textContent = '⏳ Enviando áudio e processando com IA...';
+    document.getElementById('voice-status').className = 'text-xs text-purple-400';
 
     try {
+        // Envia áudio como FormData
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        formData.append('_token', document.querySelector('input[name="_token"]').value);
+
         const response = await fetch('/admin/portfolio/ia-preencher', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-Token': document.querySelector('input[name="_token"]').value,
-            },
-            body: JSON.stringify({ transcript: transcript.trim() })
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
         });
 
         const data = await response.json();
@@ -236,6 +213,11 @@ async function sendToAI() {
             loading.classList.add('hidden');
             document.getElementById('voice-status').textContent = '✅ Campos preenchidos pela IA!';
             document.getElementById('voice-status').className = 'text-xs text-green-400';
+
+            if (d.transcript) {
+                document.getElementById('voice-transcript').classList.remove('hidden');
+                document.getElementById('transcript-text').textContent = d.transcript;
+            }
         } else {
             throw new Error(data.message || 'Erro ao processar');
         }

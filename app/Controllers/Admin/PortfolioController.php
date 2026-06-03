@@ -119,12 +119,6 @@ class PortfolioController extends Controller
     {
         $this->requirePermission('portfolio.manage');
 
-        $transcript = $request->input('transcript') ?? '';
-        if (empty($transcript)) {
-            $this->response->error('Transcrição vazia', 400);
-            return;
-        }
-
         $apiKey = Config::get('openai.api_key') ?: Config::setting('openai.api_key');
         if (empty($apiKey)) {
             $this->response->error('API Key do OpenAI não configurada', 400);
@@ -132,18 +126,56 @@ class PortfolioController extends Controller
         }
 
         $model = Config::setting('openai.model') ?: Config::get('openai.model', 'gpt-4');
+        $transcript = $request->input('transcript') ?? '';
 
-        $prompt = "Baseado na seguinte descrição falada de um projeto de portfólio de uma empresa de tecnologia/web, extraia e melhore as informações para preencher um formulário.
+        // Se veio áudio, transcreve com Whisper
+        $audioFile = $request->file('audio');
+        if ($audioFile && $audioFile['error'] === UPLOAD_ERR_OK) {
+            // Envia para Whisper
+            $ch = curl_init('https://api.openai.com/v1/audio/transcriptions');
+            $cfile = new \CURLFile($audioFile['tmp_name'], $audioFile['type'] ?? 'audio/webm', 'recording.webm');
+            curl_setopt_array($ch, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => [
+                    'file' => $cfile,
+                    'model' => 'whisper-1',
+                    'language' => 'pt',
+                ],
+                CURLOPT_HTTPHEADER => ["Authorization: Bearer {$apiKey}"],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 60,
+            ]);
+            $whisperResponse = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200) {
+                $whisperData = json_decode($whisperResponse, true);
+                $transcript = $whisperData['text'] ?? '';
+            } else {
+                Logger::error('Whisper falhou', ['http' => $httpCode, 'response' => $whisperResponse]);
+                $this->response->error('Erro ao transcrever áudio (HTTP ' . $httpCode . ')', 500);
+                return;
+            }
+        }
+
+        if (empty($transcript)) {
+            $this->response->error('Nenhum áudio ou transcrição recebida', 400);
+            return;
+        }
+
+        // Envia transcrição pro GPT para preencher campos
+        $prompt = "Baseado na seguinte descrição falada de um projeto de portfólio de uma empresa de tecnologia/web, extraia e melhore as informações.
 
 Transcrição: \"{$transcript}\"
 
 Retorne APENAS um JSON válido com estas chaves:
 - name: Nome curto e profissional do projeto (max 80 caracteres)
-- description: Descrição profissional do projeto para exibir no portfólio (2-4 frases, focada em resultados e o que foi entregue)
-- technologies: Lista de tecnologias separadas por vírgula (ex: PHP, MySQL, Tailwind, JavaScript)
+- description: Descrição profissional do projeto (2-4 frases, focada em resultados)
+- technologies: Lista de tecnologias separadas por vírgula
 - url: URL do projeto se mencionada (ou string vazia)
 
-Melhore o texto para ficar profissional e vendedor, como se fosse para um portfólio de empresa de desenvolvimento web.";
+Melhore o texto para ficar profissional, como portfólio de empresa de desenvolvimento web.";
 
         try {
             $ch = curl_init('https://api.openai.com/v1/chat/completions');
@@ -152,7 +184,7 @@ Melhore o texto para ficar profissional e vendedor, como se fosse para um portf�
                 CURLOPT_POSTFIELDS => json_encode([
                     'model' => $model,
                     'messages' => [
-                        ['role' => 'system', 'content' => 'Você é um copywriter especialista em portfólios de tecnologia. Sempre responda em JSON válido.'],
+                        ['role' => 'system', 'content' => 'Você é um copywriter de portfólios de tecnologia. Sempre responda em JSON válido.'],
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'temperature' => 0.7,
@@ -167,19 +199,16 @@ Melhore o texto para ficar profissional e vendedor, como se fosse para um portf�
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            if ($httpCode !== 200) {
-                throw new \RuntimeException("OpenAI API error (HTTP {$httpCode})");
-            }
+            if ($httpCode !== 200) throw new \RuntimeException("OpenAI GPT error (HTTP {$httpCode})");
 
             $result = json_decode($aiResponse, true);
             $content = $result['choices'][0]['message']['content'] ?? '';
             $content = preg_replace('/^```json\s*|\s*```$/m', '', trim($content));
             $data = json_decode($content, true);
 
-            if (!$data || !isset($data['name'])) {
-                throw new \RuntimeException('Resposta inválida da IA');
-            }
+            if (!$data || !isset($data['name'])) throw new \RuntimeException('Resposta inválida da IA');
 
+            $data['transcript'] = $transcript;
             $this->response->success($data, 'Campos preenchidos');
         } catch (\Throwable $e) {
             Logger::error('IA Portfolio falhou', ['error' => $e->getMessage()]);
