@@ -80,3 +80,6 @@ $router->get('/orcamento/{hash}', [BudgetPublicController::class, 'show']);
 // === SEO ===
 $router->get('/sitemap.xml', [PageController::class, 'sitemap']);
 $router->get('/robots.txt', [PageController::class, 'robots']);
+
+// === Cron via URL (com token de segurança) ===
+$router->get('/cron/blog-ai/{token}', [PageController::class, 'cronBlogAi']);

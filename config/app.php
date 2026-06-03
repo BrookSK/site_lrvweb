@@ -20,7 +20,7 @@ return [
         'env' => 'development', // development, staging, production
         'debug' => true,
         'version' => '1.0.0',
-        'key' => 'ALTERE_PARA_STRING_ALEATORIA_DE_32_CARACTERES',
+        'key' => 'lrvweb_cron_2026_x9k4m7p2',
         'timezone' => 'America/Sao_Paulo',
         'locale' => 'pt',
         'fallback_locale' => 'pt',
