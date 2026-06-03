@@ -54,21 +54,152 @@
 
 <!-- Modal Novo Lançamento -->
 <div id="modal-entry" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl border border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Novo Lançamento</h3>
         <form action="/admin/financeiro/lancamentos" method="POST" class="space-y-4">
             <?= \Core\View::csrf() ?>
-            <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label><select name="type" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><option value="revenue">Receita</option><option value="expense">Despesa</option></select></div>
-            <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição *</label><input type="text" name="description" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
+
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor (R$) *</label><input type="number" step="0.01" name="value" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
-                <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data *</label><input type="date" name="date" required value="<?= date('Y-m-d') ?>" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
+                    <select name="type" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                        <option value="revenue">💰 Receita</option>
+                        <option value="expense">💸 Despesa</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
+                    <select name="category" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                        <option value="servicos">Serviços</option>
+                        <option value="hospedagem">Hospedagem</option>
+                        <option value="desenvolvimento">Desenvolvimento</option>
+                        <option value="agua">Água</option>
+                        <option value="luz">Luz / Energia</option>
+                        <option value="telefone">Telefone / Internet</option>
+                        <option value="aluguel">Aluguel</option>
+                        <option value="software">Software / Ferramentas</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="salario">Salário</option>
+                        <option value="impostos">Impostos</option>
+                        <option value="equipamento">Equipamento</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
             </div>
-            <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label><input type="text" name="category" placeholder="Serviços, Hospedagem, Operacional..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição *</label>
+                <input type="text" name="description" required placeholder="Ex: Hospedagem Cloud - Cliente X" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor (R$) *</label>
+                    <input type="number" step="0.01" name="value" required class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data *</label>
+                    <input type="date" name="date" required value="<?= date('Y-m-d') ?>" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                </div>
+            </div>
+
+            <!-- Recorrência -->
+            <div class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_recurring" value="1" id="chk-recurring" onchange="toggleRecurring()" class="rounded border-gray-300 text-purple-600">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Conta recorrente / fixa</span>
+                </label>
+
+                <div id="recurring-fields" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Frequência</label>
+                        <select name="recurring_frequency" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                            <option value="monthly">Mensal</option>
+                            <option value="quarterly">Trimestral</option>
+                            <option value="yearly">Anual</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parcelamento -->
+            <div class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" name="is_installment" value="1" id="chk-installment" onchange="toggleInstallment()" class="rounded border-gray-300 text-purple-600">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Parcelado</span>
+                </label>
+
+                <div id="installment-fields" class="hidden space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nº de parcelas</label>
+                            <input type="number" name="installments" min="2" max="48" value="3" id="input-installments" oninput="calcInstallments()" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Valor por parcela</label>
+                            <input type="text" id="installment-value" readonly class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-950 dark:text-gray-400 text-sm" value="—">
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500" id="installment-info">Serão criados lançamentos mensais a partir da data selecionada.</p>
+                </div>
+            </div>
+
+            <!-- Forma de pagamento -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Forma de pagamento</label>
+                <select name="payment_method" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+                    <option value="">Não informado</option>
+                    <option value="pix">PIX</option>
+                    <option value="boleto">Boleto</option>
+                    <option value="cartao_credito">Cartão de Crédito</option>
+                    <option value="cartao_debito">Cartão de Débito</option>
+                    <option value="transferencia">Transferência</option>
+                    <option value="dinheiro">Dinheiro</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observações</label>
+                <input type="text" name="notes" placeholder="Notas adicionais..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm">
+            </div>
+
             <div class="flex justify-end gap-3 pt-2">
-                <button type="button" onclick="document.getElementById('modal-entry').classList.add('hidden')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">Salvar</button>
+                <button type="button" onclick="document.getElementById('modal-entry').classList.add('hidden')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">Salvar Lançamento</button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+function toggleRecurring() {
+    document.getElementById('recurring-fields').classList.toggle('hidden', !document.getElementById('chk-recurring').checked);
+    if (document.getElementById('chk-recurring').checked) {
+        document.getElementById('chk-installment').checked = false;
+        document.getElementById('installment-fields').classList.add('hidden');
+    }
+}
+function toggleInstallment() {
+    document.getElementById('installment-fields').classList.toggle('hidden', !document.getElementById('chk-installment').checked);
+    if (document.getElementById('chk-installment').checked) {
+        document.getElementById('chk-recurring').checked = false;
+        document.getElementById('recurring-fields').classList.add('hidden');
+        calcInstallments();
+    }
+}
+function calcInstallments() {
+    const total = parseFloat(document.querySelector('input[name="value"]')?.value) || 0;
+    const parcelas = parseInt(document.getElementById('input-installments')?.value) || 1;
+    const perParcel = total / parcelas;
+    document.getElementById('installment-value').value = total > 0 ? 'R$ ' + perParcel.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : '—';
+
+    const startDate = document.querySelector('input[name="date"]')?.value;
+    if (startDate && parcelas > 0) {
+        const end = new Date(startDate);
+        end.setMonth(end.getMonth() + parcelas - 1);
+        document.getElementById('installment-info').textContent = `${parcelas} parcelas de R$ ${perParcel.toFixed(2).replace('.', ',')} · Última em ${end.toLocaleDateString('pt-BR', {month: 'short', year: 'numeric'})}`;
+    }
+}
+// Recalcula ao mudar valor
+document.querySelector('input[name="value"]')?.addEventListener('input', calcInstallments);
+</script>

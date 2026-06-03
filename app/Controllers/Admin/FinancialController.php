@@ -82,23 +82,55 @@ class FinancialController extends Controller
         $data = $this->validate(['description' => 'required', 'value' => 'required|numeric', 'date' => 'required|date', 'type' => 'required|in:revenue,expense']);
 
         $db = Database::getInstance();
-        $db->insert('financial_entries', [
+        $isInstallment = $request->input('is_installment');
+        $installments = (int) ($request->input('installments') ?? 1);
+        $isRecurring = $request->input('is_recurring');
+
+        $baseData = [
             'type' => $data['type'],
-            'category' => $request->input('category') ?? 'geral',
-            'description' => $data['description'],
-            'value' => (float) $data['value'],
-            'date' => $data['date'],
+            'category' => $request->input('category') ?? 'outros',
             'client_id' => $request->input('client_id') ?: null,
             'project_id' => $request->input('project_id') ?: null,
-            'is_recurring' => (int) ($request->input('is_recurring') ?? 0),
-            'recurring_frequency' => $request->input('recurring_frequency') ?: null,
+            'is_recurring' => $isRecurring ? 1 : 0,
+            'recurring_frequency' => $isRecurring ? ($request->input('recurring_frequency') ?? 'monthly') : null,
             'notes' => $request->input('notes'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ]);
+        ];
 
-        Logger::audit('Lançamento financeiro criado', ['type' => $data['type'], 'value' => $data['value']]);
-        $this->session->flash('success', 'Lançamento registrado!');
+        if ($isInstallment && $installments > 1) {
+            // Cria múltiplos lançamentos (um por parcela)
+            $totalValue = (float) $data['value'];
+            $perInstallment = round($totalValue / $installments, 2);
+            $startDate = $data['date'];
+
+            for ($i = 0; $i < $installments; $i++) {
+                $date = date('Y-m-d', strtotime("+{$i} months", strtotime($startDate)));
+                $desc = $data['description'] . " ({$i}+1/{$installments})";
+
+                $db->insert('financial_entries', array_merge($baseData, [
+                    'description' => str_replace('{$i}+1', ($i + 1), $desc),
+                    'value' => $perInstallment,
+                    'date' => $date,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]));
+            }
+
+            Logger::audit('Lançamento parcelado criado', ['type' => $data['type'], 'value' => $totalValue, 'installments' => $installments]);
+            $this->session->flash('success', "Lançamento parcelado em {$installments}x criado!");
+        } else {
+            // Lançamento único
+            $db->insert('financial_entries', array_merge($baseData, [
+                'description' => $data['description'],
+                'value' => (float) $data['value'],
+                'date' => $data['date'],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]));
+
+            Logger::audit('Lançamento financeiro criado', ['type' => $data['type'], 'value' => $data['value']]);
+            $this->session->flash('success', 'Lançamento registrado!');
+        }
+
         $this->redirect('/admin/financeiro');
     }
 
