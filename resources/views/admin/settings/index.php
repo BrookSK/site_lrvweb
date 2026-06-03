@@ -16,6 +16,16 @@ $fc = $fileConfig;
 ?>
 
 <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Botão limpar cache (fixo no topo) -->
+    <div class="lg:hidden mb-4">
+        <form action="/admin/cache/limpar" method="POST" class="inline">
+            <?= \Core\View::csrf() ?>
+            <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition flex items-center gap-2 w-full justify-center">
+                <i data-lucide="trash" class="w-4 h-4"></i> Limpar Cache
+            </button>
+        </form>
+    </div>
+
     <!-- Tabs Sidebar -->
     <div class="lg:w-64 flex-shrink-0">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2">
@@ -26,6 +36,17 @@ $fc = $fileConfig;
                     <?= $tabInfo['label'] ?>
                 </a>
             <?php endforeach; ?>
+
+            <!-- Botão limpar cache -->
+            <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <form action="/admin/cache/limpar" method="POST">
+                    <?= \Core\View::csrf() ?>
+                    <button type="submit" class="w-full px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition flex items-center gap-3" onclick="return confirm('Limpar todo o cache do sistema?')">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        Limpar Cache
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 

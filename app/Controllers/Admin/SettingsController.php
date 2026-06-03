@@ -183,6 +183,63 @@ class SettingsController extends Controller
         $this->redirect('/admin/configuracoes?tab=branding');
     }
 
+    /**
+     * Limpa todo o cache do sistema
+     */
+    public function clearCache(Request $request, Response $response): void
+    {
+        $this->requirePermission('settings.manage');
+
+        $cleared = 0;
+
+        // Limpa cache de arquivos
+        $cacheDir = ROOT_PATH . '/cache/';
+        if (is_dir($cacheDir)) {
+            $files = glob($cacheDir . '*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
+                    $cleared++;
+                }
+            }
+            // Subdiretórios
+            $dirs = glob($cacheDir . '*', GLOB_ONLYDIR);
+            foreach ($dirs as $dir) {
+                $subfiles = glob($dir . '/*');
+                foreach ($subfiles as $f) {
+                    if (is_file($f)) { unlink($f); $cleared++; }
+                }
+            }
+        }
+
+        // Limpa rate limit cache
+        $rateDir = ROOT_PATH . '/cache/rate_limit/';
+        if (is_dir($rateDir)) {
+            $files = glob($rateDir . '*');
+            foreach ($files as $file) {
+                if (is_file($file)) { unlink($file); $cleared++; }
+            }
+        }
+
+        // Touch nos arquivos CSS/JS para invalidar cache do navegador
+        $assets = [
+            ROOT_PATH . '/public/assets/css/app.css',
+            ROOT_PATH . '/public/assets/css/admin.css',
+            ROOT_PATH . '/public/assets/js/app.js',
+            ROOT_PATH . '/public/assets/js/admin.js',
+        ];
+        foreach ($assets as $asset) {
+            if (file_exists($asset)) touch($asset);
+        }
+
+        // Recarrega settings do banco
+        Config::refreshDbSettings();
+
+        Logger::audit('Cache limpo', ['files' => $cleared]);
+        $this->session->flash('success', "Cache limpo! {$cleared} arquivo(s) removido(s). CSS/JS atualizados.");
+        $this->redirect('/admin/configuracoes');
+    }
+
     // === Métodos privados de salvamento ===
 
     private function saveAppConfig(Request $request): void

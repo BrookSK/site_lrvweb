@@ -160,6 +160,9 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
     $router->put('/notificacoes/{id}/lida', [NotificationController::class, 'markAsRead']);
     $router->put('/notificacoes/todas-lidas', [NotificationController::class, 'markAllAsRead']);
 
+    // Cache
+    $router->post('/cache/limpar', [SettingsController::class, 'clearCache']);
+
     // Chat IA
     $router->get('/ia', [\App\Controllers\Admin\AiChatController::class, 'index']);
     $router->post('/ia/criar', [\App\Controllers\Admin\AiChatController::class, 'createChat']);

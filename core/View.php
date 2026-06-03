@@ -92,12 +92,14 @@ class View
     }
 
     /**
-     * Helper para assets
+     * Helper para assets com cache buster
      */
     public static function asset(string $path): string
     {
         $baseUrl = Config::get('app.url', '');
-        return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/');
+        $filePath = ROOT_PATH . '/public/assets/' . ltrim($path, '/');
+        $version = file_exists($filePath) ? filemtime($filePath) : time();
+        return rtrim($baseUrl, '/') . '/assets/' . ltrim($path, '/') . '?v=' . $version;
     }
 
     /**
