@@ -45,9 +45,16 @@ class ClientBudgetController extends Controller
         $budget = $db->fetchOne("SELECT id FROM budgets WHERE id = :id AND client_id = :cid", ['id' => $id, 'cid' => $clientId]);
         if (!$budget) { $this->redirect('/cliente/orcamentos'); return; }
 
-        $db->update('budgets', ['status' => 'approved', 'approved_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $id]);
-        Logger::audit('Orçamento aprovado pelo cliente', ['budget_id' => $id]);
-        $this->session->flash('success', 'Orçamento aprovado!');
+        $observation = $request->input('observation') ?? '';
+
+        $db->update('budgets', [
+            'status' => 'approved',
+            'approved_at' => date('Y-m-d H:i:s'),
+            'internal_notes' => $observation ? 'Cliente aprovou com obs: ' . $observation : null,
+        ], 'id = :id', ['id' => $id]);
+
+        Logger::audit('Orçamento aprovado pelo cliente', ['budget_id' => $id, 'observation' => $observation]);
+        $this->session->flash('success', 'Orçamento aprovado com sucesso!');
         $this->redirect("/cliente/orcamentos/{$id}");
     }
 
@@ -61,8 +68,15 @@ class ClientBudgetController extends Controller
         $budget = $db->fetchOne("SELECT id FROM budgets WHERE id = :id AND client_id = :cid", ['id' => $id, 'cid' => $clientId]);
         if (!$budget) { $this->redirect('/cliente/orcamentos'); return; }
 
-        $db->update('budgets', ['status' => 'rejected', 'rejected_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $id]);
-        Logger::audit('Orçamento recusado pelo cliente', ['budget_id' => $id]);
+        $observation = $request->input('observation') ?? '';
+
+        $db->update('budgets', [
+            'status' => 'rejected',
+            'rejected_at' => date('Y-m-d H:i:s'),
+            'internal_notes' => $observation ? 'Cliente recusou: ' . $observation : 'Cliente recusou sem motivo informado.',
+        ], 'id = :id', ['id' => $id]);
+
+        Logger::audit('Orçamento recusado pelo cliente', ['budget_id' => $id, 'observation' => $observation]);
         $this->session->flash('success', 'Orçamento recusado.');
         $this->redirect("/cliente/orcamentos/{$id}");
     }

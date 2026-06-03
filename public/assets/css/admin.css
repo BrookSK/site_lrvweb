@@ -87,3 +87,8 @@ input:focus, select:focus, textarea:focus {
     ring: 2px;
     border-color: #3b82f6;
 }
+
+/* Fix dark mode text visibility in admin */
+.dark .text-gray-800 { color: #f3f4f6 !important; }
+.dark .text-gray-700 { color: #d1d5db !important; }
+.dark .text-gray-900 { color: #ffffff !important; }
