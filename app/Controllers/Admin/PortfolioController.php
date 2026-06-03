@@ -174,7 +174,7 @@ Clientes cadastrados: " . implode(', ', array_map(fn($c) => $c['name'], Database
 
 Retorne APENAS um JSON válido com estas chaves:
 - name: Nome curto e profissional do projeto (max 80 caracteres)
-- description: Descrição profissional do projeto (2-4 frases, focada em resultados)
+- description: Descrição LONGA e detalhada do projeto em HTML. Deve ter pelo menos 3-4 parágrafos usando tags <p>, <h3>, <ul>, <li>, <strong>. Inclua: o que foi feito, desafios superados, tecnologias utilizadas, funcionalidades principais, resultados alcançados e benefícios para o cliente. Escreva de forma persuasiva e profissional, como um case de sucesso. Mínimo 200 palavras.
 - technologies: Lista de tecnologias separadas por vírgula
 - url: URL do projeto se mencionada (ou string vazia)
 - category: Uma das categorias disponíveis que mais se encaixa (ex: 'Site', 'Sistema', 'E-commerce'). Se não conseguir identificar, use string vazia.
@@ -194,7 +194,7 @@ Melhore o texto para ficar profissional, como portfólio de empresa de desenvolv
                         ['role' => 'user', 'content' => $prompt],
                     ],
                     'temperature' => 0.7,
-                    'max_tokens' => 500,
+                    'max_tokens' => 1500,
                 ]),
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json', "Authorization: Bearer {$apiKey}"],
                 CURLOPT_RETURNTRANSFER => true,
