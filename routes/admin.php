@@ -159,4 +159,9 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
     $router->get('/notificacoes', [NotificationController::class, 'index']);
     $router->put('/notificacoes/{id}/lida', [NotificationController::class, 'markAsRead']);
     $router->put('/notificacoes/todas-lidas', [NotificationController::class, 'markAllAsRead']);
+
+    // Chat IA
+    $router->get('/ia', [\App\Controllers\Admin\AiChatController::class, 'index']);
+    $router->post('/ia/send', [\App\Controllers\Admin\AiChatController::class, 'send']);
+    $router->post('/ia/transcribe', [\App\Controllers\Admin\AiChatController::class, 'transcribe']);
 });

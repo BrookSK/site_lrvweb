@@ -42,7 +42,14 @@
         <!-- Separador -->
         <div class="border-t border-white/10 my-4"></div>
 
-        <!-- Sistema -->
+        <!-- IA -->
+        <a href="/admin/ia" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition <?= str_starts_with($currentUri, '/admin/ia') ? 'bg-sidebar-hover text-white' : 'text-gray-300 hover:bg-sidebar-hover hover:text-white' ?>">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+            <span>Assistente IA</span>
+        </a>
+
+        <!-- Separador -->
+        <div class="border-t border-white/10 my-4"></div>
         <?php if (in_array('*', $userPermissions)): ?>
             <p class="px-3 text-xs text-gray-500 uppercase tracking-wider mb-2">Sistema</p>
             <a href="/admin/versoes" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-300 hover:bg-sidebar-hover hover:text-white transition">
