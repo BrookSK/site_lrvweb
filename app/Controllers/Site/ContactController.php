@@ -52,8 +52,26 @@ class ContactController extends Controller
             $mail->SMTPAuth = true;
             $mail->Username = $mailConfig['username'];
             $mail->Password = $mailConfig['password'];
-            $mail->SMTPSecure = $mailConfig['encryption'] === 'tls' ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
             $mail->CharSet = 'UTF-8';
+
+            // Criptografia
+            $encryption = $mailConfig['encryption'] ?? '';
+            if ($encryption === 'tls') {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            } elseif ($encryption === 'ssl') {
+                $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            } else {
+                $mail->SMTPSecure = '';
+                $mail->SMTPAutoTLS = false;
+            }
+
+            // Se for localhost, desabilita verificação de certificado
+            if (in_array($mailConfig['host'], ['localhost', '127.0.0.1'])) {
+                $mail->SMTPOptions = [
+                    'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+                ];
+                $mail->SMTPAuth = false;
+            }
 
             $mail->setFrom($mailConfig['from_address'] ?: $mailConfig['username'], $mailConfig['from_name'] ?: 'LRV Web');
             $mail->addAddress($mailConfig['from_address'] ?: $mailConfig['username']); // Envia para si mesmo
