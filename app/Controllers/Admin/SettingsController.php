@@ -278,15 +278,31 @@ class SettingsController extends Controller
 
     private function saveMailConfig(Request $request): void
     {
+        $data = [
+            'host' => $request->input('mail_host') ?? '',
+            'port' => $request->input('mail_port') ?? '587',
+            'username' => $request->input('mail_username') ?? '',
+            'password' => $request->input('mail_password') ?? '',
+            'encryption' => $request->input('mail_encryption') ?? 'tls',
+            'from_address' => $request->input('mail_from_address') ?? '',
+            'from_name' => $request->input('mail_from_name') ?? '',
+        ];
+
+        // Salva no banco (sempre funciona)
+        foreach ($data as $key => $value) {
+            Config::setSetting('mail', $key, $value);
+        }
+
+        // Tenta salvar no arquivo também
         Config::saveToFile([
             'mail' => [
-                'host' => $request->input('mail_host') ?? '',
-                'port' => (int) ($request->input('mail_port') ?? 587),
-                'username' => $request->input('mail_username') ?? '',
-                'password' => $request->input('mail_password') ?? '',
-                'encryption' => $request->input('mail_encryption') ?? 'tls',
-                'from_address' => $request->input('mail_from_address') ?? '',
-                'from_name' => $request->input('mail_from_name') ?? '',
+                'host' => $data['host'],
+                'port' => (int) $data['port'],
+                'username' => $data['username'],
+                'password' => $data['password'],
+                'encryption' => $data['encryption'],
+                'from_address' => $data['from_address'],
+                'from_name' => $data['from_name'],
             ],
         ]);
     }
