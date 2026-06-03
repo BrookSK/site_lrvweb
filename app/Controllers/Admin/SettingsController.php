@@ -252,13 +252,27 @@ class SettingsController extends Controller
 
     private function saveOpenAiConfig(Request $request): void
     {
+        $data = [
+            'api_key' => $request->input('openai_api_key') ?? '',
+            'model' => $request->input('openai_model') ?? 'gpt-4',
+            'blog_frequency' => $request->input('openai_frequency') ?? 'weekly',
+            'blog_enabled' => $request->input('openai_enabled') ? '1' : '0',
+            'blog_languages' => $request->input('openai_languages') ?? 'pt,en,es',
+        ];
+
+        // Salva no banco (sempre funciona)
+        foreach ($data as $key => $value) {
+            Config::setSetting('openai', $key, $value);
+        }
+
+        // Tenta salvar no arquivo também
         Config::saveToFile([
             'openai' => [
-                'api_key' => $request->input('openai_api_key') ?? '',
-                'model' => $request->input('openai_model') ?? 'gpt-4',
-                'blog_frequency' => $request->input('openai_frequency') ?? 'weekly',
-                'blog_enabled' => (bool) $request->input('openai_enabled'),
-                'blog_languages' => array_filter(explode(',', $request->input('openai_languages') ?? 'pt,en,es')),
+                'api_key' => $data['api_key'],
+                'model' => $data['model'],
+                'blog_frequency' => $data['blog_frequency'],
+                'blog_enabled' => (bool) $data['blog_enabled'],
+                'blog_languages' => array_filter(explode(',', $data['blog_languages'])),
             ],
         ]);
     }

@@ -129,7 +129,7 @@ class BlogController extends Controller
     {
         $this->requirePermission('blog.manage');
 
-        $apiKey = Config::get('openai.api_key');
+        $apiKey = Config::get('openai.api_key') ?: Config::setting('openai.api_key');
         if (empty($apiKey)) {
             $this->session->flash('error', 'API Key do OpenAI não configurada. Vá em Configurações > Blog IA.');
             $this->redirect('/admin/blog/ia/configuracoes');
@@ -138,7 +138,7 @@ class BlogController extends Controller
 
         $language = $request->input('language') ?? 'pt';
         $topic = $request->input('topic') ?? '';
-        $model = Config::get('openai.model', 'gpt-4');
+        $model = Config::setting('openai.model') ?: Config::get('openai.model', 'gpt-4');
 
         $db = Database::getInstance();
 
@@ -287,9 +287,19 @@ Retorne APENAS um JSON válido com essas chaves.";
     public function aiSettings(Request $request, Response $response): string
     {
         $this->requirePermission('blog.manage');
-        $config = Config::get('openai');
+
+        // Busca config do arquivo E do banco (banco tem prioridade)
+        $fileConfig = Config::get('openai') ?? [];
+        $dbConfig = [
+            'api_key' => Config::setting('openai.api_key') ?: ($fileConfig['api_key'] ?? ''),
+            'model' => Config::setting('openai.model') ?: ($fileConfig['model'] ?? 'gpt-4'),
+            'blog_frequency' => Config::setting('openai.blog_frequency') ?: ($fileConfig['blog_frequency'] ?? 'weekly'),
+            'blog_enabled' => Config::setting('openai.blog_enabled') ?: ($fileConfig['blog_enabled'] ?? false),
+            'blog_languages' => Config::setting('openai.blog_languages') ?: implode(',', $fileConfig['blog_languages'] ?? ['pt','en','es']),
+        ];
+
         $jobs = Database::getInstance()->fetchAll("SELECT * FROM blog_ai_jobs ORDER BY created_at DESC LIMIT 20");
-        return $this->adminView('blog/ai-settings', ['title' => 'Blog IA - Configurações', 'config' => $config, 'jobs' => $jobs]);
+        return $this->adminView('blog/ai-settings', ['title' => 'Blog IA - Configurações', 'config' => $dbConfig, 'jobs' => $jobs]);
     }
 
     public function updateAiSettings(Request $request, Response $response): void
