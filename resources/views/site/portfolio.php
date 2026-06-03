@@ -28,15 +28,12 @@
             <a href="/<?= $locale ?>/portfolio/<?= $item['slug'] ?>" class="group block" data-animate="fade-up" data-delay="<?= ($i % 6) * 100 ?>">
                 <div class="relative aspect-[4/3] bg-gray-900 rounded-2xl overflow-hidden border border-white/5 group-hover:border-purple-500/50 transition-all duration-500">
                     <?php if ($item['image_cover']): ?>
-                        <img src="<?= htmlspecialchars($item['image_cover']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
+                        <img src="<?= htmlspecialchars($item['image_cover']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">
                     <?php else: ?>
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-950 to-black"><span class="text-5xl opacity-50">🌐</span></div>
                     <?php endif; ?>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
-                        <div>
-                            <p class="text-white font-semibold"><?= htmlspecialchars($item['name']) ?></p>
-                            <p class="text-purple-300 text-sm mt-1"><?= \Core\I18n::get('portfolio_view_details') ?> →</p>
-                        </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-5">
+                        <span class="text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300"><?= \Core\I18n::get('portfolio_view_details') ?> →</span>
                     </div>
                 </div>
                 <div class="mt-4">
