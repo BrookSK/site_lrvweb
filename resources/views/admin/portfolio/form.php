@@ -209,6 +209,29 @@ async function sendToAI() {
             if (d.description) document.querySelector('textarea[name="description"]').value = d.description;
             if (d.technologies) document.querySelector('input[name="technologies"]').value = d.technologies;
             if (d.url) document.querySelector('input[name="url"]').value = d.url;
+            if (d.completed_at) document.querySelector('input[name="completed_at"]').value = d.completed_at;
+
+            // Seleciona categoria pelo texto
+            if (d.category) {
+                const catSelect = document.querySelector('select[name="category_id"]');
+                for (let opt of catSelect.options) {
+                    if (opt.text.toLowerCase().includes(d.category.toLowerCase())) {
+                        catSelect.value = opt.value;
+                        break;
+                    }
+                }
+            }
+
+            // Seleciona cliente pelo nome
+            if (d.client) {
+                const clientSelect = document.querySelector('select[name="client_id"]');
+                for (let opt of clientSelect.options) {
+                    if (opt.text.toLowerCase().includes(d.client.toLowerCase())) {
+                        clientSelect.value = opt.value;
+                        break;
+                    }
+                }
+            }
 
             loading.classList.add('hidden');
             document.getElementById('voice-status').textContent = '✅ Campos preenchidos pela IA!';

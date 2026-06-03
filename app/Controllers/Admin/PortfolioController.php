@@ -169,11 +169,17 @@ class PortfolioController extends Controller
 
 Transcrição: \"{$transcript}\"
 
+Categorias disponíveis: Site, Sistema, E-commerce, Hospedagem, Social Media, Automação
+Clientes cadastrados: " . implode(', ', array_map(fn($c) => $c['name'], Database::getInstance()->fetchAll("SELECT name FROM clients WHERE is_active = 1 AND deleted_at IS NULL"))) . "
+
 Retorne APENAS um JSON válido com estas chaves:
 - name: Nome curto e profissional do projeto (max 80 caracteres)
 - description: Descrição profissional do projeto (2-4 frases, focada em resultados)
 - technologies: Lista de tecnologias separadas por vírgula
 - url: URL do projeto se mencionada (ou string vazia)
+- category: Uma das categorias disponíveis que mais se encaixa (ex: 'Site', 'Sistema', 'E-commerce'). Se não conseguir identificar, use string vazia.
+- client: Nome do cliente se mencionado (deve ser exatamente igual a um dos cadastrados). Se não mencionou, string vazia.
+- completed_at: Data de conclusão no formato YYYY-MM-DD se mencionada (ex: se disse 'janeiro de 2025' retorne '2025-01-01'). Se não mencionou, string vazia.
 
 Melhore o texto para ficar profissional, como portfólio de empresa de desenvolvimento web.";
 
