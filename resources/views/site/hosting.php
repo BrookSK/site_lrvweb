@@ -49,7 +49,7 @@
             <p class="text-gray-400 mt-3" data-animate="fade-up" data-delay="150"><?= \Core\I18n::get('hosting_plans_subtitle') ?></p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 overflow-visible">
             <?php
             $plans = [
                 [\Core\I18n::get('plan_startup'), \Core\I18n::get('plan_startup_desc'), '90', ['1 vCPU', '2 GB RAM', '20 GB SSD', 'Proteção DDoS', 'SSL Gratuito', 'Suporte E-mail'], false],
@@ -59,9 +59,9 @@
                 [\Core\I18n::get('plan_enterprise'), \Core\I18n::get('plan_enterprise_desc'), '1.497', ['16 vCPU', '32 GB RAM', '300 GB SSD', 'Proteção DDoS', 'SSL Gratuito', 'Suporte Dedicado'], false],
             ];
             foreach ($plans as $i => $plan): ?>
-            <div class="<?= $plan[4] ? 'pricing-featured' : '' ?> card-premium flex flex-col relative <?= $plan[4] ? 'md:-translate-y-2' : '' ?>" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
+            <div class="<?= $plan[4] ? 'pricing-featured' : '' ?> card-premium flex flex-col relative" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
                 <?php if ($plan[4]): ?>
-                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-bold px-4 py-1 rounded-full shadow-lg">🔥 <?= \Core\I18n::get('plan_popular') ?></span>
+                    <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-black text-xs font-bold px-4 py-1 rounded-full shadow-lg z-10">🔥 <?= \Core\I18n::get('plan_popular') ?></span>
                 <?php endif; ?>
                 <div class="mb-4 <?= $plan[4] ? 'mt-2' : '' ?>">
                     <h3 class="text-lg font-bold text-white"><?= $plan[0] ?></h3>

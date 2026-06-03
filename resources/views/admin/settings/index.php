@@ -316,7 +316,14 @@ $fc = $fileConfig;
                             </select>
                         </div>
                     </div>
-                    <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Posts por semana (máximo)</label>
+                            <input type="number" name="openai_posts_per_week" min="1" max="7" value="<?= htmlspecialchars(\Core\Config::setting('openai.blog_posts_per_week') ?: '3') ?>" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+                            <p class="text-xs text-gray-500 mt-1">O cron pode rodar todo dia, mas só gera posts até atingir este limite semanal.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Idiomas (separados por vírgula)</label>
                         <input type="text" name="openai_languages" value="<?= htmlspecialchars(implode(',', $fc['openai']['blog_languages'] ?? ['pt','en','es'])) ?>" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" placeholder="pt,en,es">
                     </div>

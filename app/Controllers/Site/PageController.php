@@ -64,6 +64,24 @@ class PageController extends Controller
             return;
         }
 
+        // Verifica frequência — quantos posts já foram gerados esta semana
+        $db = Database::getInstance();
+        $postsPerWeek = (int) (Config::setting('openai.blog_posts_per_week') ?: 3);
+        $postsThisWeek = $db->fetchOne("
+            SELECT COUNT(*) as total FROM blog_posts 
+            WHERE is_ai_generated = 1 
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        ");
+
+        if ((int)($postsThisWeek['total'] ?? 0) >= $postsPerWeek) {
+            $response->json([
+                'success' => true, 
+                'skipped' => true, 
+                'message' => "Limite semanal atingido ({$postsPerWeek} posts/semana). Já foram gerados {$postsThisWeek['total']} nos últimos 7 dias."
+            ]);
+            return;
+        }
+
         // Executa geração
         $languages = Config::setting('openai.blog_languages') ?: implode(',', Config::get('openai.blog_languages', ['pt']));
         $langArray = array_filter(explode(',', $languages));

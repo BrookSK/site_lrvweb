@@ -265,6 +265,10 @@ class SettingsController extends Controller
             Config::setSetting('openai', $key, $value);
         }
 
+        // Salva posts por semana
+        $postsPerWeek = $request->input('openai_posts_per_week') ?? '3';
+        Config::setSetting('openai', 'blog_posts_per_week', $postsPerWeek);
+
         // Tenta salvar no arquivo também
         Config::saveToFile([
             'openai' => [
