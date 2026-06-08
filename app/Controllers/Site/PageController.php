@@ -143,17 +143,35 @@ Retorne APENAS um JSON válido com essas chaves.";
 
                 if (!$data || !isset($data['title'])) throw new \RuntimeException('JSON inválido da IA');
 
-                // Imagem
+                // Imagem via OpenAI gpt-image-1
                 $imageUrl = '';
                 $imgSearch = $data['image_search'] ?? 'technology';
                 $imgDir = ROOT_PATH . '/public/assets/img/blog/';
                 if (!is_dir($imgDir)) mkdir($imgDir, 0755, true);
-                $imgFile = 'ai_' . time() . '_' . uniqid() . '.jpg';
-                $imgData = @file_get_contents('https://source.unsplash.com/1200x630/?' . urlencode($imgSearch));
-                if ($imgData && strlen($imgData) > 1000) {
-                    file_put_contents($imgDir . $imgFile, $imgData);
-                    $imageUrl = '/assets/img/blog/' . $imgFile;
-                }
+                $imgFile = 'ai_' . time() . '_' . uniqid() . '.png';
+
+                try {
+                    $imgPrompt = "Create a professional, modern image related to: {$imgSearch}. Style: clean, minimal, tech-oriented, purple and dark tones. Do NOT include any text, letters or words in the image.";
+                    $imgCh = curl_init('https://api.openai.com/v1/images/generations');
+                    curl_setopt_array($imgCh, [
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => json_encode(['model' => 'gpt-image-1', 'prompt' => $imgPrompt, 'n' => 1, 'size' => '1536x1024', 'quality' => 'medium']),
+                        CURLOPT_HTTPHEADER => ['Content-Type: application/json', "Authorization: Bearer {$apiKey}"],
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_TIMEOUT => 120,
+                    ]);
+                    $imgResp = curl_exec($imgCh);
+                    $imgCode = curl_getinfo($imgCh, CURLINFO_HTTP_CODE);
+                    curl_close($imgCh);
+
+                    if ($imgCode === 200) {
+                        $imgRes = json_decode($imgResp, true);
+                        $b64 = $imgRes['data'][0]['b64_json'] ?? null;
+                        $remoteUrl = $imgRes['data'][0]['url'] ?? null;
+                        if ($b64) { file_put_contents($imgDir . $imgFile, base64_decode($b64)); $imageUrl = '/assets/img/blog/' . $imgFile; }
+                        elseif ($remoteUrl) { $d = @file_get_contents($remoteUrl); if ($d) { file_put_contents($imgDir . $imgFile, $d); $imageUrl = '/assets/img/blog/' . $imgFile; } }
+                    }
+                } catch (\Throwable $ie) {}
 
                 // Slug
                 $slug = mb_strtolower($data['title']);

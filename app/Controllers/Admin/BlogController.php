@@ -208,21 +208,53 @@ Retorne APENAS um JSON válido com essas chaves.";
                 throw new \RuntimeException('Formato de resposta inválido da IA');
             }
 
-            // Busca imagem no Unsplash
+            // Gera imagem com OpenAI (gpt-image-1)
             $imageUrl = '';
             $imageSearch = $data['image_search'] ?? $data['keywords'] ?? 'technology';
-            $unsplashUrl = 'https://source.unsplash.com/1200x630/?' . urlencode($imageSearch);
-
-            // Baixa a imagem
             $imgDir = ROOT_PATH . '/public/assets/img/blog/';
             if (!is_dir($imgDir)) mkdir($imgDir, 0755, true);
-            $imgFilename = 'ai_' . time() . '_' . uniqid() . '.jpg';
+            $imgFilename = 'ai_' . time() . '_' . uniqid() . '.png';
             $imgPath = $imgDir . $imgFilename;
 
-            $imgData = @file_get_contents($unsplashUrl);
-            if ($imgData && strlen($imgData) > 1000) {
-                file_put_contents($imgPath, $imgData);
-                $imageUrl = '/assets/img/blog/' . $imgFilename;
+            try {
+                $imgPrompt = "Create a professional, modern, visually appealing image related to: {$imageSearch}. The image should be suitable as a blog post header/cover. Style: clean, minimal, tech-oriented, with purple and dark tones. IMPORTANT: Do NOT include any text, letters, words or typography in the image. Pure visual/graphic only.";
+
+                $imgCh = curl_init('https://api.openai.com/v1/images/generations');
+                curl_setopt_array($imgCh, [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => json_encode([
+                        'model' => 'gpt-image-1',
+                        'prompt' => $imgPrompt,
+                        'n' => 1,
+                        'size' => '1536x1024',
+                        'quality' => 'medium',
+                    ]),
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/json', "Authorization: Bearer {$apiKey}"],
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT => 120,
+                ]);
+                $imgResponse = curl_exec($imgCh);
+                $imgHttpCode = curl_getinfo($imgCh, CURLINFO_HTTP_CODE);
+                curl_close($imgCh);
+
+                if ($imgHttpCode === 200) {
+                    $imgResult = json_decode($imgResponse, true);
+                    $imgB64 = $imgResult['data'][0]['b64_json'] ?? null;
+                    $imgUrlRemote = $imgResult['data'][0]['url'] ?? null;
+
+                    if ($imgB64) {
+                        file_put_contents($imgPath, base64_decode($imgB64));
+                        $imageUrl = '/assets/img/blog/' . $imgFilename;
+                    } elseif ($imgUrlRemote) {
+                        $imgData = @file_get_contents($imgUrlRemote);
+                        if ($imgData && strlen($imgData) > 1000) {
+                            file_put_contents($imgPath, $imgData);
+                            $imageUrl = '/assets/img/blog/' . $imgFilename;
+                        }
+                    }
+                }
+            } catch (\Throwable $imgErr) {
+                Logger::warning('Geração de imagem IA falhou', ['error' => $imgErr->getMessage()]);
             }
 
             // Cria slug
