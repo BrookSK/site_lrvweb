@@ -212,22 +212,59 @@ Retorne APENAS um JSON válido com essas chaves.";
     {
         $db = Database::getInstance();
         $baseUrl = Config::get('app.url', 'https://lrvweb.com.br');
+        $today = date('Y-m-d');
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">';
 
-        $staticPages = ['', '/sobre', '/servicos', '/hospedagem', '/portfolio', '/blog', '/contato'];
+        // Páginas estáticas com hreflang
+        $staticPages = [
+            ['', 1.0, 'weekly'],
+            ['/sobre', 0.8, 'monthly'],
+            ['/servicos', 0.9, 'weekly'],
+            ['/hospedagem', 0.9, 'weekly'],
+            ['/portfolio', 0.8, 'weekly'],
+            ['/blog', 0.9, 'daily'],
+            ['/contato', 0.7, 'monthly'],
+        ];
+
         $languages = ['pt', 'en', 'es'];
 
-        foreach ($languages as $lang) {
-            foreach ($staticPages as $page) {
-                $xml .= "<url><loc>{$baseUrl}/{$lang}{$page}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>";
+        foreach ($staticPages as $page) {
+            foreach ($languages as $lang) {
+                $xml .= "<url>";
+                $xml .= "<loc>{$baseUrl}/{$lang}{$page[0]}</loc>";
+                $xml .= "<lastmod>{$today}</lastmod>";
+                $xml .= "<changefreq>{$page[2]}</changefreq>";
+                $xml .= "<priority>{$page[1]}</priority>";
+                // Hreflang alternates
+                foreach ($languages as $altLang) {
+                    $xml .= "<xhtml:link rel=\"alternate\" hreflang=\"{$altLang}\" href=\"{$baseUrl}/{$altLang}{$page[0]}\"/>";
+                }
+                $xml .= "</url>";
             }
         }
 
-        $posts = $db->fetchAll("SELECT slug, language, updated_at FROM blog_posts WHERE status = 'published' AND deleted_at IS NULL");
+        // Blog posts
+        $posts = $db->fetchAll("SELECT slug, language, updated_at FROM blog_posts WHERE status = 'published' AND deleted_at IS NULL ORDER BY published_at DESC");
         foreach ($posts as $post) {
-            $xml .= "<url><loc>{$baseUrl}/{$post['language']}/blog/{$post['slug']}</loc><lastmod>" . date('Y-m-d', strtotime($post['updated_at'])) . "</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>";
+            $xml .= "<url><loc>{$baseUrl}/{$post['language']}/blog/{$post['slug']}</loc><lastmod>" . date('Y-m-d', strtotime($post['updated_at'])) . "</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>";
+        }
+
+        // Portfolio
+        $portfolios = $db->fetchAll("SELECT slug, updated_at FROM portfolios WHERE is_active = 1");
+        foreach ($portfolios as $item) {
+            foreach ($languages as $lang) {
+                $xml .= "<url><loc>{$baseUrl}/{$lang}/portfolio/{$item['slug']}</loc><lastmod>" . date('Y-m-d', strtotime($item['updated_at'])) . "</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>";
+            }
+        }
+
+        // Serviços
+        $services = $db->fetchAll("SELECT slug, updated_at FROM services WHERE is_active = 1");
+        foreach ($services as $svc) {
+            foreach ($languages as $lang) {
+                $xml .= "<url><loc>{$baseUrl}/{$lang}/servicos/{$svc['slug']}</loc><lastmod>" . date('Y-m-d', strtotime($svc['updated_at'])) . "</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>";
+            }
         }
 
         $xml .= '</urlset>';

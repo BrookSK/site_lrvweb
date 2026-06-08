@@ -21,6 +21,18 @@ use App\Controllers\Site\PageController;
 
 /** @var \Core\Router $router */
 
+// === Redirects de URLs antigas (SEO - preserva links indexados) ===
+// Se o site antigo tinha /portfolio/slug sem prefixo de idioma, redireciona
+$router->get('/portfolio/{slug}', [HomeController::class, 'redirectOld']);
+$router->get('/servicos/{slug}', [HomeController::class, 'redirectOld']);
+$router->get('/blog/{slug}', [HomeController::class, 'redirectOld']);
+$router->get('/sobre', [HomeController::class, 'redirectOld']);
+$router->get('/servicos', [HomeController::class, 'redirectOld']);
+$router->get('/portfolio', [HomeController::class, 'redirectOld']);
+$router->get('/blog', [HomeController::class, 'redirectOld']);
+$router->get('/contato', [HomeController::class, 'redirectOld']);
+$router->get('/hospedagem', [HomeController::class, 'redirectOld']);
+
 // === Multilíngue Redirect ===
 $router->get('/', [HomeController::class, 'index']);
 

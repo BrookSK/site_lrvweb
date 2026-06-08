@@ -18,6 +18,20 @@ use Core\Response;
 class HomeController extends Controller
 {
     /**
+     * Redireciona URLs antigas (sem prefixo de idioma) para as novas
+     * Redirect 301 para preservar SEO
+     */
+    public function redirectOld(Request $request, Response $response, array $params = []): void
+    {
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $newUrl = '/pt' . $uri;
+        $response->setStatusCode(301);
+        $response->setHeader('Location', $newUrl);
+        $response->setHeader('Cache-Control', 'public, max-age=86400');
+        $response->send();
+    }
+
+    /**
      * Página inicial
      */
     public function index(Request $request, Response $response): string
