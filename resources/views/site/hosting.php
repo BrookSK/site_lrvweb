@@ -22,16 +22,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php
             $diffs = [
-                ['⚡', \Core\I18n::get('feat_performance'), \Core\I18n::get('feat_performance_desc')],
-                ['🛡️', \Core\I18n::get('feat_ddos'), \Core\I18n::get('feat_ddos_desc')],
-                ['🌐', \Core\I18n::get('feat_connectivity'), \Core\I18n::get('feat_connectivity_desc')],
-                ['📈', \Core\I18n::get('feat_upgrades'), \Core\I18n::get('feat_upgrades_desc')],
-                ['🖥️', \Core\I18n::get('feat_hardware'), \Core\I18n::get('feat_hardware_desc')],
-                ['💰', \Core\I18n::get('feat_pricing'), \Core\I18n::get('feat_pricing_desc')],
+                ['zap', \Core\I18n::get('feat_performance'), \Core\I18n::get('feat_performance_desc')],
+                ['shield', \Core\I18n::get('feat_ddos'), \Core\I18n::get('feat_ddos_desc')],
+                ['wifi', \Core\I18n::get('feat_connectivity'), \Core\I18n::get('feat_connectivity_desc')],
+                ['trending-up', \Core\I18n::get('feat_upgrades'), \Core\I18n::get('feat_upgrades_desc')],
+                ['server', \Core\I18n::get('feat_hardware'), \Core\I18n::get('feat_hardware_desc')],
+                ['credit-card', \Core\I18n::get('feat_pricing'), \Core\I18n::get('feat_pricing_desc')],
             ];
             foreach ($diffs as $i => $d): ?>
             <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300 group" data-animate="fade-up" data-delay="<?= $i * 80 ?>">
-                <span class="text-3xl block mb-3 group-hover:scale-110 transition-transform"><?= $d[0] ?></span>
+                <i data-lucide="<?= $d[0] ?>" class="w-6 h-6 text-purple-400 mb-3 block group-hover:scale-110 transition-transform"></i>
                 <h3 class="text-white font-semibold mb-2"><?= $d[1] ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed"><?= $d[2] ?></p>
             </div>

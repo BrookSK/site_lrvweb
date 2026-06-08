@@ -27,13 +27,13 @@
                     <div class="absolute inset-0 bg-gradient-to-br from-purple-600/20 to-purple-800/5 rounded-3xl border border-purple-500/20"></div>
                     <div class="absolute top-8 left-8 right-8 bottom-8 bg-gradient-to-br from-purple-950 to-black rounded-2xl flex items-center justify-center">
                         <div class="text-center">
-                            <span class="text-7xl block mb-4">🚀</span>
+                            <i data-lucide="rocket" class="w-16 h-16 text-purple-400"></i>
                             <p class="text-2xl font-bold text-white">+8 Anos</p>
                             <p class="text-purple-300 text-sm">de Experiência</p>
                         </div>
                     </div>
-                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-2xl flex items-center justify-center animate-float"><span class="text-2xl">⚡</span></div>
-                    <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center animate-float" style="animation-delay:1s"><span class="text-xl">💎</span></div>
+                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-purple-600/20 border border-purple-500/30 rounded-2xl flex items-center justify-center animate-float"><i data-lucide="zap" class="w-5 h-5 text-purple-400"></i></div>
+                    <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-purple-600/20 border border-purple-500/30 rounded-xl flex items-center justify-center animate-float" style="animation-delay:1s"><i data-lucide="gem" class="w-5 h-5 text-purple-400"></i></div>
                 </div>
             </div>
         </div>
@@ -51,21 +51,21 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="card-premium text-center" data-animate="fade-up" data-delay="100">
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
-                    <span class="text-3xl">🎯</span>
+                    <i data-lucide="target" class="w-8 h-8 text-purple-400"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_mission') ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_mission_desc') ?></p>
             </div>
             <div class="card-premium text-center" data-animate="fade-up" data-delay="200">
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
-                    <span class="text-3xl">🔭</span>
+                    <i data-lucide="telescope" class="w-8 h-8 text-purple-400"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_vision') ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_vision_desc') ?></p>
             </div>
             <div class="card-premium text-center" data-animate="fade-up" data-delay="300">
                 <div class="w-16 h-16 bg-gradient-to-br from-purple-600/20 to-purple-800/10 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-purple-500/20">
-                    <span class="text-3xl">💎</span>
+                    <i data-lucide="gem" class="w-8 h-8 text-purple-400"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-white mb-3"><?= \Core\I18n::get('about_values') ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed"><?= \Core\I18n::get('about_values_desc') ?></p>
@@ -85,14 +85,14 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php
             $diffs = [
-                ['🛡️', \Core\I18n::get('diff_security'), \Core\I18n::get('diff_security_desc')],
-                ['⚡', \Core\I18n::get('diff_performance'), \Core\I18n::get('diff_performance_desc')],
-                ['🤝', \Core\I18n::get('diff_support'), \Core\I18n::get('diff_support_desc')],
-                ['📈', \Core\I18n::get('diff_results'), \Core\I18n::get('diff_results_desc')],
+                ['shield', \Core\I18n::get('diff_security'), \Core\I18n::get('diff_security_desc')],
+                ['zap', \Core\I18n::get('diff_performance'), \Core\I18n::get('diff_performance_desc')],
+                ['headphones', \Core\I18n::get('diff_support'), \Core\I18n::get('diff_support_desc')],
+                ['bar-chart-3', \Core\I18n::get('diff_results'), \Core\I18n::get('diff_results_desc')],
             ];
             foreach ($diffs as $i => $d): ?>
             <div class="text-center p-6" data-animate="fade-up" data-delay="<?= $i * 100 ?>">
-                <span class="text-4xl block mb-4"><?= $d[0] ?></span>
+                <i data-lucide="<?= $d[0] ?>" class="w-8 h-8 text-purple-400 mx-auto mb-4"></i>
                 <h3 class="text-white font-semibold mb-2"><?= $d[1] ?></h3>
                 <p class="text-gray-400 text-sm"><?= $d[2] ?></p>
             </div>

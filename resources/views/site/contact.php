@@ -71,14 +71,14 @@
                     <h3 class="font-semibold text-white mb-4"><?= \Core\I18n::get('contact_channels') ?></h3>
                     <div class="space-y-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">📧</span></div>
+                            <div class="w-10 h-10 bg-purple-600/20 rounded-xl flex items-center justify-center"><i data-lucide="mail" class="w-5 h-5 text-purple-400"></i></div>
                             <div>
                                 <p class="text-xs text-gray-500">E-mail</p>
                                 <p class="text-sm text-white">contato@lrvweb.com.br</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-600/20 rounded-xl flex items-center justify-center"><span class="text-lg">💬</span></div>
+                            <div class="w-10 h-10 bg-green-600/20 rounded-xl flex items-center justify-center"><i data-lucide="phone" class="w-5 h-5 text-green-400"></i></div>
                             <div>
                                 <p class="text-xs text-gray-500">WhatsApp</p>
                                 <a href="https://wa.me/5517988093160" target="_blank" class="text-sm text-white hover:text-purple-400 transition">(17) 98809-3160</a>

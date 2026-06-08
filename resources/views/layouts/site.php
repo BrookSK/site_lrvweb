@@ -59,6 +59,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= \Core\View::asset('css/app.css') ?>">
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Override Tailwind para botões (garante especificidade) -->
     <style>
         .btn-primary {
@@ -161,5 +164,6 @@
 
     <!-- Scripts -->
     <script src="<?= \Core\View::asset('js/app.js') ?>"></script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>

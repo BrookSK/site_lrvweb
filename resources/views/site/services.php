@@ -21,14 +21,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-16">
             <?php
             $mainServices = [
-                ['☁️', \Core\I18n::get('service_hosting'), \Core\I18n::get('service_hosting_desc'), ['Intel Xeon', 'NVMe SSD', 'DDoS Protection', 'Backup Diário', 'Tráfego Ilimitado', 'Suporte Especializado']],
-                ['⚙️', \Core\I18n::get('service_systems'), \Core\I18n::get('service_systems_desc'), ['PHP, Node.js, React', 'Banco de Dados', 'API REST', 'Painel Admin', 'Integrações', 'Deploy Incluso']],
-                ['🌐', \Core\I18n::get('service_websites'), \Core\I18n::get('service_websites_desc'), ['Design Exclusivo', 'SEO Otimizado', 'Responsivo', 'Alta Velocidade', 'Painel CMS', 'SSL Incluso']],
+                ['cloud', \Core\I18n::get('service_hosting'), \Core\I18n::get('service_hosting_desc'), ['Intel Xeon', 'NVMe SSD', 'DDoS Protection', 'Backup Diário', 'Tráfego Ilimitado', 'Suporte Especializado']],
+                ['settings', \Core\I18n::get('service_systems'), \Core\I18n::get('service_systems_desc'), ['PHP, Node.js, React', 'Banco de Dados', 'API REST', 'Painel Admin', 'Integrações', 'Deploy Incluso']],
+                ['globe', \Core\I18n::get('service_websites'), \Core\I18n::get('service_websites_desc'), ['Design Exclusivo', 'SEO Otimizado', 'Responsivo', 'Alta Velocidade', 'Painel CMS', 'SSL Incluso']],
             ];
             foreach ($mainServices as $i => $s): ?>
             <div class="card-premium flex flex-col" data-animate="fade-up" data-delay="<?= $i * 120 ?>">
                 <div class="w-14 h-14 bg-purple-600/15 border border-purple-500/20 rounded-2xl flex items-center justify-center mb-5">
-                    <span class="text-3xl"><?= $s[0] ?></span>
+                    <i data-lucide="<?= $s[0] ?>" class="w-8 h-8 text-purple-400"></i>
                 </div>
                 <h3 class="text-xl font-bold text-white mb-3"><?= $s[1] ?></h3>
                 <p class="text-gray-400 text-sm leading-relaxed mb-6"><?= $s[2] ?></p>
@@ -49,19 +49,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <?php
             $secondary = [
-                ['🛒', \Core\I18n::get('service_ecommerce'), \Core\I18n::get('service_ecommerce_desc')],
-                ['💬', \Core\I18n::get('service_automation'), \Core\I18n::get('service_automation_desc')],
-                ['📱', \Core\I18n::get('service_social'), \Core\I18n::get('service_social_desc')],
-                ['🎨', \Core\I18n::get('service_branding'), \Core\I18n::get('service_branding_desc')],
-                ['🔧', \Core\I18n::get('service_maintenance'), \Core\I18n::get('service_maintenance_desc')],
-                ['💾', \Core\I18n::get('service_backup'), \Core\I18n::get('service_backup_desc')],
-                ['📧', \Core\I18n::get('service_email'), \Core\I18n::get('service_email_desc')],
-                ['📅', \Core\I18n::get('service_scheduling'), \Core\I18n::get('service_scheduling_desc')],
+                ['shopping-cart', \Core\I18n::get('service_ecommerce'), \Core\I18n::get('service_ecommerce_desc')],
+                ['message-circle', \Core\I18n::get('service_automation'), \Core\I18n::get('service_automation_desc')],
+                ['smartphone', \Core\I18n::get('service_social'), \Core\I18n::get('service_social_desc')],
+                ['palette', \Core\I18n::get('service_branding'), \Core\I18n::get('service_branding_desc')],
+                ['wrench', \Core\I18n::get('service_maintenance'), \Core\I18n::get('service_maintenance_desc')],
+                ['hard-drive', \Core\I18n::get('service_backup'), \Core\I18n::get('service_backup_desc')],
+                ['mail', \Core\I18n::get('service_email'), \Core\I18n::get('service_email_desc')],
+                ['calendar', \Core\I18n::get('service_scheduling'), \Core\I18n::get('service_scheduling_desc')],
             ];
             foreach ($secondary as $i => $s): ?>
             <div class="p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300 group" data-animate="fade-up" data-delay="<?= $i * 60 ?>">
                 <div class="flex items-center gap-3">
-                    <span class="text-xl group-hover:scale-110 transition-transform"><?= $s[0] ?></span>
+                    <i data-lucide="<?= $s[0] ?>" class="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform"></i>
                     <div>
                         <h4 class="text-white text-sm font-semibold"><?= $s[1] ?></h4>
                         <p class="text-gray-500 text-xs mt-0.5"><?= $s[2] ?></p>
@@ -84,15 +84,15 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <?php
             $steps = [
-                ['01', '💬', \Core\I18n::get('step_1_title'), \Core\I18n::get('step_1_desc')],
-                ['02', '📋', \Core\I18n::get('step_2_title'), \Core\I18n::get('step_2_desc')],
-                ['03', '🚀', \Core\I18n::get('step_3_title'), \Core\I18n::get('step_3_desc')],
-                ['04', '✅', \Core\I18n::get('step_4_title'), \Core\I18n::get('step_4_desc')],
+                ['01', 'message-circle', \Core\I18n::get('step_1_title'), \Core\I18n::get('step_1_desc')],
+                ['02', 'clipboard', \Core\I18n::get('step_2_title'), \Core\I18n::get('step_2_desc')],
+                ['03', 'rocket', \Core\I18n::get('step_3_title'), \Core\I18n::get('step_3_desc')],
+                ['04', 'check-circle', \Core\I18n::get('step_4_title'), \Core\I18n::get('step_4_desc')],
             ];
             foreach ($steps as $i => $step): ?>
             <div class="text-center" data-animate="fade-up" data-delay="<?= $i * 120 ?>">
                 <div class="w-16 h-16 bg-purple-600/10 border border-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 relative">
-                    <span class="text-2xl"><?= $step[1] ?></span>
+                    <i data-lucide="<?= $step[1] ?>" class="w-6 h-6 text-purple-400"></i>
                     <span class="absolute -top-2 -right-2 w-7 h-7 bg-purple-600 text-white text-xs font-bold rounded-full flex items-center justify-center"><?= $step[0] ?></span>
                 </div>
                 <h3 class="text-white font-semibold mb-2"><?= $step[2] ?></h3>

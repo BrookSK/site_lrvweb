@@ -26,9 +26,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php foreach ($portfolios as $i => $item): ?>
             <a href="/<?= $locale ?>/portfolio/<?= $item['slug'] ?>" class="group block" data-animate="fade-up" data-delay="<?= ($i % 6) * 100 ?>">
-                <div class="relative aspect-[4/3] bg-gray-900 rounded-2xl overflow-hidden border border-white/5 group-hover:border-purple-500/50 transition-all duration-500">
+                <div class="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden border border-white/5 group-hover:border-purple-500/50 transition-all duration-500">
                     <?php if ($item['image_cover']): ?>
-                        <img src="<?= htmlspecialchars($item['image_cover']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">
+                        <img src="<?= htmlspecialchars($item['image_cover']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" loading="lazy">
                     <?php else: ?>
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-950 to-black"><span class="text-5xl opacity-50">🌐</span></div>
                     <?php endif; ?>
