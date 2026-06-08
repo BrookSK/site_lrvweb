@@ -123,12 +123,14 @@ class BlogController extends Controller
             LEFT JOIN users u ON p.author_id = u.id
             WHERE (p.tags LIKE :tag1 OR p.tags LIKE :tag2 OR p.tags LIKE :tag3 OR p.tags LIKE :tag4)
             AND p.status = 'published' AND p.deleted_at IS NULL
+            AND p.language = :lang
             ORDER BY p.published_at DESC
         ", [
             'tag1' => "%{$tag}%",
             'tag2' => "%" . str_replace(' ', '%', $tag) . "%",
             'tag3' => "%" . strtolower($tag) . "%",
             'tag4' => "%" . mb_strtolower($tag) . "%",
+            'lang' => $locale,
         ]);
 
         return $this->view('site/blog', [
