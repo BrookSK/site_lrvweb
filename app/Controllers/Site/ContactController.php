@@ -162,4 +162,42 @@ Para responder, basta clicar em "Responder" — irá direto para ' . htmlspecial
         $this->session->flash('success', \Core\I18n::get('message_sent'));
         $this->redirect('/' . \Core\I18n::getLocale() . '/contato');
     }
+
+    /**
+     * Cadastro na newsletter
+     */
+    public function newsletter(Request $request, Response $response): void
+    {
+        $email = trim($request->input('email') ?? '');
+
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if ($request->isAjax()) {
+                $this->response->error('E-mail inválido', 422);
+            } else {
+                $this->session->flash('error', 'E-mail inválido.');
+                $this->redirect($_SERVER['HTTP_REFERER'] ?? '/');
+            }
+            return;
+        }
+
+        $db = \Core\Database::getInstance();
+
+        // Verifica se já existe
+        $existing = $db->fetchOne("SELECT id FROM newsletter_subscribers WHERE email = :email", ['email' => $email]);
+
+        if (!$existing) {
+            $db->insert('newsletter_subscribers', [
+                'email' => $email,
+                'is_active' => 1,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        if ($request->isAjax()) {
+            $this->response->success(null, 'Cadastrado com sucesso!');
+        } else {
+            $this->session->flash('success', 'E-mail cadastrado!');
+            $this->redirect($_SERVER['HTTP_REFERER'] ?? '/');
+        }
+    }
 }

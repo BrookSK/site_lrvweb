@@ -93,5 +93,8 @@ $router->get('/orcamento/{hash}', [BudgetPublicController::class, 'show']);
 $router->get('/sitemap.xml', [PageController::class, 'sitemap']);
 $router->get('/robots.txt', [PageController::class, 'robots']);
 
+// === Newsletter ===
+$router->post('/newsletter', [ContactController::class, 'newsletter']);
+
 // === Cron via URL (com token de segurança) ===
 $router->get('/cron/blog-ai/{token}', [PageController::class, 'cronBlogAi']);

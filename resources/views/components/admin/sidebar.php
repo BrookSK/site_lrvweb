@@ -24,6 +24,7 @@
             ['icon' => 'pen-tool', 'label' => 'Blog', 'url' => '/admin/blog', 'permission' => 'blog.view'],
             ['icon' => 'layout', 'label' => 'Páginas', 'url' => '/admin/paginas', 'permission' => 'settings.manage'],
             ['icon' => 'settings', 'label' => 'Configurações', 'url' => '/admin/configuracoes', 'permission' => 'settings.view'],
+            ['icon' => 'mail', 'label' => 'Newsletter', 'url' => '/admin/newsletter', 'permission' => 'settings.view'],
         ];
 
         $userPermissions = $user['permissions'] ?? [];

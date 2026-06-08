@@ -78,11 +78,16 @@
                 <!-- Newsletter mini -->
                 <div class="mt-6">
                     <p class="text-xs text-gray-500 mb-2">Receba novidades</p>
-                    <div class="flex gap-2">
-                        <input type="email" placeholder="Seu e-mail" class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500">
-                        <button class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></button>
-                    </div>
+                    <form action="/newsletter" method="POST" class="flex gap-2" id="newsletter-form">
+                        <?= \Core\View::csrf() ?>
+                        <input type="email" name="email" required placeholder="Seu e-mail" class="flex-1 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500">
+                        <button type="submit" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></button>
+                    </form>
+                    <p id="newsletter-msg" class="text-xs text-green-400 mt-1 hidden">✓ Cadastrado com sucesso!</p>
                 </div>
+                <script>
+                document.getElementById('newsletter-form')?.addEventListener('submit',async function(e){e.preventDefault();const em=this.querySelector('input[name="email"]').value;const tk=this.querySelector('input[name="_token"]').value;try{const r=await fetch('/newsletter',{method:'POST',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest','X-CSRF-Token':tk},body:JSON.stringify({email:em})});const d=await r.json();if(d.success){document.getElementById('newsletter-msg').classList.remove('hidden');this.querySelector('input[name="email"]').value='';}}catch(err){}});
+                </script>
             </div>
         </div>
 

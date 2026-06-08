@@ -160,6 +160,10 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
     $router->put('/notificacoes/{id}/lida', [NotificationController::class, 'markAsRead']);
     $router->put('/notificacoes/todas-lidas', [NotificationController::class, 'markAllAsRead']);
 
+    // Newsletter
+    $router->get('/newsletter', [\App\Controllers\Admin\NewsletterController::class, 'index']);
+    $router->delete('/newsletter/{id}', [\App\Controllers\Admin\NewsletterController::class, 'destroy']);
+
     // Cache
     $router->post('/cache/limpar', [SettingsController::class, 'clearCache']);
 
