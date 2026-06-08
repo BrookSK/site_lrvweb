@@ -33,10 +33,14 @@
                 <p class="text-sm text-white font-semibold"><?= htmlspecialchars($portfolio['category_name']) ?></p>
             </div>
             <?php endif; ?>
-            <?php if ($portfolio['completed_at']): ?>
+            <?php if ($portfolio['completed_at']):
+                $mesesPT = [1=>'Jan',2=>'Fev',3=>'Mar',4=>'Abr',5=>'Mai',6=>'Jun',7=>'Jul',8=>'Ago',9=>'Set',10=>'Out',11=>'Nov',12=>'Dez'];
+                $mesNum = (int)date('n', strtotime($portfolio['completed_at']));
+                $ano = date('Y', strtotime($portfolio['completed_at']));
+            ?>
             <div class="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-center">
                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Concluído em</p>
-                <p class="text-sm text-white font-semibold"><?= date('M/Y', strtotime($portfolio['completed_at'])) ?></p>
+                <p class="text-sm text-white font-semibold"><?= $mesesPT[$mesNum] ?>/<?= $ano ?></p>
             </div>
             <?php endif; ?>
             <?php if ($portfolio['url']): ?>
