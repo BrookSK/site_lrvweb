@@ -10,9 +10,6 @@
         <div class="max-w-3xl" data-animate="fade-up" data-delay="100">
             <span class="text-purple-400 text-sm font-semibold uppercase tracking-wider"><?= htmlspecialchars($portfolio['category_name'] ?? '') ?></span>
             <h1 class="text-3xl md:text-4xl font-bold text-white mt-2"><?= htmlspecialchars($portfolio['name']) ?></h1>
-            <?php if ($portfolio['client_name']): ?>
-                <p class="text-gray-400 mt-3 text-sm">Projeto realizado para <strong class="text-white"><?= htmlspecialchars($portfolio['client_name']) ?></strong></p>
-            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -34,12 +31,6 @@
             <div class="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-center">
                 <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Categoria</p>
                 <p class="text-sm text-white font-semibold"><?= htmlspecialchars($portfolio['category_name']) ?></p>
-            </div>
-            <?php endif; ?>
-            <?php if ($portfolio['client_name']): ?>
-            <div class="p-4 rounded-xl bg-white/[0.03] border border-white/5 text-center">
-                <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Cliente</p>
-                <p class="text-sm text-white font-semibold"><?= htmlspecialchars($portfolio['client_name']) ?></p>
             </div>
             <?php endif; ?>
             <?php if ($portfolio['completed_at']): ?>
