@@ -112,17 +112,24 @@ class BlogController extends Controller
 
     public function tag(Request $request, Response $response, array $params): string
     {
-        $tag = $params['slug'] ?? '';
+        $tag = urldecode($params['slug'] ?? '');
         $db = Database::getInstance();
+        $locale = \Core\I18n::getLocale();
 
         $posts = $db->fetchAll("
             SELECT p.*, bc.name as category_name, u.name as author_name
             FROM blog_posts p
             LEFT JOIN blog_categories bc ON p.category_id = bc.id
             LEFT JOIN users u ON p.author_id = u.id
-            WHERE p.tags LIKE :tag AND p.status = 'published' AND p.deleted_at IS NULL
+            WHERE (p.tags LIKE :tag1 OR p.tags LIKE :tag2 OR p.tags LIKE :tag3 OR p.tags LIKE :tag4)
+            AND p.status = 'published' AND p.deleted_at IS NULL
             ORDER BY p.published_at DESC
-        ", ['tag' => "%{$tag}%"]);
+        ", [
+            'tag1' => "%{$tag}%",
+            'tag2' => "%" . str_replace(' ', '%', $tag) . "%",
+            'tag3' => "%" . strtolower($tag) . "%",
+            'tag4' => "%" . mb_strtolower($tag) . "%",
+        ]);
 
         return $this->view('site/blog', [
             'title' => "Tag: {$tag} - Blog LRV Web",
