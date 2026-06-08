@@ -60,8 +60,10 @@
             ];
             foreach ($secondary as $i => $s): ?>
             <div class="p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-purple-500/30 transition-all duration-300 group" data-animate="fade-up" data-delay="<?= $i * 60 ?>">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="<?= $s[0] ?>" class="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-purple-600/10 border border-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="<?= $s[0] ?>" class="w-5 h-5 text-purple-400"></i>
+                    </div>
                     <div>
                         <h4 class="text-white text-sm font-semibold"><?= $s[1] ?></h4>
                         <p class="text-gray-500 text-xs mt-0.5"><?= $s[2] ?></p>
