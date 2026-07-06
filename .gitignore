@@ -54,3 +54,4 @@ composer.lock
 # Build
 build/
 dist/
+DOCUMENTACAO_SOFTWARE.md
