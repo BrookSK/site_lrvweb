@@ -236,7 +236,7 @@
                     </div>
                 </div>
 
-                <div class="flex gap-4">
+                <div class="flex flex-col sm:flex-row gap-4">
                     <a href="https://cloud.lrvweb.com.br/#planos" target="_blank" class="btn-primary"><?= \Core\I18n::get('hosting_see_plans') ?></a>
                     <a href="https://cloud.lrvweb.com.br/contato" target="_blank" class="btn-outline"><?= \Core\I18n::get('hosting_talk_consultant') ?></a>
                 </div>
