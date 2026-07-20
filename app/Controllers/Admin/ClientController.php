@@ -171,19 +171,31 @@ class ClientController extends Controller
                     'updated_at' => date('Y-m-d H:i:s'),
                 ], 'id = :id', ['id' => $client['user_id']]);
             } else {
-                // Cria usuário se não existir
-                $clientRoleId = $db->fetchOne("SELECT id FROM roles WHERE name = 'cliente'");
-                if ($clientRoleId) {
-                    $userId = $db->insert('users', [
-                        'name' => $clientData['name'] ?? $client['name'],
-                        'email' => $clientData['email'] ?? $client['email'],
+                // Cria usuário se não existir (ou vincula existente pelo e-mail)
+                $email = $clientData['email'] ?? $client['email'];
+                $existingUser = $db->fetchOne("SELECT id FROM users WHERE email = :email", ['email' => $email]);
+
+                if ($existingUser) {
+                    // Usuário já existe com esse e-mail — apenas vincula e atualiza senha
+                    $db->update('users', [
                         'password' => password_hash($password, PASSWORD_ARGON2ID),
-                        'role_id' => (int) $clientRoleId['id'],
-                        'is_active' => 1,
-                        'created_at' => date('Y-m-d H:i:s'),
                         'updated_at' => date('Y-m-d H:i:s'),
-                    ]);
-                    $db->update('clients', ['user_id' => $userId], 'id = :id', ['id' => $id]);
+                    ], 'id = :id', ['id' => $existingUser['id']]);
+                    $db->update('clients', ['user_id' => (int) $existingUser['id']], 'id = :id', ['id' => $id]);
+                } else {
+                    $clientRoleId = $db->fetchOne("SELECT id FROM roles WHERE name = 'cliente'");
+                    if ($clientRoleId) {
+                        $userId = $db->insert('users', [
+                            'name' => $clientData['name'] ?? $client['name'],
+                            'email' => $email,
+                            'password' => password_hash($password, PASSWORD_ARGON2ID),
+                            'role_id' => (int) $clientRoleId['id'],
+                            'is_active' => 1,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ]);
+                        $db->update('clients', ['user_id' => $userId], 'id = :id', ['id' => $id]);
+                    }
                 }
             }
         }

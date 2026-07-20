@@ -22,7 +22,7 @@ class Budget extends Model
         'discount_percent', 'discount_value', 'final_value', 'payment_type',
         'installments', 'installment_value', 'minimum_entry', 'validity_date',
         'payment_pix', 'payment_card', 'payment_boleto', 'notes',
-        'internal_notes', 'about_company', 'created_by',
+        'internal_notes', 'ai_transcript', 'about_company', 'created_by',
     ];
 
     /**

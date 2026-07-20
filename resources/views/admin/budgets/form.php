@@ -3,6 +3,7 @@
         <form action="<?= $budget ? '/admin/orcamentos/' . $budget['id'] : '/admin/orcamentos' ?>" method="POST" class="space-y-8" id="budget-form">
             <?= \Core\View::csrf() ?>
             <?php if ($budget): ?><?= \Core\View::method('PUT') ?><?php endif; ?>
+            <input type="hidden" name="ai_transcript" id="ai_transcript_input" value="<?= htmlspecialchars($budget['ai_transcript'] ?? '') ?>">
 
             <!-- =============================== -->
             <!-- ASSISTENTE DE VOZ COM IA -->
@@ -391,6 +392,7 @@ async function sendBudgetToAI() {
             if (d.transcript) {
                 document.getElementById('voice-transcript').classList.remove('hidden');
                 document.getElementById('transcript-text').textContent = d.transcript;
+                document.getElementById('ai_transcript_input').value = d.transcript;
             }
 
             // Preenche nome do orçamento

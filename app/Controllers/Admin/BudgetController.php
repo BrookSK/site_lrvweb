@@ -115,6 +115,7 @@ class BudgetController extends Controller
             'installments' => (int) ($request->input('installments') ?? 1),
             'notes' => $request->input('notes'),
             'internal_notes' => $request->input('internal_notes'),
+            'ai_transcript' => $request->input('ai_transcript') ?: null,
             'about_company' => $request->input('about_company'),
             'created_by' => $user['id'],
             'created_at' => date('Y-m-d H:i:s'),
