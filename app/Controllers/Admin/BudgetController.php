@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Admin;
 
+use Core\Config;
 use Core\Controller;
 use Core\Database;
 use Core\Logger;
@@ -483,6 +484,239 @@ class BudgetController extends Controller
         } else {
             $this->session->flash('success', 'Orçamento excluído!');
             $this->redirect('/admin/orcamentos');
+        }
+    }
+
+    /**
+     * IA preenche campos do orçamento baseado na transcrição de voz.
+     * Cria cliente e projeto automaticamente se não existirem.
+     */
+    public function aiAutofill(Request $request, Response $response): void
+    {
+        $this->requirePermission('budgets.create');
+
+        $apiKey = Config::get('openai.api_key') ?: Config::setting('openai.api_key');
+        if (empty($apiKey)) {
+            $this->response->error('API Key do OpenAI não configurada', 400);
+            return;
+        }
+
+        $model = Config::setting('openai.model') ?: Config::get('openai.model', 'gpt-4o');
+        $transcript = $request->input('transcript') ?? '';
+
+        // Se veio áudio, transcreve com Whisper
+        $audioFile = $request->file('audio');
+        if ($audioFile && $audioFile['error'] === UPLOAD_ERR_OK) {
+            $ch = curl_init('https://api.openai.com/v1/audio/transcriptions');
+            $cfile = new \CURLFile($audioFile['tmp_name'], $audioFile['type'] ?? 'audio/webm', 'recording.webm');
+            curl_setopt_array($ch, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => ['file' => $cfile, 'model' => 'whisper-1', 'language' => 'pt'],
+                CURLOPT_HTTPHEADER => ["Authorization: Bearer {$apiKey}"],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 60,
+            ]);
+            $whisperResponse = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode === 200) {
+                $whisperData = json_decode($whisperResponse, true);
+                $transcript = $whisperData['text'] ?? '';
+            } else {
+                Logger::error('Whisper falhou no orçamento', ['http' => $httpCode, 'response' => $whisperResponse]);
+                $this->response->error('Erro ao transcrever áudio (HTTP ' . $httpCode . ')', 500);
+                return;
+            }
+        }
+
+        if (empty($transcript)) {
+            $this->response->error('Nenhum áudio ou transcrição recebida', 400);
+            return;
+        }
+
+        $db = Database::getInstance();
+
+        // Busca dados para contexto
+        $clients = $db->fetchAll("SELECT id, name, company FROM clients WHERE is_active = 1 AND deleted_at IS NULL ORDER BY name");
+        $clientNames = array_map(fn($c) => $c['name'] . ($c['company'] ? ' (' . $c['company'] . ')' : ''), $clients);
+
+        $projects = $db->fetchAll("SELECT id, name, client_id FROM projects WHERE deleted_at IS NULL ORDER BY name");
+        $projectNames = array_map(fn($p) => $p['name'], $projects);
+
+        $prompt = "Você é um assistente especializado em interpretar descrições faladas de orçamentos de uma empresa de desenvolvimento web/tecnologia.
+
+Baseado na transcrição abaixo, extraia TODAS as informações para montar um orçamento completo.
+
+Transcrição: \"{$transcript}\"
+
+Clientes cadastrados: " . implode(', ', $clientNames) . "
+Projetos cadastrados: " . implode(', ', $projectNames) . "
+
+Retorne APENAS um JSON válido com estas chaves:
+
+{
+  \"budget_name\": \"Nome descritivo do orçamento (ex: Proposta Web + E-commerce MC Tecnologia)\",
+  \"client\": {
+    \"name\": \"Nome do cliente ou empresa mencionada (ex: MC Tecnologia)\",
+    \"existing_id\": null,
+    \"is_new\": true
+  },
+  \"project\": {
+    \"name\": \"Nome do projeto (ex: Sites para Revenda MC Tecnologia)\",
+    \"description\": \"Breve descrição do projeto\",
+    \"existing_id\": null,
+    \"is_new\": true
+  },
+  \"payment\": {
+    \"type\": \"one_time ou monthly ou installments\",
+    \"pix\": true,
+    \"card\": true,
+    \"boleto\": true,
+    \"installments\": 1,
+    \"pix_discount_enabled\": false,
+    \"pix_discount_percent\": 5,
+    \"discount_percent\": 0,
+    \"minimum_entry\": null
+  },
+  \"validity_date\": null,
+  \"notes\": \"Observações gerais extraídas da fala\",
+  \"blocks\": [
+    {
+      \"title\": \"Título do item/serviço (ex: Site Institucional)\",
+      \"description\": \"O que inclui este bloco\",
+      \"features\": \"Item 1\\nItem 2\\nItem 3\",
+      \"value\": 400.00,
+      \"deadline\": \"Prazo estimado se mencionado\",
+      \"scope\": \"Escopo técnico\"
+    }
+  ]
+}
+
+REGRAS IMPORTANTES:
+- Se o cliente mencionado EXISTE na lista, preencha existing_id com o ID correspondente e is_new = false.
+- Se NÃO existe, is_new = true e preencha apenas name.
+- Mesma lógica para projeto.
+- Crie blocos separados para cada serviço/item diferente mencionado.
+- Se falou que já é com desconto, discount_percent = 0.
+- Se mencionou desconto no PIX, ative pix_discount_enabled.
+- Se mencionou parcelas no cartão, extraia a quantidade em installments.
+- Se disse que não tem validade, validity_date = null.
+- Valores devem ser numéricos (sem R$, sem ponto de milhar).
+- Interprete expressões coloquiais (\"400 conto\" = 400.00, \"oitocentão\" = 800.00, etc.)";
+
+        try {
+            $ch = curl_init('https://api.openai.com/v1/chat/completions');
+            curl_setopt_array($ch, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode([
+                    'model' => $model,
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Você é um assistente de orçamentos de uma empresa de tecnologia. Sempre responda em JSON válido, sem markdown, sem backticks.'],
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'temperature' => 0.4,
+                    'max_tokens' => 3000,
+                ]),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json', "Authorization: Bearer {$apiKey}"],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 60,
+            ]);
+
+            $aiResponse = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($httpCode !== 200) {
+                $error = json_decode($aiResponse, true);
+                throw new \RuntimeException($error['error']['message'] ?? "OpenAI HTTP {$httpCode}");
+            }
+
+            $result = json_decode($aiResponse, true);
+            $content = $result['choices'][0]['message']['content'] ?? '';
+            $content = preg_replace('/^```json\s*|\s*```$/m', '', trim($content));
+            $data = json_decode($content, true);
+
+            if (!$data || !isset($data['blocks'])) {
+                throw new \RuntimeException('Resposta inválida da IA: ' . mb_substr($content, 0, 200));
+            }
+
+            // === Auto-criar cliente se necessário ===
+            $clientId = null;
+            if (!empty($data['client'])) {
+                if (!empty($data['client']['existing_id'])) {
+                    $clientId = (int) $data['client']['existing_id'];
+                } elseif (!empty($data['client']['name'])) {
+                    // Tenta encontrar por nome similar
+                    $clientName = $data['client']['name'];
+                    $found = $db->fetchOne(
+                        "SELECT id FROM clients WHERE (name LIKE :name OR company LIKE :name) AND is_active = 1 AND deleted_at IS NULL LIMIT 1",
+                        ['name' => '%' . $clientName . '%']
+                    );
+
+                    if ($found) {
+                        $clientId = (int) $found['id'];
+                    } elseif (!empty($data['client']['is_new'])) {
+                        // Cria novo cliente
+                        $clientId = $db->insert('clients', [
+                            'name' => $clientName,
+                            'company' => $clientName,
+                            'is_active' => 1,
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ]);
+                        $data['client_created'] = true;
+                        $data['client_created_id'] = $clientId;
+                    }
+                }
+            }
+            $data['resolved_client_id'] = $clientId;
+
+            // === Auto-criar projeto se necessário ===
+            $projectId = null;
+            if (!empty($data['project'])) {
+                if (!empty($data['project']['existing_id'])) {
+                    $projectId = (int) $data['project']['existing_id'];
+                } elseif (!empty($data['project']['name']) && $clientId) {
+                    // Tenta encontrar por nome similar
+                    $projectName = $data['project']['name'];
+                    $found = $db->fetchOne(
+                        "SELECT id FROM projects WHERE name LIKE :name AND deleted_at IS NULL LIMIT 1",
+                        ['name' => '%' . $projectName . '%']
+                    );
+
+                    if ($found) {
+                        $projectId = (int) $found['id'];
+                    } elseif (!empty($data['project']['is_new'])) {
+                        // Cria novo projeto
+                        $projectId = $db->insert('projects', [
+                            'client_id' => $clientId,
+                            'name' => $projectName,
+                            'description' => $data['project']['description'] ?? null,
+                            'status' => 'planning',
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'updated_at' => date('Y-m-d H:i:s'),
+                        ]);
+                        $data['project_created'] = true;
+                        $data['project_created_id'] = $projectId;
+                    }
+                }
+            }
+            $data['resolved_project_id'] = $projectId;
+
+            $data['transcript'] = $transcript;
+
+            Logger::audit('Orçamento IA preenchido via voz', [
+                'client_id' => $clientId,
+                'project_id' => $projectId,
+                'client_created' => $data['client_created'] ?? false,
+                'project_created' => $data['project_created'] ?? false,
+            ]);
+
+            $this->response->success($data, 'Orçamento preenchido pela IA');
+        } catch (\Throwable $e) {
+            Logger::error('IA Orçamento falhou', ['error' => $e->getMessage()]);
+            $this->response->error('Erro: ' . $e->getMessage(), 500);
         }
     }
 

@@ -67,6 +67,7 @@ $router->group(['prefix' => '/admin', 'middlewares' => ['AuthMiddleware', 'Admin
     $router->get('/orcamentos', [BudgetController::class, 'index']);
     $router->get('/orcamentos/criar', [BudgetController::class, 'create']);
     $router->post('/orcamentos', [BudgetController::class, 'store']);
+    $router->post('/orcamentos/ia-preencher', [BudgetController::class, 'aiAutofill']);
     $router->get('/orcamentos/{id}', [BudgetController::class, 'show']);
     $router->get('/orcamentos/{id}/editar', [BudgetController::class, 'edit']);
     $router->put('/orcamentos/{id}', [BudgetController::class, 'update']);

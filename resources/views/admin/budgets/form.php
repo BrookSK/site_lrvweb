@@ -5,6 +5,42 @@
             <?php if ($budget): ?><?= \Core\View::method('PUT') ?><?php endif; ?>
 
             <!-- =============================== -->
+            <!-- ASSISTENTE DE VOZ COM IA -->
+            <!-- =============================== -->
+            <div class="p-5 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h4 class="text-gray-800 dark:text-white font-semibold text-sm flex items-center gap-2"><span class="text-lg">🎙️</span> Assistente de Voz com IA</h4>
+                        <p class="text-xs text-purple-600 dark:text-purple-300 mt-0.5">Descreva o orçamento falando. A IA preenche tudo, cria cliente e projeto automaticamente.</p>
+                    </div>
+                    <div id="voice-status" class="text-xs text-gray-500">Pronto</div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="button" id="btn-record" onclick="toggleBudgetRecording()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition flex items-center gap-2">
+                        <svg id="mic-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        <span id="btn-record-text">Gravar</span>
+                    </button>
+                    <button type="button" id="btn-ai-fill" onclick="sendBudgetToAI()" class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition flex items-center gap-2 hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Preencher com IA
+                    </button>
+                </div>
+
+                <div id="voice-transcript" class="hidden mt-3 p-3 bg-white dark:bg-gray-900 border border-purple-200 dark:border-gray-700 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-1">Transcrição:</p>
+                    <p id="transcript-text" class="text-sm text-gray-700 dark:text-gray-200 leading-relaxed"></p>
+                </div>
+
+                <div id="ai-loading" class="hidden mt-3 flex items-center gap-2 text-purple-600 dark:text-purple-300 text-sm">
+                    <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                    A IA está interpretando e preenchendo o orçamento...
+                </div>
+
+                <div id="ai-result-info" class="hidden mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-sm text-green-700 dark:text-green-300"></div>
+            </div>
+
+            <!-- =============================== -->
             <!-- INFORMAÇÕES GERAIS -->
             <!-- =============================== -->
             <div>
@@ -261,4 +297,241 @@ document.addEventListener('input', function(e) {
 
 // Calcula ao carregar (para quando editar)
 document.addEventListener('DOMContentLoaded', updatePreview);
+
+// ==========================================
+// ASSISTENTE DE VOZ + IA PARA ORÇAMENTOS
+// ==========================================
+let budgetMediaRecorder = null;
+let budgetAudioChunks = [];
+let budgetIsRecording = false;
+
+function toggleBudgetRecording() {
+    if (budgetIsRecording) {
+        stopBudgetRecording();
+    } else {
+        startBudgetRecording();
+    }
+}
+
+async function startBudgetRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        budgetMediaRecorder = new MediaRecorder(stream);
+        budgetAudioChunks = [];
+
+        budgetMediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) budgetAudioChunks.push(event.data);
+        };
+
+        budgetMediaRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop());
+        };
+
+        budgetMediaRecorder.start();
+        budgetIsRecording = true;
+
+        document.getElementById('btn-record').classList.remove('bg-purple-600', 'hover:bg-purple-700');
+        document.getElementById('btn-record').classList.add('bg-red-600', 'hover:bg-red-700');
+        document.getElementById('btn-record-text').textContent = 'Parar Gravação';
+        document.getElementById('voice-status').textContent = '🔴 Gravando...';
+        document.getElementById('voice-status').className = 'text-xs text-red-500';
+        document.getElementById('ai-result-info').classList.add('hidden');
+    } catch (err) {
+        alert('Não foi possível acessar o microfone: ' + err.message);
+    }
+}
+
+function stopBudgetRecording() {
+    if (budgetMediaRecorder && budgetMediaRecorder.state !== 'inactive') {
+        budgetMediaRecorder.stop();
+    }
+    budgetIsRecording = false;
+
+    document.getElementById('btn-record').classList.add('bg-purple-600', 'hover:bg-purple-700');
+    document.getElementById('btn-record').classList.remove('bg-red-600', 'hover:bg-red-700');
+    document.getElementById('btn-record-text').textContent = 'Gravar';
+    document.getElementById('voice-status').textContent = '✓ Gravação finalizada. Clique para preencher com IA.';
+    document.getElementById('voice-status').className = 'text-xs text-green-600 dark:text-green-400';
+    document.getElementById('btn-ai-fill').classList.remove('hidden');
+}
+
+async function sendBudgetToAI() {
+    if (budgetAudioChunks.length === 0) {
+        alert('Nenhum áudio gravado.');
+        return;
+    }
+
+    const loading = document.getElementById('ai-loading');
+    const btn = document.getElementById('btn-ai-fill');
+    const resultInfo = document.getElementById('ai-result-info');
+    loading.classList.remove('hidden');
+    btn.classList.add('hidden');
+    resultInfo.classList.add('hidden');
+    document.getElementById('voice-status').textContent = '⏳ Enviando áudio e processando com IA...';
+    document.getElementById('voice-status').className = 'text-xs text-purple-600 dark:text-purple-400';
+
+    try {
+        const audioBlob = new Blob(budgetAudioChunks, { type: 'audio/webm' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'recording.webm');
+        formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+        const response = await fetch('/admin/orcamentos/ia-preencher', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data) {
+            const d = data.data;
+
+            // Mostra transcrição
+            if (d.transcript) {
+                document.getElementById('voice-transcript').classList.remove('hidden');
+                document.getElementById('transcript-text').textContent = d.transcript;
+            }
+
+            // Preenche nome do orçamento
+            if (d.budget_name) {
+                document.querySelector('input[name="name"]').value = d.budget_name;
+            }
+
+            // Seleciona/define cliente
+            if (d.resolved_client_id) {
+                const clientSelect = document.querySelector('select[name="client_id"]');
+                clientSelect.value = d.resolved_client_id;
+                // Se foi criado agora e não existe na lista, adiciona a option
+                if (!clientSelect.querySelector(`option[value="${d.resolved_client_id}"]`)) {
+                    const opt = document.createElement('option');
+                    opt.value = d.resolved_client_id;
+                    opt.textContent = d.client?.name || 'Novo Cliente';
+                    opt.selected = true;
+                    clientSelect.appendChild(opt);
+                } else {
+                    clientSelect.value = d.resolved_client_id;
+                }
+            }
+
+            // Seleciona/define projeto
+            if (d.resolved_project_id) {
+                const projSelect = document.querySelector('select[name="project_id"]');
+                if (projSelect) {
+                    if (!projSelect.querySelector(`option[value="${d.resolved_project_id}"]`)) {
+                        const opt = document.createElement('option');
+                        opt.value = d.resolved_project_id;
+                        opt.textContent = d.project?.name || 'Novo Projeto';
+                        opt.selected = true;
+                        projSelect.appendChild(opt);
+                    } else {
+                        projSelect.value = d.resolved_project_id;
+                    }
+                }
+            }
+
+            // Preenche pagamento
+            if (d.payment) {
+                const p = d.payment;
+                if (p.type) {
+                    const payTypeSelect = document.querySelector('select[name="payment_type"]');
+                    if (payTypeSelect) payTypeSelect.value = p.type;
+                }
+                if (p.installments) {
+                    const installInput = document.querySelector('input[name="installments"]');
+                    if (installInput) installInput.value = p.installments;
+                }
+                if (p.discount_percent !== undefined) {
+                    const discInput = document.querySelector('input[name="discount_percent"]');
+                    if (discInput) discInput.value = p.discount_percent;
+                }
+                if (p.minimum_entry !== null && p.minimum_entry !== undefined) {
+                    const entryInput = document.querySelector('input[name="minimum_entry"]');
+                    if (entryInput) entryInput.value = p.minimum_entry;
+                }
+
+                // Checkboxes de forma de pagamento
+                const pixCb = document.querySelector('input[name="payment_pix"]');
+                const cardCb = document.querySelector('input[name="payment_card"]');
+                const boletoCb = document.querySelector('input[name="payment_boleto"]');
+                if (pixCb) pixCb.checked = p.pix !== false;
+                if (cardCb) cardCb.checked = p.card !== false;
+                if (boletoCb) boletoCb.checked = p.boleto !== false;
+
+                // Desconto PIX
+                const pixDiscToggle = document.querySelector('input[name="pix_discount_enabled"]');
+                if (pixDiscToggle && p.pix_discount_enabled) {
+                    pixDiscToggle.checked = true;
+                    const pixDiscPercent = document.querySelector('input[name="pix_discount_percent"]');
+                    if (pixDiscPercent && p.pix_discount_percent) {
+                        pixDiscPercent.value = p.pix_discount_percent;
+                    }
+                }
+            }
+
+            // Validade
+            if (d.validity_date) {
+                const validInput = document.querySelector('input[name="validity_date"]');
+                if (validInput) validInput.value = d.validity_date;
+            }
+
+            // Observações
+            if (d.notes) {
+                const notesArea = document.querySelector('textarea[name="notes"]');
+                if (notesArea) notesArea.value = d.notes;
+            }
+
+            // Cria blocos
+            if (d.blocks && Array.isArray(d.blocks) && d.blocks.length > 0) {
+                // Limpa blocos existentes
+                const container = document.getElementById('blocks-container');
+                container.innerHTML = '';
+                document.getElementById('no-blocks-msg').classList.add('hidden');
+                blockIndex = 0;
+
+                d.blocks.forEach((block) => {
+                    addBlock();
+                    const lastBlock = container.lastElementChild;
+                    const idx = blockIndex - 1;
+
+                    if (block.title) lastBlock.querySelector(`input[name="blocks[${idx}][title]"]`).value = block.title;
+                    if (block.description) lastBlock.querySelector(`textarea[name="blocks[${idx}][description]"]`).value = block.description;
+                    if (block.features) lastBlock.querySelector(`textarea[name="blocks[${idx}][features]"]`).value = block.features;
+                    if (block.deadline) lastBlock.querySelector(`input[name="blocks[${idx}][deadline]"]`).value = block.deadline;
+                    if (block.value) lastBlock.querySelector(`input[name="blocks[${idx}][value]"]`).value = block.value;
+                    if (block.scope) lastBlock.querySelector(`input[name="blocks[${idx}][scope]"]`).value = block.scope;
+                });
+            }
+
+            // Atualiza preview de totais
+            updatePreview();
+
+            // Mostra info de sucesso
+            loading.classList.add('hidden');
+            document.getElementById('voice-status').textContent = '✅ Orçamento preenchido pela IA!';
+            document.getElementById('voice-status').className = 'text-xs text-green-600 dark:text-green-400';
+
+            let infoHtml = '✅ Campos preenchidos com sucesso!';
+            if (d.client_created) {
+                infoHtml += `<br>👤 Cliente "<strong>${d.client?.name || ''}</strong>" criado automaticamente.`;
+            }
+            if (d.project_created) {
+                infoHtml += `<br>📁 Projeto "<strong>${d.project?.name || ''}</strong>" criado e vinculado.`;
+            }
+            if (d.blocks) {
+                infoHtml += `<br>📋 ${d.blocks.length} bloco(s) de solicitação criado(s).`;
+            }
+            resultInfo.innerHTML = infoHtml;
+            resultInfo.classList.remove('hidden');
+
+        } else {
+            throw new Error(data.message || 'Erro ao processar');
+        }
+    } catch (err) {
+        loading.classList.add('hidden');
+        btn.classList.remove('hidden');
+        document.getElementById('voice-status').textContent = '❌ Erro: ' + err.message;
+        document.getElementById('voice-status').className = 'text-xs text-red-500';
+    }
+}
 </script>
