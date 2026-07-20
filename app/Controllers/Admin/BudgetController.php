@@ -650,8 +650,8 @@ REGRAS IMPORTANTES:
                     // Tenta encontrar por nome similar
                     $clientName = $data['client']['name'];
                     $found = $db->fetchOne(
-                        "SELECT id FROM clients WHERE (name LIKE :name OR company LIKE :name) AND is_active = 1 AND deleted_at IS NULL LIMIT 1",
-                        ['name' => '%' . $clientName . '%']
+                        "SELECT id FROM clients WHERE (name LIKE :name1 OR company LIKE :name2) AND is_active = 1 AND deleted_at IS NULL LIMIT 1",
+                        ['name1' => '%' . $clientName . '%', 'name2' => '%' . $clientName . '%']
                     );
 
                     if ($found) {
