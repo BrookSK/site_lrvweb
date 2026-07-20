@@ -181,7 +181,9 @@ Retorne APENAS um JSON válido com estas chaves:
 - client: Nome do cliente se mencionado (deve ser exatamente igual a um dos cadastrados). Se não mencionou, string vazia.
 - completed_at: Data de conclusão no formato YYYY-MM-DD se mencionada (ex: se disse 'janeiro de 2025' retorne '2025-01-01'). Se não mencionou, string vazia.
 
-Melhore o texto para ficar profissional, como portfólio de empresa de desenvolvimento web.";
+Melhore o texto para ficar profissional, como portfólio de empresa de desenvolvimento web.
+CORRIJA termos técnicos mal escritos ou mal transcritos: \"lending page\" → \"Landing Page\", \"uebsite\" → \"Website\", \"ecomerce\"/\"e-comerce\" → \"E-commerce\", \"osti\" → \"Hosting\", \"domino\" → \"Domínio\", \"imeio\" → \"E-mail\", \"uordpress\" → \"WordPress\", \"iu ai\" → \"UI\", \"iu equis\" → \"UX\", \"esse e o\" → \"SEO\", \"api rest\" → \"API REST\", \"frontend\" → \"Front-end\", \"backend\" → \"Back-end\".
+Use SEMPRE a grafia correta dos termos técnicos na saída.";
 
         try {
             $ch = curl_init('https://api.openai.com/v1/chat/completions');

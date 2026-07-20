@@ -603,7 +603,9 @@ REGRAS IMPORTANTES:
 - Se mencionou parcelas no cartão, extraia a quantidade em installments.
 - Se disse que não tem validade, validity_date = null.
 - Valores devem ser numéricos (sem R$, sem ponto de milhar).
-- Interprete expressões coloquiais (\"400 conto\" = 400.00, \"oitocentão\" = 800.00, etc.)";
+- Interprete expressões coloquiais (\"400 conto\" = 400.00, \"oitocentão\" = 800.00, etc.)
+- CORRIJA termos técnicos mal escritos ou mal transcritos: \"lending page\" → \"Landing Page\", \"uebsite\" → \"Website\", \"ecomerce\"/\"e-comerce\" → \"E-commerce\", \"osti\" → \"Hosting\", \"domino\" → \"Domínio\", \"imeio\" → \"E-mail\", \"uordpress\" → \"WordPress\", \"iu ai\" → \"UI\", \"iu equis\" → \"UX\", \"esse e o\" → \"SEO\", \"api rest\" → \"API REST\", \"frontend\" → \"Front-end\", \"backend\" → \"Back-end\", \"responsivo\" → \"Responsivo\", \"crud\" → \"CRUD\".
+- Use a grafia correta de termos técnicos em títulos, descrições e escopos. A saída deve ser profissional.";
 
         try {
             $ch = curl_init('https://api.openai.com/v1/chat/completions');
