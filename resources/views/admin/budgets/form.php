@@ -166,12 +166,12 @@
                             </div>
                             <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Descrição</label><textarea name="blocks[<?= $idx ?>][description]" rows="2" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><?= htmlspecialchars($block['description'] ?? '') ?></textarea></div>
                             <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">O que será feito (um por linha)</label><textarea name="blocks[<?= $idx ?>][features]" rows="4" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><?= htmlspecialchars($block['features'] ?? '') ?></textarea></div>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                                 <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Prazo</label><input type="text" name="blocks[<?= $idx ?>][deadline]" value="<?= htmlspecialchars($block['deadline'] ?? '') ?>" placeholder="30 dias úteis" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
                                 <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Valor (R$)</label><input type="number" step="0.01" name="blocks[<?= $idx ?>][value]" value="<?= $block['value'] ?? '' ?>" placeholder="0.00" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
-                                <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Escopo</label><input type="text" name="blocks[<?= $idx ?>][scope]" value="<?= htmlspecialchars($block['scope'] ?? '') ?>" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
                             </div>
-                            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Observações do bloco</label><textarea name="blocks[<?= $idx ?>][notes]" rows="2" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><?= htmlspecialchars($block['notes'] ?? '') ?></textarea></div>
+                            <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Escopo</label><textarea name="blocks[<?= $idx ?>][scope]" rows="4" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><?= htmlspecialchars($block['scope'] ?? '') ?></textarea></div>
+                            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Observações da solicitação</label><textarea name="blocks[<?= $idx ?>][notes]" rows="3" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"><?= htmlspecialchars($block['notes'] ?? '') ?></textarea></div>
                         </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
@@ -245,12 +245,12 @@ function addBlock() {
         </div>
         <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Descrição</label><textarea name="blocks[${idx}][description]" rows="2" placeholder="Descrição geral do que será feito..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea></div>
         <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">O que será feito (um item por linha)</label><textarea name="blocks[${idx}][features]" rows="4" placeholder="Autenticação de usuários\nDashboard com relatórios\nIntegração com API\n..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea></div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
             <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Prazo</label><input type="text" name="blocks[${idx}][deadline]" placeholder="30 dias úteis" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
             <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Valor (R$)</label><input type="number" step="0.01" name="blocks[${idx}][value]" placeholder="0.00" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
-            <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Escopo</label><input type="text" name="blocks[${idx}][scope]" placeholder="Escopo técnico" class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></div>
         </div>
-        <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Observações</label><textarea name="blocks[${idx}][notes]" rows="2" placeholder="Observações específicas..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea></div>
+        <div class="mb-3"><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Escopo</label><textarea name="blocks[${idx}][scope]" rows="4" placeholder="Escopo técnico detalhado do que o projeto contempla..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea></div>
+        <div><label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Observações da solicitação</label><textarea name="blocks[${idx}][notes]" rows="3" placeholder="Delimitação do que não está incluído no escopo..." class="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 dark:text-white text-sm"></textarea></div>
     </div>`;
 
     container.insertAdjacentHTML('beforeend', html);
@@ -502,6 +502,7 @@ async function sendBudgetToAI() {
                     if (block.deadline) lastBlock.querySelector(`input[name="blocks[${idx}][deadline]"]`).value = block.deadline;
                     if (block.value) lastBlock.querySelector(`input[name="blocks[${idx}][value]"]`).value = block.value;
                     if (block.scope) lastBlock.querySelector(`input[name="blocks[${idx}][scope]"]`).value = block.scope;
+                    if (block.notes) lastBlock.querySelector(`textarea[name="blocks[${idx}][notes]"]`).value = block.notes;
                 });
             }
 

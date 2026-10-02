@@ -545,68 +545,91 @@ class BudgetController extends Controller
         $projects = $db->fetchAll("SELECT id, name, client_id FROM projects WHERE deleted_at IS NULL ORDER BY name");
         $projectNames = array_map(fn($p) => $p['name'], $projects);
 
-        $prompt = "Você é um assistente especializado em interpretar descrições faladas de orçamentos de uma empresa de desenvolvimento web/tecnologia.
+        $today = date('d/m/Y');
+        $prompt = "Você é um especialista em propostas comerciais da LRV Web, uma empresa de desenvolvimento web/tecnologia. Você escreve orçamentos profissionais, detalhados e bem redigidos — no mesmo nível de uma proposta comercial elaborada manualmente por um consultor sênior.
 
-Baseado na transcrição abaixo, extraia TODAS as informações para montar um orçamento completo.
+Você recebe transcrições de áudio onde o dono da empresa descreve o orçamento de forma rápida e informal (muitas vezes dizendo 'encher linguiça', ou seja, pedindo para você detalhar e expandir profissionalmente). Seu trabalho é transformar essa fala em uma proposta COMPLETA e PROFISSIONAL.
 
-Transcrição: \"{$transcript}\"
+Data de hoje: {$today}
 
-Clientes cadastrados: " . implode(', ', $clientNames) . "
-Projetos cadastrados: " . implode(', ', $projectNames) . "
+## TRANSCRIÇÃO DO ÁUDIO:
+\"{$transcript}\"
 
-Retorne APENAS um JSON válido com estas chaves:
+## CONTEXTO DO SISTEMA:
+Clientes cadastrados (ID - Nome): " . implode(', ', array_map(fn($c) => $c['id'] . '-' . $c['name'] . ($c['company'] ? ' (' . $c['company'] . ')' : ''), $clients)) . "
+Projetos cadastrados (ID - Nome): " . implode(', ', array_map(fn($p) => $p['id'] . '-' . $p['name'], $projects)) . "
+
+## FORMATO DE SAÍDA:
+Retorne APENAS um JSON válido (sem markdown, sem backticks) com esta estrutura:
 
 {
-  \"budget_name\": \"Nome descritivo do orçamento (ex: Proposta Web + E-commerce MC Tecnologia)\",
-  \"client\": {
-    \"name\": \"Nome do cliente ou empresa mencionada (ex: MC Tecnologia)\",
-    \"existing_id\": null,
-    \"is_new\": true
-  },
-  \"project\": {
-    \"name\": \"Nome do projeto (ex: Sites para Revenda MC Tecnologia)\",
-    \"description\": \"Breve descrição do projeto\",
-    \"existing_id\": null,
-    \"is_new\": true
-  },
+  \"budget_name\": \"Nome comercial do orçamento\",
+  \"client\": { \"name\": \"Nome da empresa/cliente\", \"existing_id\": null, \"is_new\": true },
+  \"project\": { \"name\": \"Nome do projeto\", \"description\": \"Descrição profissional do projeto\", \"existing_id\": null, \"is_new\": true },
   \"payment\": {
-    \"type\": \"one_time ou monthly ou installments\",
-    \"pix\": true,
-    \"card\": true,
-    \"boleto\": true,
+    \"type\": \"one_time | monthly | installments\",
+    \"pix\": true, \"card\": true, \"boleto\": true,
     \"installments\": 1,
-    \"pix_discount_enabled\": false,
-    \"pix_discount_percent\": 5,
+    \"pix_discount_enabled\": false, \"pix_discount_percent\": 5,
     \"discount_percent\": 0,
     \"minimum_entry\": null
   },
   \"validity_date\": null,
-  \"notes\": \"Observações gerais extraídas da fala\",
+  \"notes\": \"Observação geral do orçamento (ver instruções abaixo)\",
   \"blocks\": [
     {
-      \"title\": \"Título do item/serviço (ex: Site Institucional)\",
-      \"description\": \"O que inclui este bloco\",
+      \"title\": \"Título do serviço\",
+      \"description\": \"Descrição em texto corrido\",
       \"features\": \"Item 1\\nItem 2\\nItem 3\",
-      \"value\": 400.00,
-      \"deadline\": \"Prazo estimado se mencionado\",
-      \"scope\": \"Escopo técnico\"
+      \"deadline\": \"Prazo\",
+      \"scope\": \"Escopo em texto corrido\",
+      \"notes\": \"Observação da solicitação (delimitação de escopo)\",
+      \"value\": 500.00
     }
   ]
 }
 
-REGRAS IMPORTANTES:
-- Se o cliente mencionado EXISTE na lista, preencha existing_id com o ID correspondente e is_new = false.
-- Se NÃO existe, is_new = true e preencha apenas name.
-- Mesma lógica para projeto.
-- Crie blocos separados para cada serviço/item diferente mencionado.
-- Se falou que já é com desconto, discount_percent = 0.
-- Se mencionou desconto no PIX, ative pix_discount_enabled.
-- Se mencionou parcelas no cartão, extraia a quantidade em installments.
-- Se disse que não tem validade, validity_date = null.
-- Valores devem ser numéricos (sem R$, sem ponto de milhar).
-- Interprete expressões coloquiais (\"400 conto\" = 400.00, \"oitocentão\" = 800.00, etc.)
-- CORRIJA termos técnicos mal escritos ou mal transcritos: \"lending page\" → \"Landing Page\", \"uebsite\" → \"Website\", \"ecomerce\"/\"e-comerce\" → \"E-commerce\", \"osti\" → \"Hosting\", \"domino\" → \"Domínio\", \"imeio\" → \"E-mail\", \"uordpress\" → \"WordPress\", \"iu ai\" → \"UI\", \"iu equis\" → \"UX\", \"esse e o\" → \"SEO\", \"api rest\" → \"API REST\", \"frontend\" → \"Front-end\", \"backend\" → \"Back-end\", \"responsivo\" → \"Responsivo\", \"crud\" → \"CRUD\".
-- Use a grafia correta de termos técnicos em títulos, descrições e escopos. A saída deve ser profissional.";
+## COMO PREENCHER CADA CAMPO (SIGA EXATAMENTE ESTE PADRÃO DE ESCRITA):
+
+### notes (observação geral do orçamento):
+Texto profissional sobre condições comerciais. Exemplo de estilo:
+\"O valor apresentado já considera a condição comercial especial e diferenciada da parceria com a agência. O pagamento poderá ser realizado via Pix, cartão ou boleto, com entrada mínima de 50%. Este orçamento é válido até DD/MM/AAAA.\"
+Adapte conforme o que foi dito (formas de pagamento, entrada, validade, desconto, parceria).
+
+### Em cada bloco:
+- **title**: Título profissional e específico. Ex: \"Criação de Landing Page Institucional – DMR Assessoria Imobiliária\".
+- **description**: Texto corrido (NÃO lista), 2 a 4 frases, descrevendo profissionalmente o que será desenvolvido, para quem, e as principais características. Estilo de proposta comercial.
+- **features**: Lista granular e detalhada (um item por linha, separados por \\n). Quebre em MUITOS itens específicos. Para uma landing page institucional, por exemplo, liste cada seção separadamente (seção inicial/hero, sobre a empresa, serviços, diferenciais, contato), formulário de contato, responsividade, testes, publicação, etc. Quanto mais granular e completo, melhor.
+- **deadline**: Prazo. Se não mencionado, pode usar 'A definir conforme recebimento dos materiais necessários para o desenvolvimento.' ou estimar (Landing Page: 7-15 dias úteis, Site: 15-25 dias úteis, E-commerce: 30-45 dias úteis, Sistema: 45-60 dias úteis).
+- **scope**: Texto corrido LONGO e detalhado (3 a 6 frases) descrevendo tecnicamente tudo que o projeto contempla. Deve reafirmar o que está incluído, mencionar responsividade, painel administrativo (quando aplicável), tecnologia usada, etc. Estilo formal de contrato/proposta.
+- **notes** (observação da solicitação): SEMPRE delimite o que NÃO está incluído no escopo, protegendo contra expectativas extras. Exemplo de estilo:
+\"O desenvolvimento será realizado com base nos materiais, informações e orientações fornecidos pelo cliente. Solicitações que ultrapassem o escopo apresentado, como novas páginas, integrações, funcionalidades específicas ou desenvolvimentos adicionais, poderão ser avaliadas e orçadas separadamente.\"
+- **value**: Valor numérico do bloco.
+
+## REGRAS DE NEGÓCIO:
+- Cliente/projeto existente na lista → preencha existing_id (ID numérico) e is_new = false. Senão → is_new = true e preencha name.
+- Se falou 'já é com desconto'/'valor com desconto'/'condição especial', discount_percent = 0 (o valor já é o final).
+- 'entrada mínima de 50%' → minimum_entry = 50.
+- Mencionou desconto no PIX → pix_discount_enabled = true + porcentagem.
+- Mencionou parcelas/vezes no cartão → installments = quantidade e type = 'installments'.
+- 'válido até dia 12 do 10' → validity_date no formato YYYY-MM-DD (ex: 2026-10-12). Use o ano atual ou próximo mais lógico.
+- Valores numéricos puros (sem R\$, sem ponto de milhar). Interprete coloquialismos: '400 conto' = 400, 'oitocentão' = 800, 'um e meio' = 1500, '500 pila' = 500.
+
+## MÚLTIPLOS BLOCOS:
+Crie um bloco SEPARADO para cada serviço distinto. Ex: se mencionou o site E a hospedagem, são 2 blocos. Para hospedagem/manutenção recorrente, deadline = 'Serviço recorrente mensal.' e detalhe os planos (ex: Hospedagem R\$65/mês, Hospedagem + Manutenção R\$90/mês, hora adicional R\$50) na description, features, scope e notes.
+
+## CORREÇÃO DE TERMOS TÉCNICOS (a transcrição vem de áudio e erra muito):
+'lending page'/'lendim page' → 'Landing Page'; 'uebsite' → 'Website'; 'ecomerce'/'e-comerce' → 'E-commerce'; 'osti'/'hosting' → 'Hospedagem'; 'dominio' → 'Domínio'; 'uordpress'/'wordpress' → 'WordPress'; 'elementor' → 'Elementor'; 'iu ai' → 'UI'; 'iu equis' → 'UX'; 'esse e o'/'seo' → 'SEO'; 'frontend' → 'Front-end'; 'backend' → 'Back-end'. Use SEMPRE a grafia correta.
+
+## EXEMPLO DE REFERÊNCIA (siga ESTE nível de detalhe e redação):
+Para 'landing page institucional feita direto na programação, com painel de login, R\$500' você deve gerar um bloco assim:
+- title: \"Criação de Landing Page Institucional – [Empresa]\"
+- description: \"Desenvolvimento de uma landing page institucional personalizada para a [Empresa], desenvolvida diretamente em programação e estruturada de acordo com a identidade visual da marca, com painel administrativo para gerenciamento e configurações básicas do projeto.\"
+- features: \"Desenvolvimento da landing page diretamente em programação\\nCriação da estrutura visual seguindo a identidade da marca\\nCriação da seção inicial (banner/hero)\\nCriação da seção sobre a empresa\\nCriação da seção de serviços\\nCriação da seção de diferenciais\\nCriação da seção de atuação da empresa\\nCriação da seção de contato\\nImplementação de formulário de contato\\nConfiguração do envio de e-mails\\nCriação de painel administrativo com acesso por login\\nAdequação responsiva para computadores, tablets e celulares\\nTestes e ajustes finais\\nPublicação da landing page\"
+- scope: \"O projeto contempla o desenvolvimento de uma landing page institucional personalizada para a [Empresa], construída diretamente em programação, sem utilização de WordPress. A página será estruturada de acordo com a identidade visual da marca e contará com seções institucionais, apresentação dos serviços, diferenciais e canais de contato. O projeto também contempla a criação de um painel administrativo com acesso por login, destinado às configurações e gerenciamento básico da landing page, incluindo configurações relacionadas ao envio de e-mails. A página será desenvolvida de forma responsiva, garantindo adequada visualização em computadores, tablets e dispositivos móveis.\"
+- notes: \"O desenvolvimento será realizado com base nos materiais, informações e orientações fornecidos pelo cliente. Solicitações que ultrapassem o escopo apresentado, incluindo novas páginas, integrações, funcionalidades específicas ou desenvolvimentos adicionais, poderão ser avaliadas e orçadas separadamente.\"
+
+IMPORTANTE: a LRV Web desenvolve sites/landing pages DIRETAMENTE EM PROGRAMAÇÃO (não WordPress), e SEMPRE cria um painel administrativo com login para configurações (envio de e-mail, etc.), mesmo em landing pages — a menos que o áudio diga explicitamente que é WordPress/Elementor.";
 
         try {
             $ch = curl_init('https://api.openai.com/v1/chat/completions');
@@ -615,11 +638,11 @@ REGRAS IMPORTANTES:
                 CURLOPT_POSTFIELDS => json_encode([
                     'model' => $model,
                     'messages' => [
-                        ['role' => 'system', 'content' => 'Você é um assistente de orçamentos de uma empresa de tecnologia. Sempre responda em JSON válido, sem markdown, sem backticks.'],
+                        ['role' => 'system', 'content' => 'Você é um gerente de projetos sênior e especialista em propostas comerciais de tecnologia. Interprete transcrições de áudio com inteligência, enriqueça com detalhes profissionais e retorne JSON válido puro (sem markdown, sem backticks, sem explicações). Seja criativo nas features e descrições — como se estivesse escrevendo uma proposta real para fechar negócio.'],
                         ['role' => 'user', 'content' => $prompt],
                     ],
-                    'temperature' => 0.4,
-                    'max_tokens' => 3000,
+                    'temperature' => 0.6,
+                    'max_tokens' => 4000,
                 ]),
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json', "Authorization: Bearer {$apiKey}"],
                 CURLOPT_RETURNTRANSFER => true,
